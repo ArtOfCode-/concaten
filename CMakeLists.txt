@@ -4,5 +4,5 @@ project(concaten C)
 set(CMAKE_C_STANDARD 11)
 set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wall -Werror")
 
-set(SOURCE_FILES main.c tokenizer.c errors.c)
+set(SOURCE_FILES main.c tokenizer.c errors.c stringbuilder.h stringbuilder.c)
 add_executable(concaten ${SOURCE_FILES})

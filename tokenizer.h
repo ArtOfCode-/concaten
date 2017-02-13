@@ -1,6 +1,13 @@
 #ifndef CONCATEN_TOKENIZER_H
 #define CONCATEN_TOKENIZER_H
 
+#ifndef TKNR_BUF_SIZE
+# define TKNR_BUF_SIZE 256
+#endif
+#if TKNR_BUF_SIZE <= 0
+# error TKNR_BUF_SIZE cannot be <= 0
+#endif
+
 struct tokenizer_s;
 typedef struct tokenizer_s *tokenizer_t;
 
@@ -18,8 +25,8 @@ char *tkn_origin(token_t);
 size_t tkn_line(token_t);
 size_t tkn_index(token_t);
 char *tkn_raw(token_t);
-int tkn_err(token_t);
-char *tkn_err_to_string(int);
+// token errors are stored in the relevant tokenizer, not in the token itself
+bool tkn_err(token_t);
 void tkn_free(token_t);
 // object_t tkn_value(token_t) // defined in object.h
 

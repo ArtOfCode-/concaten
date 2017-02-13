@@ -4,37 +4,39 @@
 #include <string.h>
 
 #include "tokenizer.h"
+#include "stringbuilder.h"
 
-#ifndef TKNR_BUF_SIZE
- #define TKNR_BUF_SIZE 256
-#endif
-#if TKNR_BUF_SIZE <= 0
- #error TKNR_BUF_SIZE cannot be <= 0
-#endif
+#define ERROR(code) do{\
+    printf("Tokenizer error %d unhandled at " __FILE__ ":%d", code, __LINE__);\
+    exit(code);\
+    }while(0)
 
 #define TOKENIZER_OPS_FAIL 1000
- #define CTOR_FAIL (TOKENIZER_OPS_FAIL + 100)
-  #define CTOR_STR_FAIL (CTOR_FAIL + 10)
-   #define CTOR_STR_MALLOC_FAIL (CTOR_STR_FAIL + 1)
-   #define CTOR_STR_BAD_STRLEN_FAIL (CTOR_STR_FAIL + 2)
-   #define CTOR_STR_NULL_ARG_FAIL (CTOR_STR_FAIL + 3)
-  #define CTOR_FILE_FAIL (CTOR_FAIL + 20)
-   #define CTOR_FILE_MALLOC_FAIL (CTOR_FILE_FAIL + 1)
-   #define CTOR_FILE_BAD_STRLEN_FAIL (CTOR_FILE_FAIL + 2)
- #define READ_CHAR_FAIL (TOKENIZER_OPS_FAIL + 200)
-  #define FILE_READ_FAIL (READ_CHAR_FAIL + 10)
-   #define FILE_READ_EOF_FAIL (FILE_READ_FAIL + 1)
-  #define STRING_READ_FAIL (READ_CHAR_FAIL + 20)
-   #define STRING_READ_EOS_FAIL (STRING_READ_FAIL + 1)
+# define CTOR_FAIL (TOKENIZER_OPS_FAIL + 100)
+#  define CTOR_STR_FAIL (CTOR_FAIL + 10)
+#   define CTOR_STR_MALLOC_FAIL (CTOR_STR_FAIL + 1)
+#   define CTOR_STR_BAD_STRLEN_FAIL (CTOR_STR_FAIL + 2)
+#   define CTOR_STR_NULL_ARG_FAIL (CTOR_STR_FAIL + 3)
+#  define CTOR_FILE_FAIL (CTOR_FAIL + 20)
+#   define CTOR_FILE_MALLOC_FAIL (CTOR_FILE_FAIL + 1)
+#   define CTOR_FILE_BAD_STRLEN_FAIL (CTOR_FILE_FAIL + 2)
+#   define CTOR_FILE_NULL_ARG_FAIL (CTOR_FILE_FAIL + 3)
+# define READ_CHAR_FAIL (TOKENIZER_OPS_FAIL + 200)
+#  define FILE_READ_FAIL (READ_CHAR_FAIL + 10)
+#   define FILE_READ_EOF_FAIL (FILE_READ_FAIL + 1)
+#  define STRING_READ_FAIL (READ_CHAR_FAIL + 20)
+#   define STRING_READ_EOS_FAIL (STRING_READ_FAIL + 1)
 #define TOKENIZER_SYNTAX_FAIL 1500
- #define SYN_NO_SEPARATION (TOKENIZER_SYNTAX_FAIL + 1)
+# define SYN_NO_SEPARATION_FAIL (TOKENIZER_SYNTAX_FAIL + 1)
+# define SYN_STR_FAIL (TOKENIZER_SYNTAX_FAIL + 10)
+#  define
 
 struct token_s {
     char *raw; size_t raw_len;
     size_t line, index;
     enum token_type_e type;
     
-    int error;
+    bool error;
 };
 
 struct file_source_s {
@@ -188,19 +190,23 @@ char read_char(tokenizer_t reading) {
 }
 
 char peek_char(tokenizer_t peeking) {
+    if (peeking->error) {
+        printf("Tokenizer error %d unhandled at %s:%d", peeking->error, __FILE__, __LINE__);
+        exit(peeking->error);
+    }
     return peeking->next_char;
 }
 
+bool is_ws(char c) {
+    return c == ' ' ||
+           c == '\t' ||
+           c == '\n' ||
+           c == '\r';
+}
 bool skip_ws(tokenizer_t from) {
     bool skipped = false;
-    while (true) {
-        char peeked = peek_char(from);
-        if (peeked == ' ' || peeked == '\t' || peeked == '\r' || peeked == '\n') {
-            skipped = true;
-            read_char(from);
-        } else {
-            break;
-        }
+    while (is_ws(peek_char(from))) {
+        read_char(from);
     }
     return skipped;
 }
@@ -217,17 +223,52 @@ bool skip_between(tokenizer_t from) {
     while (skip_ws(from) || skip_slc(from)) skipped = true;
     return skipped;
 }
+
 #define STARTING_TOKEN_MEM 16
 token_t tknr_next(tokenizer_t from) {
+    if (from->error) {
+        ERROR(fsrom->error);
+    }
     token_t ret = malloc(sizeof(struct token_s));
     if (!ret) {
         return NULL;
     }
     if (!skip_between(from)) {
-        ret->error = SYN_NO_SEPARATION;
+        ret->error = true;
+        from->error = SYN_NO_SEPARATION_FAIL;
         return ret;
     };
-    size_t char_count;
+    size_t char_count = 0;
+    size_t char_cap = STARTING_TOKEN_MEM;
     char *token_raw = malloc(STARTING_TOKEN_MEM * sizeof(char));
-    
+    char next_char = peek_char(from);
+    if (!next_char && from->error) {
+        ret->error = true;
+        return ret;
+    }
+    stringbuilder_t sb = sb_new(STARTING_TOKEN_MEM);
+    if ('0' <= next_char && next_char <= '9') {
+        // TODO support for alternate bases
+        do {
+            sb_append(sb, next_char);
+            next_char = peek_char(from);
+        } while ('0' <= next_char && next_char <= '9');
+        if (next_char == '.') {
+            do {
+                sb_append(sb, next_char);
+                next_char = peek_char(from);
+            } while ('0' <= next_char && next_char <= '9');
+        }
+        if (next_char == 'e') {
+            do {
+                sb_append(sb, next_char);
+                next_char = peek_char(from);
+            } while ('0' <= next_char && next_char <= '9');
+        }
+        
+    } else if (next_char == '"') {
+        
+    } else if (next_char == ':') {
+        //
+    }
 }
