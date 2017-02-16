@@ -1,6 +1,3 @@
-#include "tokenizer.h"
-#include <stdio.h>
-
 //#include "callable.h"
 //#include "stacks.h"
 //#include "errors.h"
@@ -67,16 +64,36 @@
 //    return 0;
 //}
 
+#include "tokenizer.h"
+#include <string.h>
+#include <stdlib.h>
+#include <stdio.h>
+
 int main() {
-    Tokenizer tknr = tknr_from_string("\"string here\"#commentsep\n123 #commentsep2\n\"foobar!\" 123.45  ",
-                                      "<main>");
-    Token next;
-    while ((next = tknr_next(tknr)) != NULL) {
-        printf("`%s` (%d) at %s@%zu:%zu\n", tkn_raw(next), tkn_type(next),
-               tkn_origin(next), tkn_line(next), tkn_index(next));
+    char *test_strings[] = {
+            "",
+            "\"hello, world\"",
+            "\"string here\" 123.4e5"
+    };
+    size_t test_count = sizeof(test_strings) / sizeof(char *);
+    char *origin = malloc(strlen("test case #0") * sizeof(char));
+    strcpy(origin, "test case #0");
+    --origin[11];
+    for (int i = 0; i < test_count; ++i) {
+        ++origin[11];
+        puts(origin);
+        Tokenizer tknr = tknr_from_string(test_strings[i], origin);
+        if (tknr_err(tknr)) {
+            
+        }
+        Token next;
+        while ((next = tknr_next(tknr)) != NULL) {
+            printf("`%s` (%d) at %s@%zu:%zu\n", tkn_raw(next), tkn_type(next),
+                   tkn_origin(next), tkn_line(next), tkn_index(next));
+        }
+        if (tknr_err(tknr) && !tknr_end(tknr)) {
+            printf("Error %d occured in tokenizer", tknr_err(tknr));
+        }
+        tknr_free(tknr);
     }
-    if (tknr_err(tknr) && !tknr_end(tknr)) {
-        printf("Error %d occured in tokenizer", tknr_err(tknr));
-    }
-    tknr_free(tknr);
 }

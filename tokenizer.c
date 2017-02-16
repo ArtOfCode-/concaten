@@ -265,10 +265,13 @@ char escape_next(Tokenizer from) {
 
 #define STARTING_RAW_MEM 16
 Token tknr_next(Tokenizer from) {
-    if (from->error) {
-        ERROR(from->error);
+    if (tknr_err(from)) {
+        ERROR(tknr_err(from));
     }
     if (!skip_between(from)) {
+        if (tknr_err(from)) {
+            return NULL;
+        }
         // at the very beginning, it's OK not to have separation
         // (files don't have to start with code)
         if (from->just_started) {
@@ -278,7 +281,7 @@ Token tknr_next(Tokenizer from) {
             return NULL;
         }
     }
-    if (tknr_err(from)) {
+    if (tknr_end(from)) {
         from->error = from->is_from_file ? FILE_READ_EOF_FAIL : STRING_READ_EOS_FAIL;
         return NULL;
     }
@@ -307,21 +310,20 @@ Token tknr_next(Tokenizer from) {
         return NULL;
     }
     char next_char = peek_char(from);
-    if (!next_char && from->error) {
+    if (!next_char && tknr_err(from)) {
         return NULL;
     }
     if (next_char == '"') { // single-line string
         while (1) {
             sb_append(raw, read_char(from));
             next_char = peek_char(from);
-            
             if (next_char == '\\') {
                 sb_append(raw, read_char(from));
-                if (from->error) {
+                if (tknr_err(from)) {
                     return NULL;
                 }
                 sb_append(raw, escape_next(from));
-                if (from->error) {
+                if (tknr_err(from)) {
                     return NULL;
                 }
             }
@@ -350,37 +352,60 @@ Token tknr_next(Tokenizer from) {
     } else if ('0' <= next_char && next_char <= '9') {
         // TODO Support numbers with different bases
         // TODO Arbitrary-precision rationals?
-        bool decimal = false;
-        do {
+        if (next_char == '0') {
             sb_append(raw, read_char(from));
             next_char = peek_char(from);
-            if (!next_char && !tknr_err(from) && from->error) {
+            if (tknr_end(from)) {
+                sb_append(raw, next_char);
+            } else if (next_char == 'x') {
+                sb_append(raw, next_char);
+                while (('0' <= next_char && next_char <= '9') ||
+                        ('a' <= next_char && next_char <= 'f') ||
+                        ('A' <= next_char && next_char <= 'F')) {
+                    sb_append(raw, read_char(from));
+                    next_char = peek_char(from);
+                    if (!next_char && tknr_err(from)) {
+                        return NULL;
+                    }
+                }
+            }
+        }
+        bool decimal = false;
+        // add decimal digits
+        while ('0' <= next_char && next_char <= '9') {
+            sb_append(raw, read_char(from));
+            next_char = peek_char(from);
+            if (!next_char && !tknr_err(from) && tknr_err(from)) {
                 return NULL;
             }
-        } while ('0' <= next_char && next_char <= '9');
+        }
+        // un punto
         if (next_char == '.') {
             decimal = true;
             sb_append(raw, read_char(from));
-            do {
+            next_char = peek_char(from);
+            while ('0' <= next_char && next_char <= '9') {
                 sb_append(raw, read_char(from));
                 next_char = peek_char(from);
-                if (!next_char && from->error) {
+                if (!next_char && tknr_err(from)) {
                     return NULL;
                 }
-            } while ('0' <= next_char && next_char <= '9');
+            }
         }
+        // exponents
         if (next_char == 'e') {
             decimal = true;
             sb_append(raw, read_char(from));
-            do {
+            next_char = peek_char(from);
+            while ('0' <= next_char && next_char <= '9') {
                 sb_append(raw, read_char(from));
                 next_char = peek_char(from);
-                if (!next_char && from->error) {
+                if (!next_char && tknr_err(from)) {
                     return NULL;
                 }
-            } while ('0' <= next_char && next_char <= '9');
+            }
         }
-        if (!next_char && !tknr_err(from) && from->error) {
+        if (!next_char && !tknr_err(from) && tknr_err(from)) {
             return NULL;
         }
         size_t raw_cstr_len = sb_size(raw);
