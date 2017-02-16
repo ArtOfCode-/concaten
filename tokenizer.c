@@ -11,29 +11,29 @@
     exit(code % 100);\
     }while(0)
 
-#define TOKENIZER_OPS_FAIL          1000
-# define CTOR_FAIL                   1100
-#  define CTOR_STR_FAIL               1110
-#   define CTOR_STR_MALLOC_FAIL        1111
-#   define CTOR_STR_BAD_STRLEN_FAIL    1112
-#   define CTOR_STR_NULL_ARG_FAIL      1113
-#  define CTOR_FILE_FAIL              1120
-#   define CTOR_FILE_MALLOC_FAIL       1121
-#   define CTOR_FILE_BAD_STRLEN_FAIL   1122
-#   define CTOR_FILE_NULL_ARG_FAIL     1123
-# define READ_CHAR_FAIL              1200
-#  define FILE_READ_FAIL              1210
-#   define FILE_READ_EOF_FAIL          1211
-#  define STRING_READ_FAIL            1220
-#   define STRING_READ_EOS_FAIL        1221
-# define NEXT_TOKEN_FAIL             1300
-#  define NT_MALLOC_FAIL              1301
-#  define NT_NEW_SB_FAIL              1302
-#  define NT_SB_FREE_FAIL             1303
-#define TOKENIZER_SYNTAX_FAIL       1500
-# define SYN_NO_SEPARATION_FAIL      1501
-# define SYN_STR_FAIL                1510
-#  define SYN_STR_MULTILINE_FAIL      1511
+#define TOKENIZER_OPS_FAIL           1000
+# define CTOR_FAIL                    1100
+#  define CTOR_STR_FAIL                1110
+#   define CTOR_STR_MALLOC_FAIL         1111
+#   define CTOR_STR_BAD_STRLEN_FAIL     1112
+#   define CTOR_STR_NULL_ARG_FAIL       1113
+#  define CTOR_FILE_FAIL               1120
+#   define CTOR_FILE_MALLOC_FAIL        1121
+#   define CTOR_FILE_BAD_STRLEN_FAIL    1122
+#   define CTOR_FILE_NULL_ARG_FAIL      1123
+# define READ_CHAR_FAIL               1200
+#  define FILE_READ_FAIL               1210
+#   define FILE_READ_EOF_FAIL           1211
+#  define STRING_READ_FAIL             1220
+#   define STRING_READ_EOS_FAIL         1221
+# define NEXT_TOKEN_FAIL              1300
+#  define NT_MALLOC_FAIL               1301
+#  define NT_NEW_SB_FAIL               1302
+#  define NT_SB_FREE_FAIL              1303
+#define TOKENIZER_SYNTAX_FAIL        1500
+# define SYN_NO_SEPARATION_FAIL       1501
+# define SYN_STR_FAIL                 1510
+#  define SYN_STR_MULTILINE_FAIL       1511
 
 struct Token {
     char *raw; size_t raw_len;
@@ -277,7 +277,11 @@ Token tknr_next(Tokenizer from) {
             from->error = SYN_NO_SEPARATION_FAIL;
             return NULL;
         }
-    };
+    }
+    if (tknr_err(from)) {
+        from->error = from->is_from_file ? FILE_READ_EOF_FAIL : STRING_READ_EOS_FAIL;
+        return NULL;
+    }
     Token ret = malloc(sizeof(struct Token));
     if (!ret) {
         from->error = NT_MALLOC_FAIL;
@@ -342,6 +346,53 @@ Token tknr_next(Tokenizer from) {
         ret->raw = raw_cstr;
         ret->raw_len = raw_cstr_len;
         ret->type = TKN_STRING;
+        return ret;
+    } else if ('0' <= next_char && next_char <= '9') {
+        // TODO Support numbers with different bases
+        // TODO Arbitrary-precision rationals?
+        bool decimal = false;
+        do {
+            sb_append(raw, read_char(from));
+            next_char = peek_char(from);
+            if (!next_char && !tknr_err(from) && from->error) {
+                return NULL;
+            }
+        } while ('0' <= next_char && next_char <= '9');
+        if (next_char == '.') {
+            decimal = true;
+            sb_append(raw, read_char(from));
+            do {
+                sb_append(raw, read_char(from));
+                next_char = peek_char(from);
+                if (!next_char && from->error) {
+                    return NULL;
+                }
+            } while ('0' <= next_char && next_char <= '9');
+        }
+        if (next_char == 'e') {
+            decimal = true;
+            sb_append(raw, read_char(from));
+            do {
+                sb_append(raw, read_char(from));
+                next_char = peek_char(from);
+                if (!next_char && from->error) {
+                    return NULL;
+                }
+            } while ('0' <= next_char && next_char <= '9');
+        }
+        if (!next_char && !tknr_err(from) && from->error) {
+            return NULL;
+        }
+        size_t raw_cstr_len = sb_size(raw);
+        char *raw_cstr = sb_free_copy(raw);
+        if (!raw_cstr) {
+            from->error = NT_SB_FREE_FAIL;
+            sb_free(raw);
+            return NULL;
+        }
+        ret->raw = raw_cstr;
+        ret->raw_len = raw_cstr_len;
+        ret->type = decimal ? TKN_REAL : TKN_INTEGER;
         return ret;
     }
     printf("Uh oh, we got here! (%d)\n", __LINE__);

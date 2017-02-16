@@ -68,7 +68,8 @@
 //}
 
 int main() {
-    Tokenizer tknr = tknr_from_string("\"string here\" \"foobar!\"", "<main>");
+    Tokenizer tknr = tknr_from_string("\"string here\"#commentsep\n123 #commentsep2\n\"foobar!\" 123.45  ",
+                                      "<main>");
     Token next;
     while ((next = tknr_next(tknr)) != NULL) {
         printf("`%s` (%d) at %s@%zu:%zu\n", tkn_raw(next), tkn_type(next),
