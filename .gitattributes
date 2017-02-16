@@ -1,0 +1,11 @@
+#by default, text with lfs
+* text eol=lf
+
+#explicitly state
+*.c text
+*.h text
+
+#some things aren't text
+*.exe binary
+
+
