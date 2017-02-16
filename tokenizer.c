@@ -74,7 +74,7 @@ struct FileSource_s {
     size_t eof; // if we're at EOF, this marks where in next_chars it is
 };
 
-struct StringSource_s {
+struct StringSource {
     char *begin;
     char *end;
     char *cur_pos;
@@ -82,7 +82,7 @@ struct StringSource_s {
 
 struct Tokenizer {
     union {
-        struct StringSource_s string;
+        struct StringSource string;
         struct FileSource_s file;
     } source;
     bool is_from_file;
@@ -103,13 +103,13 @@ Tokenizer tknr_from_string(const char *mem, const char *origin) {
     }
     
     ret->origin = NULL;
-    ret->source.string = (struct StringSource_s) {
+    ret->source.string = (struct StringSource) {
             .begin = NULL,
             .end = NULL,
             .cur_pos = NULL
     };
     ret->is_from_file = false;
-    ret->line = 0;
+    ret->line = 1;
     ret->index = 0;
     ret->error = 0;
     ret->next_char = '\0';
@@ -134,9 +134,9 @@ Tokenizer tknr_from_string(const char *mem, const char *origin) {
         return ret;
     }
     strcpy(mem_c, mem);
-    ret->source.string = (struct StringSource_s) {
+    ret->source.string = (struct StringSource) {
             .begin = mem_c,
-            .end = mem_c + mem_len,
+            .end = mem_c + mem_len + 1,
             .cur_pos = mem_c
     };
     
@@ -151,6 +151,7 @@ Tokenizer tknr_from_string(const char *mem, const char *origin) {
     ret->origin = origin_c;
     
     read_char(ret);
+    --ret->index;
     
     return ret;
 }
@@ -186,11 +187,12 @@ int get_next_char_file(Tokenizer from) {
 }
 
 int get_next_char_string(Tokenizer from) {
-    struct StringSource_s *ss = &from->source.string;
+    struct StringSource *ss = &from->source.string;
     if (ss->end == ss->cur_pos) {
         return STRING_READ_EOS_FAIL;
     } else {
-        from->next_char = *(ss->cur_pos++);
+        from->next_char = *ss->cur_pos;
+        ++ss->cur_pos;
     }
     return 0;
 }
@@ -200,7 +202,7 @@ char read_char(Tokenizer reading) {
         ERROR(reading->error);
     }
     char ret = reading->next_char;
-    int err;
+    int err = 0;
     if (reading->is_from_file) {
         err = get_next_char_file(reading);
     } else {
@@ -237,6 +239,7 @@ bool is_ws(char c) {
 bool skip_ws(Tokenizer from) {
     bool skipped = false;
     while (is_ws(peek_char(from))) {
+        skipped = true;
         read_char(from);
     }
     return skipped;
@@ -265,12 +268,6 @@ Token tknr_next(Tokenizer from) {
     if (from->error) {
         ERROR(from->error);
     }
-    if (from->last_read) tkn_free(from->last_read);
-    Token ret = malloc(sizeof(struct Token));
-    if (!ret) {
-        from->error = NT_MALLOC_FAIL;
-        return NULL;
-    }
     if (!skip_between(from)) {
         // at the very beginning, it's OK not to have separation
         // (files don't have to start with code)
@@ -281,9 +278,24 @@ Token tknr_next(Tokenizer from) {
             return NULL;
         }
     };
+    Token ret = malloc(sizeof(struct Token));
+    if (!ret) {
+        from->error = NT_MALLOC_FAIL;
+        return NULL;
+    }
+    if (from->last_read) {
+        tkn_free(from->last_read);
+    }
+    char *origin_c = malloc(strlen(from->origin) * sizeof(char));
+    if (!origin_c) {
+        from->error = NT_MALLOC_FAIL;
+        return NULL;
+    }
+    strcpy(origin_c, from->origin);
+    from->last_read = ret;
     ret->index = from->index;
     ret->line = from->line;
-    ret->origin = from->origin;
+    ret->origin = origin_c;
     ret->type = TKN_UNKNOWN;
     StringBuilder raw = sb_new(STARTING_RAW_MEM);
     if (!raw) {
@@ -337,7 +349,11 @@ Token tknr_next(Tokenizer from) {
 }
 
 bool tknr_end(Tokenizer t) {
-    return t->error == STRING_READ_EOS_FAIL || t->error == FILE_READ_EOF_FAIL;
+    if (t->is_from_file) {
+        return t->source.file.eof == t->source.file.next_chars_pos;
+    } else {
+        return t->source.string.cur_pos == t->source.string.end;
+    }
 }
 
 int tknr_err(Tokenizer t) {

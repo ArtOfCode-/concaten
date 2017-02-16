@@ -37,7 +37,7 @@ int ctn_error(ctn_err_t errcode, Token tkn, char *detail) {
             should_free = true;
             break;
         default:
-            size = 10 + 19 + 1; // max int length + extra chars + null
+            size = 12 + 19 + 1; // max int length + extra chars + null
             message = malloc(size * sizeof(char));
             if (!message) {
                 message = "[memory failure] UNKNOWN ERROR";
