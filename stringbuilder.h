@@ -4,10 +4,13 @@
 #include <stddef.h>
 #include <stdbool.h>
 
-struct stringbuilder_s;
-typedef struct stringbuilder_s *stringbuilder_t;
-stringbuilder_t sb_new(size_t);
-bool sb_append(stringbuilder_t, char);
-char *sb_as_string(stringbuilder_t);
+struct StringBuilder;
+typedef struct StringBuilder *StringBuilder;
+StringBuilder sb_new(size_t);
+bool sb_append(StringBuilder, char);
+char *sb_as_string(StringBuilder);
+char *sb_free_copy(StringBuilder);
+size_t sb_size(StringBuilder);
+void sb_free(StringBuilder);
 
 #endif //CONCATEN_STRINGBUILDER_H

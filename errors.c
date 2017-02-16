@@ -5,7 +5,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 
-int ctn_error(ctn_err_t errcode, token_t tkn, char *detail) {
+int ctn_error(ctn_err_t errcode, Token tkn, char *detail) {
     char *message;
     bool should_free = false;
     char *tkn_name = tkn_raw(tkn);

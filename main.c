@@ -38,11 +38,11 @@
 //
 //int main() {
 //    char *code = "1 2.3 4.5e6 7e8 0x9";
-//    tokenizer_t tokenizer = tknr_from_string(code, "memory");
+//    Tokenizer tokenizer = tknr_from_string(code, "memory");
 //    data_stack_t dst = dst_empty();
 //    scope_stack_t sst = sst_globals();
 //    token_stack_t tst = tst_from_tokenizer(tokenizer);
-//    token_t next;
+//    Token next;
 //    while (next = tst_pop_token(tst)) {
 //        char *tkn_err_res = tkn_err(next);
 //        if (tkn_err_res) {
@@ -68,11 +68,14 @@
 //}
 
 int main() {
-    tokenizer_t tknr = tknr_from_string("1 2.3 4e5 6.7e8 910 word another-word \"string here\" r/ege/x", "<main>");
-    token_t next;
-    while (next = tknr_next(tknr)) {
-        printf("%s (%d) at %s@%zu:%zu", tkn_raw(next), tkn_type(next),
+    Tokenizer tknr = tknr_from_string("\"string here\"", "<main>");
+    Token next;
+    while ((next = tknr_next(tknr)) != NULL) {
+        printf("`%s` (%d) at %s@%zu:%zu\n", tkn_raw(next), tkn_type(next),
                tkn_origin(next), tkn_line(next), tkn_index(next));
+    }
+    if (tknr_err(tknr) && !tknr_end(tknr)) {
+        printf("Error %d occured in tokenizer", tknr_err(tknr));
     }
     tknr_free(tknr);
 }
