@@ -263,6 +263,28 @@ char escape_next(Tokenizer from) {
     return read_char(from);
 }
 
+bool in_ranges(char c, char *begins, char *ends, size_t count) {
+    for (int i = 0; i < count; ++i) {
+        if (begins[i] <= c && c <= ends[i]) return true;
+    }
+    return false;
+}
+inline bool add_while_in_ranges(Tokenizer from, StringBuilder raw, char *next_char,
+                                char *begins, char *ends, size_t num_ranges) {
+    while (in_ranges(*next_char, begins, ends, num_ranges)) {
+        sb_append(raw, read_char(from));
+        *next_char = peek_char(from);
+        if (!(*next_char) && tknr_err(from)) {
+            return false;
+        }
+    }
+    return true;
+}
+inline bool add_while_in_range(Tokenizer from, StringBuilder raw, char *next_char,
+                               char begin, char end) {
+    return add_while_in_ranges(from, raw, next_char, &begin, &end, 1);
+}
+
 #define STARTING_RAW_MEM 16
 Token tknr_next(Tokenizer from) {
     if (tknr_err(from)) {
@@ -358,38 +380,34 @@ Token tknr_next(Tokenizer from) {
             if (tknr_end(from)) {
                 sb_append(raw, next_char);
             } else if (next_char == 'x') {
-                sb_append(raw, next_char);
-                while (('0' <= next_char && next_char <= '9') ||
-                        ('a' <= next_char && next_char <= 'f') ||
-                        ('A' <= next_char && next_char <= 'F')) {
-                    sb_append(raw, read_char(from));
-                    next_char = peek_char(from);
-                    if (!next_char && tknr_err(from)) {
-                        return NULL;
-                    }
+                sb_append(raw, read_char(from));
+                if (!add_while_in_ranges(from, raw, &next_char, "0aA", "9fF", 3)) {
+                    return NULL;
+                }
+            } else if (next_char == 'o') {
+                sb_append(raw, read_char(from));
+                if (!add_while_in_range(from, raw, &next_char, '0', '7')) {
+                    return NULL;
+                }
+            } else if (next_char == 'b') {
+                sb_append(raw, read_char(from));
+                if (!add_while_in_range(from, raw, &next_char, '0', '1')) {
+                    return NULL;
                 }
             }
         }
         bool decimal = false;
         // add decimal digits
-        while ('0' <= next_char && next_char <= '9') {
-            sb_append(raw, read_char(from));
-            next_char = peek_char(from);
-            if (!next_char && !tknr_err(from) && tknr_err(from)) {
-                return NULL;
-            }
+        if (!add_while_in_range(from, raw, &next_char, '0', '9')) {
+            return NULL;
         }
         // un punto
         if (next_char == '.') {
             decimal = true;
             sb_append(raw, read_char(from));
             next_char = peek_char(from);
-            while ('0' <= next_char && next_char <= '9') {
-                sb_append(raw, read_char(from));
-                next_char = peek_char(from);
-                if (!next_char && tknr_err(from)) {
-                    return NULL;
-                }
+            if (!add_while_in_range(from, raw, &next_char, '0', '9')) {
+                return NULL;
             }
         }
         // exponents
@@ -397,12 +415,8 @@ Token tknr_next(Tokenizer from) {
             decimal = true;
             sb_append(raw, read_char(from));
             next_char = peek_char(from);
-            while ('0' <= next_char && next_char <= '9') {
-                sb_append(raw, read_char(from));
-                next_char = peek_char(from);
-                if (!next_char && tknr_err(from)) {
-                    return NULL;
-                }
+            if (!add_while_in_range(from, raw, &next_char, '0', '9')) {
+                return NULL;
             }
         }
         if (!next_char && !tknr_err(from) && tknr_err(from)) {
