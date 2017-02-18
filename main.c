@@ -64,38 +64,65 @@
 //    return 0;
 //}
 
-#include "tokenizer.h"
 #include <string.h>
 #include <stdlib.h>
 #include <stdio.h>
 
+#include "tokenizer.h"
+
+struct TestCase {
+    char *test;
+    int err;
+};
+
 int main() {
-    char *test_strings[] = {
-            "",
-            "\"hello, world\" 123.4e5 0x1eF 0b1001 0o7513",
-//            "\"string here\" 123.4e5"
+    struct TestCase test_cases[] = {
+            (struct TestCase) { "", 1112 },
+            (struct TestCase) { "\"hello, world\" 123.4e5 0x1eF 0b1001 0o7513", 0 },
+            (struct TestCase) { "\"\" 123e5 0xef 0b191 0o713", 1501 },
+            (struct TestCase) { "\"arf\" 123.4e5 0x1eF 0o7813", 1501 },
+//            (struct TestCase) { "\"hello, world\" 123.4e5 0x1eF 0b1001 0o7513", 0 },
+//            (struct TestCase) { "\"hello, world\" 123.4e5 0x1eF 0b1001 0o7513", 0 },
+//            (struct TestCase) { "\"hello, world\" 123.4e5 0x1eF 0b1001 0o7513", 0 },
     };
-    size_t test_count = sizeof(test_strings) / sizeof(char *);
-    char *origin = malloc(strlen("test case #0") * sizeof(char));
-    strcpy(origin, "test case #0");
-    --origin[11];
-#define _printf(...) printf(" " __VA_ARGS__)
-    for (int i = 0; i < test_count; ++i) {
-        ++origin[11];
-        puts(origin);
-        Tokenizer tknr = tknr_from_string(test_strings[i], origin);
-        if (tknr_err(tknr)) {
-            _printf("Error %d occured when initializing\n", tknr_err(tknr));
+    size_t test_count = sizeof(test_cases) / sizeof(struct TestCase);
+    size_t fails = 0;
+    for (size_t i = 0; i < test_count; ++i) {
+        printf("test case #%zu\n", i + 1);
+        char *test_string = test_cases[i].test;
+        int expected_error = test_cases[i].err;
+        Tokenizer tknr = tknr_from_string(test_string, "test");
+        int err = tknr_err(tknr);
+        if (err != 0) {
+            printf(" Error %d occured when initializing...", err);
+            if (err != expected_error) {
+                puts("unexpected");
+                ++fails;
+            } else {
+                puts("expected");
+            }
             continue;
         }
         Token next;
         while ((next = tknr_next(tknr)) != NULL) {
-            _printf("`%s` (%d) at %s@%zu:%zu\n", tkn_raw(next), tkn_type(next),
-                   tkn_origin(next), tkn_line(next), tkn_index(next));
+            printf(" `%s` (%d) at %s@%zu:%zu\n", tkn_raw(next), tkn_type(next),
+                    tkn_origin(next), tkn_line(next), tkn_index(next));
         }
-        if (tknr_err(tknr) && !tknr_end(tknr)) {
-            _printf("Error %d occured in tokenizer", tknr_err(tknr));
+        err = tknr_err(tknr);
+        if (err != 0 && !tknr_end(tknr)) {
+            printf(" Error %d occured while tokenizing...", err);
+            if (err != expected_error) {
+                puts("unexpected");
+                ++fails;
+            } else {
+                puts("expected");
+            }
+        }
+        if (err == 0 && expected_error != 0) {
+            printf(" Expected error %d, but %d occurred\n", expected_error, err);
+            ++fails;
         }
         tknr_free(tknr);
     }
+    printf("%zu test cases run, %zu failed", test_count, fails);
 }
