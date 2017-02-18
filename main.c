@@ -72,27 +72,29 @@
 int main() {
     char *test_strings[] = {
             "",
-            "\"hello, world\"",
-            "\"string here\" 123.4e5"
+            "\"hello, world\" 123.4e5 0x1eF 0b1001 0o7513",
+//            "\"string here\" 123.4e5"
     };
     size_t test_count = sizeof(test_strings) / sizeof(char *);
     char *origin = malloc(strlen("test case #0") * sizeof(char));
     strcpy(origin, "test case #0");
     --origin[11];
+#define _printf(...) printf(" " __VA_ARGS__)
     for (int i = 0; i < test_count; ++i) {
         ++origin[11];
         puts(origin);
         Tokenizer tknr = tknr_from_string(test_strings[i], origin);
         if (tknr_err(tknr)) {
-            
+            _printf("Error %d occured when initializing\n", tknr_err(tknr));
+            continue;
         }
         Token next;
         while ((next = tknr_next(tknr)) != NULL) {
-            printf("`%s` (%d) at %s@%zu:%zu\n", tkn_raw(next), tkn_type(next),
+            _printf("`%s` (%d) at %s@%zu:%zu\n", tkn_raw(next), tkn_type(next),
                    tkn_origin(next), tkn_line(next), tkn_index(next));
         }
         if (tknr_err(tknr) && !tknr_end(tknr)) {
-            printf("Error %d occured in tokenizer", tknr_err(tknr));
+            _printf("Error %d occured in tokenizer", tknr_err(tknr));
         }
         tknr_free(tknr);
     }
