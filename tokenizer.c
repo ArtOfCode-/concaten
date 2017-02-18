@@ -11,33 +11,35 @@
     exit(code % 100);\
     }while(0)
 
-#define TOKENIZER_OPS_FAIL           1000
-# define CTOR_FAIL                    1100
-#  define CTOR_STR_FAIL                1110
-#   define CTOR_STR_MALLOC_FAIL         1111
-#   define CTOR_STR_BAD_STRLEN_FAIL     1112
-#   define CTOR_STR_NULL_ARG_FAIL       1113
-#  define CTOR_FILE_FAIL               1120
-#   define CTOR_FILE_MALLOC_FAIL        1121
-#   define CTOR_FILE_BAD_STRLEN_FAIL    1122
-#   define CTOR_FILE_NULL_ARG_FAIL      1123
-# define READ_CHAR_FAIL               1200
-#  define FILE_READ_FAIL               1210
-#   define FILE_READ_EOF_FAIL           1211
-#  define STRING_READ_FAIL             1220
-#   define STRING_READ_EOS_FAIL         1221
-# define NEXT_TOKEN_FAIL              1300
-#  define NT_MALLOC_FAIL               1301
-#  define NT_NEW_SB_FAIL               1302
-#  define NT_SB_FREE_FAIL              1303
-#define TOKENIZER_SYNTAX_FAIL        1500
-# define SYN_NO_SEPARATION_FAIL       1501
-# define SYN_STR_FAIL                 1510
-#  define SYN_STR_MULTILINE_FAIL       1511
+#define TOKENIZER_OPS_FAIL            1000
+# define CTOR_FAIL                     1100
+#  define CTOR_STR_FAIL                 1110
+#   define CTOR_STR_MALLOC_FAIL          1111
+#   define CTOR_STR_BAD_STRLEN_FAIL      1112
+#   define CTOR_STR_NULL_ARG_FAIL        1113
+#  define CTOR_FILE_FAIL                1120
+#   define CTOR_FILE_MALLOC_FAIL         1121
+#   define CTOR_FILE_BAD_STRLEN_FAIL     1122
+#   define CTOR_FILE_NULL_ARG_FAIL       1123
+# define READ_CHAR_FAIL                1200
+#  define FILE_READ_FAIL                1210
+#   define FILE_READ_EOF_FAIL            1211
+#  define STRING_READ_FAIL              1220
+#   define STRING_READ_EOS_FAIL          1221
+# define NEXT_TOKEN_FAIL               1300
+#  define NT_MALLOC_FAIL                1301
+#  define NT_NEW_SB_FAIL                1302
+#  define NT_SB_FREE_COPY_FAIL          1303
+#define TOKENIZER_SYNTAX_FAIL         1500
+# define SYN_NO_SEPARATION_FAIL        1501
+# define SYN_STR_FAIL                  1510
+#  define SYN_STR_MULTILINE_FAIL        1511
 
 struct Token {
-    char *raw; size_t raw_len;
-    size_t line, index; char *origin;
+    char *raw;
+    size_t raw_len;
+    size_t line, index;
+    char *origin;
     enum token_type_e type;
 };
 
@@ -52,15 +54,19 @@ enum token_type_e tkn_type(Token t) {
 char *tkn_origin(Token t) {
     return t->origin;
 }
+
 size_t tkn_line(Token t) {
     return t->line;
 }
+
 size_t tkn_index(Token t) {
     return t->index;
 }
+
 char *tkn_raw(Token t) {
     return t->raw;
 }
+
 void tkn_free(Token t) {
     free(t->raw);
     free(t->origin);
@@ -96,6 +102,7 @@ struct Tokenizer {
 };
 
 char read_char(Tokenizer reading);
+
 Tokenizer tknr_from_string(const char *mem, const char *origin) {
     Tokenizer ret = malloc(sizeof(struct Tokenizer));
     if (!ret) {
@@ -169,8 +176,8 @@ void tknr_free(Tokenizer freeing) {
 
 int get_next_char_file(Tokenizer from) {
     struct FileSource_s *fs = &from->source.file;
-    if (fs->next_chars_pos == fs->eof) {
-        return FILE_READ_EOF_FAIL;
+    if (tknr_end(from)) {
+        ERROR(FILE_READ_EOF_FAIL);
     } else if (fs->next_chars_pos == TKNR_BUF_SIZE) {
         size_t count = fread(fs->next_chars, sizeof(char), TKNR_BUF_SIZE + 1, fs->file);
         if (count != TKNR_BUF_SIZE) {
@@ -188,8 +195,8 @@ int get_next_char_file(Tokenizer from) {
 
 int get_next_char_string(Tokenizer from) {
     struct StringSource *ss = &from->source.string;
-    if (ss->end == ss->cur_pos) {
-        return STRING_READ_EOS_FAIL;
+    if (tknr_end(from)) {
+        ERROR(STRING_READ_EOS_FAIL);
     } else {
         from->next_char = *ss->cur_pos;
         ++ss->cur_pos;
@@ -236,6 +243,7 @@ bool is_ws(char c) {
            c == '\n' ||
            c == '\r';
 }
+
 bool skip_ws(Tokenizer from) {
     bool skipped = false;
     while (is_ws(peek_char(from))) {
@@ -244,6 +252,7 @@ bool skip_ws(Tokenizer from) {
     }
     return skipped;
 }
+
 bool skip_slc(Tokenizer from) {
     if (peek_char(from) != '#') {
         return false;
@@ -252,6 +261,7 @@ bool skip_slc(Tokenizer from) {
     read_char(from); // take the newline
     return true;
 }
+
 bool skip_between(Tokenizer from) {
     bool skipped = false;
     while (skip_ws(from) || skip_slc(from)) skipped = true;
@@ -269,8 +279,10 @@ bool in_ranges(char c, char *begins, char *ends, size_t count) {
     }
     return false;
 }
-inline bool add_while_in_ranges(Tokenizer from, StringBuilder raw, char *next_char,
+
+bool add_while_in_ranges(Tokenizer from, StringBuilder raw, char *next_char,
                                 char *begins, char *ends, size_t num_ranges) {
+    *next_char = peek_char(from);
     while (in_ranges(*next_char, begins, ends, num_ranges)) {
         sb_append(raw, read_char(from));
         *next_char = peek_char(from);
@@ -280,12 +292,146 @@ inline bool add_while_in_ranges(Tokenizer from, StringBuilder raw, char *next_ch
     }
     return true;
 }
-inline bool add_while_in_range(Tokenizer from, StringBuilder raw, char *next_char,
+
+bool add_while_in_range(Tokenizer from, StringBuilder raw, char *next_char,
                                char begin, char end) {
     return add_while_in_ranges(from, raw, next_char, &begin, &end, 1);
 }
 
 #define STARTING_RAW_MEM 16
+
+Token get_string(Tokenizer from, char *next_char, Token partial) {
+    StringBuilder raw = sb_new(STARTING_RAW_MEM);
+    if (!raw) {
+        from->error = NT_NEW_SB_FAIL;
+        return NULL;
+    }
+    while (1) {
+        sb_append(raw, read_char(from));
+        *next_char = peek_char(from);
+        if (*next_char == '\\') {
+            sb_append(raw, read_char(from));
+            if (tknr_err(from)) {
+                return NULL;
+            }
+            sb_append(raw, escape_next(from));
+            if (tknr_err(from)) {
+                return NULL;
+            }
+        }
+        if (*next_char == '\n') {
+            from->error = SYN_STR_MULTILINE_FAIL;
+            sb_free(raw);
+            return NULL;
+        }
+        if (*next_char == '"') {
+            // add the quote
+            sb_append(raw, read_char(from));
+            break;
+        }
+    }
+    size_t raw_cstr_len = sb_size(raw);
+    char *raw_cstr = sb_free_copy(raw);
+    if (!raw_cstr) {
+        from->error = NT_SB_FREE_COPY_FAIL;
+        sb_free(raw);
+        return NULL;
+    }
+    partial->raw = raw_cstr;
+    partial->raw_len = raw_cstr_len;
+    partial->type = TKN_STRING;
+    return partial;
+}
+
+Token get_number(Tokenizer from, char *next_char, Token partial) {
+    // TODO Arbitrary-precision rationals?
+    StringBuilder raw = sb_new(STARTING_RAW_MEM);
+    if (!raw) {
+        from->error = NT_NEW_SB_FAIL;
+        return NULL;
+    }
+    partial->type = TKN_INTEGER;
+    if (*next_char == '0') {
+        sb_append(raw, read_char(from));
+        *next_char = peek_char(from);
+        if (tknr_end(from)) {
+            sb_append(raw, *next_char);
+        } else if (*next_char == 'x') {
+            sb_append(raw, read_char(from));
+            if (!add_while_in_ranges(from, raw, next_char, "0aA", "9fF", 3)) {
+                return NULL;
+            }
+            partial->raw_len = sb_size(raw);
+            partial->raw = sb_free_copy(raw);
+            if (!partial->raw) {
+                from->error = NT_SB_FREE_COPY_FAIL;
+                sb_free(raw);
+                return NULL;
+            }
+            return partial;
+        } else if (*next_char == 'o') {
+            sb_append(raw, read_char(from));
+            if (!add_while_in_range(from, raw, next_char, '0', '7')) {
+                return NULL;
+            }
+            partial->raw_len = sb_size(raw);
+            partial->raw = sb_free_copy(raw);
+            if (!partial->raw) {
+                from->error = NT_SB_FREE_COPY_FAIL;
+                sb_free(raw);
+                return NULL;
+            }
+            return partial;
+        } else if (*next_char == 'b') {
+            sb_append(raw, read_char(from));
+            if (!add_while_in_range(from, raw, next_char, '0', '1')) {
+                return NULL;
+            }
+            partial->raw_len = sb_size(raw);
+            partial->raw = sb_free_copy(raw);
+            if (!partial->raw) {
+                from->error = NT_SB_FREE_COPY_FAIL;
+                sb_free(raw);
+                return NULL;
+            }
+            return partial;
+        }
+    }
+    bool decimal = false;
+    // add decimal digits
+    if (!add_while_in_range(from, raw, &*next_char, '0', '9')) {
+        return NULL;
+    }
+    // un punto
+    if (*next_char == '.') {
+        decimal = true;
+        sb_append(raw, read_char(from));
+        if (!add_while_in_range(from, raw, &*next_char, '0', '9')) {
+            return NULL;
+        }
+    }
+    // exponents
+    if (*next_char == 'e') {
+        decimal = true;
+        sb_append(raw, read_char(from));
+        if (!add_while_in_range(from, raw, &*next_char, '0', '9')) {
+            return NULL;
+        }
+    }
+    if (!*next_char && !tknr_err(from) && tknr_err(from)) {
+        return NULL;
+    }
+    partial->raw_len = sb_size(raw);
+    partial->raw = sb_free_copy(raw);
+    if (!partial->raw) {
+        from->error = NT_SB_FREE_COPY_FAIL;
+        sb_free(raw);
+        return NULL;
+    }
+    partial->type = decimal ? TKN_REAL : TKN_INTEGER;
+    return partial;
+}
+
 Token tknr_next(Tokenizer from) {
     if (tknr_err(from)) {
         ERROR(tknr_err(from));
@@ -326,113 +472,14 @@ Token tknr_next(Tokenizer from) {
     ret->line = from->line;
     ret->origin = origin_c;
     ret->type = TKN_UNKNOWN;
-    StringBuilder raw = sb_new(STARTING_RAW_MEM);
-    if (!raw) {
-        from->error = NT_NEW_SB_FAIL;
-        return NULL;
-    }
     char next_char = peek_char(from);
     if (!next_char && tknr_err(from)) {
         return NULL;
     }
     if (next_char == '"') { // single-line string
-        while (1) {
-            sb_append(raw, read_char(from));
-            next_char = peek_char(from);
-            if (next_char == '\\') {
-                sb_append(raw, read_char(from));
-                if (tknr_err(from)) {
-                    return NULL;
-                }
-                sb_append(raw, escape_next(from));
-                if (tknr_err(from)) {
-                    return NULL;
-                }
-            }
-            if (next_char == '\n') {
-                from->error = SYN_STR_MULTILINE_FAIL;
-                sb_free(raw);
-                return NULL;
-            }
-            if (next_char == '"') {
-                // add the quote
-                sb_append(raw, read_char(from));
-                break;
-            }
-        }
-        size_t raw_cstr_len = sb_size(raw);
-        char *raw_cstr = sb_free_copy(raw);
-        if (!raw_cstr) {
-            from->error = NT_SB_FREE_FAIL;
-            sb_free(raw);
-            return NULL;
-        }
-        ret->raw = raw_cstr;
-        ret->raw_len = raw_cstr_len;
-        ret->type = TKN_STRING;
-        return ret;
+        return get_string(from, &next_char, ret);
     } else if ('0' <= next_char && next_char <= '9') {
-        // TODO Support numbers with different bases
-        // TODO Arbitrary-precision rationals?
-        if (next_char == '0') {
-            sb_append(raw, read_char(from));
-            next_char = peek_char(from);
-            if (tknr_end(from)) {
-                sb_append(raw, next_char);
-            } else if (next_char == 'x') {
-                sb_append(raw, read_char(from));
-                if (!add_while_in_ranges(from, raw, &next_char, "0aA", "9fF", 3)) {
-                    return NULL;
-                }
-            } else if (next_char == 'o') {
-                sb_append(raw, read_char(from));
-                if (!add_while_in_range(from, raw, &next_char, '0', '7')) {
-                    return NULL;
-                }
-            } else if (next_char == 'b') {
-                sb_append(raw, read_char(from));
-                if (!add_while_in_range(from, raw, &next_char, '0', '1')) {
-                    return NULL;
-                }
-            }
-        }
-        bool decimal = false;
-        // add decimal digits
-        if (!add_while_in_range(from, raw, &next_char, '0', '9')) {
-            return NULL;
-        }
-        // un punto
-        if (next_char == '.') {
-            decimal = true;
-            sb_append(raw, read_char(from));
-            next_char = peek_char(from);
-            if (!add_while_in_range(from, raw, &next_char, '0', '9')) {
-                return NULL;
-            }
-        }
-        // exponents
-        if (next_char == 'e') {
-            decimal = true;
-            sb_append(raw, read_char(from));
-            next_char = peek_char(from);
-            if (!add_while_in_range(from, raw, &next_char, '0', '9')) {
-                return NULL;
-            }
-        }
-        if (!next_char && !tknr_err(from) && tknr_err(from)) {
-            return NULL;
-        }
-        size_t raw_cstr_len = sb_size(raw);
-        char *raw_cstr = sb_free_copy(raw);
-        if (!raw_cstr) {
-            from->error = NT_SB_FREE_FAIL;
-            sb_free(raw);
-            return NULL;
-        }
-        ret->raw = raw_cstr;
-        ret->raw_len = raw_cstr_len;
-        ret->type = decimal ? TKN_REAL : TKN_INTEGER;
-        return ret;
+        return get_number(from, &next_char, ret);
     }
     printf("Uh oh, we got here! (%d)\n", __LINE__);
     return NULL;
