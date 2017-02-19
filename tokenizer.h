@@ -19,7 +19,8 @@ struct Token;
 typedef struct Token *Token;
 
 enum token_type_e {
-    TKN_UNKNOWN, TKN_WORD, TKN_STRING, TKN_REGEX, TKN_INTEGER, TKN_REAL
+    TKN_UNKNOWN, TKN_WORD, TKN_STRING, TKN_REGEX,
+    TKN_INTEGER, TKN_REAL, TKN_IDENTIFIER
 };
 
 Token tkn_copy(Token);

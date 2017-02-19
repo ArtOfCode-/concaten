@@ -435,7 +435,7 @@ Token get_number(Tokenizer from, char *next_char, Token partial) {
         sb_free(raw);
         return NULL;
     }
-    if (!is_ws(*next_char)) {
+    if (!is_ws(*next_char) && !tknr_end(from)) {
         from->error = SYN_NUM_ILLEGAL_DIGIT_FAIL;
         sb_free(raw);
         return NULL;
@@ -446,10 +446,6 @@ Token get_number(Tokenizer from, char *next_char, Token partial) {
         from->error = NT_SB_FREE_COPY_FAIL;
         sb_free(raw);
         return NULL;
-    }
-    if (!is_ws(*next_char)) {
-        from->error = SYN_NUM_ILLEGAL_DIGIT_FAIL;
-        return NULL; // not the GOTO because raw is freed here
     }
     partial->type = decimal ? TKN_REAL : TKN_INTEGER;
     return partial;
@@ -465,13 +461,12 @@ Token tknr_next(Tokenizer from) {
         }
         // at the very beginning, it's OK not to have separation
         // (files don't have to start with code)
-        if (from->just_started) {
-            from->just_started = false;
-        } else {
+        if (!from->just_started) {
             from->error = SYN_NO_SEPARATION_FAIL;
             return NULL;
         }
     }
+    if (from->just_started) from->just_started = false;
     if (tknr_end(from)) {
         from->error = from->is_from_file ? FILE_READ_EOF_FAIL : STRING_READ_EOS_FAIL;
         return NULL;
@@ -501,13 +496,28 @@ Token tknr_next(Tokenizer from) {
         return NULL;
     }
     if (next_char == '"') { // single-line string
-        ret = get_string(from, &next_char, ret);
+        return get_string(from, &next_char, ret);
     } else if ('0' <= next_char && next_char <= '9') {
-        ret = get_number(from, &next_char, ret);
+        return get_number(from, &next_char, ret);
     }
-    if (ret != NULL) return ret;
-    tkn_free(ret);
-    return NULL;
+    StringBuilder raw = sb_new(STARTING_RAW_MEM);
+    if (next_char == ':') {
+        ret->type = TKN_IDENTIFIER;
+    }
+    // TODO regex
+    while (!is_ws(next_char) && !tknr_end(from)) {
+        sb_append(raw, read_char(from));
+        next_char = peek_char(from);
+    }
+    if (ret->type == TKN_UNKNOWN) ret->type = TKN_WORD;
+    ret->raw_len = sb_size(raw);
+    ret->raw = sb_free_copy(raw);
+    if (!ret->raw) {
+        from->error = NT_SB_FREE_COPY_FAIL;
+        sb_free(raw);
+        return NULL;
+    }
+    return ret;
 }
 
 bool tknr_end(Tokenizer t) {

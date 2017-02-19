@@ -70,37 +70,26 @@
 
 #include "tokenizer.h"
 
-struct TestCase {
-    char *test;
-    int err;
-};
-
 int main() {
-    struct TestCase test_cases[] = {
-            (struct TestCase) { "", 1112 },
-            (struct TestCase) { "\"hello, world\" 123.4e5 0x1eF 0b1001 0o7513", 0 },
-            (struct TestCase) { "\"\" 123e5 0xef 0b191 0o713", 1521 },
-            (struct TestCase) { "\"arf\" 123.4e5 0b100 0o7813", 1521 },
-//            (struct TestCase) { "\"hello, world\" 123.4e5 0x1eF 0b1001 0o7513", 0 },
-//            (struct TestCase) { "\"hello, world\" 123.4e5 0x1eF 0b1001 0o7513", 0 },
-//            (struct TestCase) { "\"hello, world\" 123.4e5 0x1eF 0b1001 0o7513", 0 },
+    char *test_cases[] = {
+            "",
+            "\"string\"",
+            "42",
+            "0x1Fe94",
+            "0b11001",
+            "0o127635",
+            "1.2e3",
+            ":foobar",
+            "foobar2"
     };
-    size_t test_count = sizeof(test_cases) / sizeof(struct TestCase);
-    size_t fails = 0;
+    size_t test_count = sizeof(test_cases) / sizeof(char *);
     for (size_t i = 0; i < test_count; ++i) {
-        printf("test case #%zu\n", i + 1);
-        char *test_string = test_cases[i].test;
-        int expected_error = test_cases[i].err;
+        printf("Test case #%zu:\n", i + 1);
+        char *test_string = test_cases[i];
         Tokenizer tknr = tknr_from_string(test_string, "test");
         int err = tknr_err(tknr);
         if (err != 0) {
-            printf(" Error %d occured when initializing...", err);
-            if (err != expected_error) {
-                puts("unexpected");
-                ++fails;
-            } else {
-                puts("expected");
-            }
+            printf(" Error %d occured when initializing.\n", err);
             continue;
         }
         Token next;
@@ -110,19 +99,9 @@ int main() {
         }
         err = tknr_err(tknr);
         if (err != 0 && !tknr_end(tknr)) {
-            printf(" Error %d occured while tokenizing...", err);
-            if (err != expected_error) {
-                puts("unexpected");
-                ++fails;
-            } else {
-                puts("expected");
-            }
-        }
-        if (err == 0 && expected_error != 0) {
-            printf(" Expected error %d, but %d occurred\n", expected_error, err);
-            ++fails;
+            printf(" Error %d occured while tokenizing.\n", err);
         }
         tknr_free(tknr);
     }
-    printf("%zu test cases run, %zu failed", test_count, fails);
+    puts("Finished running all test cases.");
 }
