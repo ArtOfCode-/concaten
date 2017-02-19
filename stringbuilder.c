@@ -54,6 +54,8 @@ size_t sb_size(StringBuilder sb) {
     return sb->count;
 }
 void sb_free(StringBuilder sb) {
-    free(sb->mem);
-    free(sb);
+    if (sb) {
+        if (sb->mem) free(sb->mem);
+        free(sb);
+    }
 }

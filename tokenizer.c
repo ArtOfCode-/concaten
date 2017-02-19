@@ -34,16 +34,39 @@
 # define SYN_NO_SEPARATION_FAIL        1501
 # define SYN_STR_FAIL                  1510
 #  define SYN_STR_MULTILINE_FAIL        1511
+# define SYN_NUM_FAIL                  1520
+#  define SYN_NUM_ILLEGAL_DIGIT_FAIL    1521
 
 struct Token {
     char *raw;
     size_t raw_len;
-    size_t line, index;
     char *origin;
+    size_t origin_len;
+    size_t line, index;
     enum token_type_e type;
 };
 
-//Token tkn_copy(Token);
+Token tkn_copy(Token copying) {
+    Token ret = malloc(sizeof(struct Token));
+    if (!ret) return NULL;
+    ret->raw = malloc(copying->raw_len * sizeof(char));
+    if (!ret->raw) {
+        free(ret);
+        return NULL;
+    }
+    strncpy(ret->raw, copying->raw, copying->raw_len);
+    ret->origin = malloc(copying->origin_len * sizeof(char));
+    if (!ret->origin) {
+        free(ret->raw);
+        free(ret);
+        return NULL;
+    }
+    strncpy(ret->origin, copying->origin, copying->origin_len);
+    ret->index = copying->index;
+    ret->line = copying->index;
+    ret->type = copying->type;
+    return ret;
+}
 
 enum token_type_e tkn_type(Token t) {
     return t->type;
@@ -68,9 +91,11 @@ char *tkn_raw(Token t) {
 }
 
 void tkn_free(Token t) {
-    free(t->raw);
-    free(t->origin);
-    free(t);
+    if (t) {
+        if (t->raw) free(t->raw);
+        if (t->origin) free(t->origin);
+        free(t);
+    }
 }
 
 struct FileSource_s {
@@ -94,6 +119,7 @@ struct Tokenizer {
     bool is_from_file;
     char next_char;
     char *origin;
+    size_t origin_len;
     size_t line, index;
     int error;
     
@@ -351,74 +377,67 @@ Token get_number(Tokenizer from, char *next_char, Token partial) {
         return NULL;
     }
     partial->type = TKN_INTEGER;
+    enum { B2, B8, B10, B16 } base = B10;
     if (*next_char == '0') {
         sb_append(raw, read_char(from));
         *next_char = peek_char(from);
-        if (tknr_end(from)) {
-            sb_append(raw, *next_char);
-        } else if (*next_char == 'x') {
-            sb_append(raw, read_char(from));
-            if (!add_while_in_ranges(from, raw, next_char, "0aA", "9fF", 3)) {
-                return NULL;
-            }
-            partial->raw_len = sb_size(raw);
-            partial->raw = sb_free_copy(raw);
-            if (!partial->raw) {
-                from->error = NT_SB_FREE_COPY_FAIL;
-                sb_free(raw);
-                return NULL;
-            }
-            return partial;
+        if (*next_char == 'x') {
+            base = B16;
         } else if (*next_char == 'o') {
-            sb_append(raw, read_char(from));
-            if (!add_while_in_range(from, raw, next_char, '0', '7')) {
-                return NULL;
-            }
-            partial->raw_len = sb_size(raw);
-            partial->raw = sb_free_copy(raw);
-            if (!partial->raw) {
-                from->error = NT_SB_FREE_COPY_FAIL;
-                sb_free(raw);
-                return NULL;
-            }
-            return partial;
+            base = B8;
         } else if (*next_char == 'b') {
-            sb_append(raw, read_char(from));
-            if (!add_while_in_range(from, raw, next_char, '0', '1')) {
-                return NULL;
-            }
-            partial->raw_len = sb_size(raw);
-            partial->raw = sb_free_copy(raw);
-            if (!partial->raw) {
-                from->error = NT_SB_FREE_COPY_FAIL;
-                sb_free(raw);
-                return NULL;
-            }
-            return partial;
+            base = B2;
         }
+        sb_append(raw, read_char(from));
     }
     bool decimal = false;
-    // add decimal digits
-    if (!add_while_in_range(from, raw, &*next_char, '0', '9')) {
+    if (base == B16) {
+        if (!add_while_in_ranges(from, raw, next_char, "0aA", "9fF", 3)) {
+            sb_free(raw);
+            return NULL;
+        }
+    } else if (base == B8) {
+        if (!add_while_in_range(from, raw, next_char, '0', '7')) {
+            sb_free(raw);
+            return NULL;
+        }
+    } else if (base == B2) {
+        if (!add_while_in_range(from, raw, next_char, '0', '1')) {
+            sb_free(raw);
+            return NULL;
+        }
+    } else if (base == B10) {
+        // add decimal digits
+        if (!add_while_in_range(from, raw, next_char, '0', '9')) {
+            sb_free(raw);
+            return NULL;
+        }
+        // un punto
+        if (*next_char == '.') {
+            decimal = true;
+            sb_append(raw, read_char(from));
+            if (!add_while_in_range(from, raw, next_char, '0', '9')) {
+                sb_free(raw);
+                return NULL;
+            }
+        }
+        // exponents
+        if (*next_char == 'e') {
+            decimal = true;
+            sb_append(raw, read_char(from));
+            if (!add_while_in_range(from, raw, next_char, '0', '9')) {
+                sb_free(raw);
+                return NULL;
+            }
+        }
+    }
+    if (tknr_err(from)) {
+        sb_free(raw);
         return NULL;
     }
-    // un punto
-    if (*next_char == '.') {
-        decimal = true;
-        sb_append(raw, read_char(from));
-        if (!add_while_in_range(from, raw, &*next_char, '0', '9')) {
-            return NULL;
-        }
-    }
-    // exponents
-    if (*next_char == 'e') {
-        decimal = true;
-        sb_append(raw, read_char(from));
-        if (!add_while_in_range(from, raw, &*next_char, '0', '9')) {
-            return NULL;
-        }
-    }
-    if (!*next_char && !tknr_err(from) && tknr_err(from)) {
+    if (!is_ws(*next_char)) {
+        from->error = SYN_NUM_ILLEGAL_DIGIT_FAIL;
+        sb_free(raw);
         return NULL;
     }
     partial->raw_len = sb_size(raw);
@@ -427,6 +446,10 @@ Token get_number(Tokenizer from, char *next_char, Token partial) {
         from->error = NT_SB_FREE_COPY_FAIL;
         sb_free(raw);
         return NULL;
+    }
+    if (!is_ws(*next_char)) {
+        from->error = SYN_NUM_ILLEGAL_DIGIT_FAIL;
+        return NULL; // not the GOTO because raw is freed here
     }
     partial->type = decimal ? TKN_REAL : TKN_INTEGER;
     return partial;
@@ -461,9 +484,10 @@ Token tknr_next(Tokenizer from) {
     if (from->last_read) {
         tkn_free(from->last_read);
     }
-    char *origin_c = malloc(strlen(from->origin) * sizeof(char));
+    char *origin_c = malloc(from->origin_len * sizeof(char));
     if (!origin_c) {
         from->error = NT_MALLOC_FAIL;
+        tkn_free(ret);
         return NULL;
     }
     strcpy(origin_c, from->origin);
@@ -477,11 +501,12 @@ Token tknr_next(Tokenizer from) {
         return NULL;
     }
     if (next_char == '"') { // single-line string
-        return get_string(from, &next_char, ret);
+        ret = get_string(from, &next_char, ret);
     } else if ('0' <= next_char && next_char <= '9') {
-        return get_number(from, &next_char, ret);
+        ret = get_number(from, &next_char, ret);
     }
-    printf("Uh oh, we got here! (%d)\n", __LINE__);
+    if (ret != NULL) return ret;
+    tkn_free(ret);
     return NULL;
 }
 

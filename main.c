@@ -79,8 +79,8 @@ int main() {
     struct TestCase test_cases[] = {
             (struct TestCase) { "", 1112 },
             (struct TestCase) { "\"hello, world\" 123.4e5 0x1eF 0b1001 0o7513", 0 },
-            (struct TestCase) { "\"\" 123e5 0xef 0b191 0o713", 1501 },
-            (struct TestCase) { "\"arf\" 123.4e5 0x1eF 0o7813", 1501 },
+            (struct TestCase) { "\"\" 123e5 0xef 0b191 0o713", 1521 },
+            (struct TestCase) { "\"arf\" 123.4e5 0b100 0o7813", 1521 },
 //            (struct TestCase) { "\"hello, world\" 123.4e5 0x1eF 0b1001 0o7513", 0 },
 //            (struct TestCase) { "\"hello, world\" 123.4e5 0x1eF 0b1001 0o7513", 0 },
 //            (struct TestCase) { "\"hello, world\" 123.4e5 0x1eF 0b1001 0o7513", 0 },
