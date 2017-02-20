@@ -80,7 +80,8 @@ int main() {
             "0o127635",
             "1.2e3",
             ":foobar",
-            "foobar2"
+            "foobar2",
+            "r/asdf boofar/xgi"
     };
     size_t test_count = sizeof(test_cases) / sizeof(char *);
     for (size_t i = 0; i < test_count; ++i) {

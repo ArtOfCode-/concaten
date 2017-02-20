@@ -36,6 +36,8 @@
 #  define SYN_STR_MULTILINE_FAIL        1511
 # define SYN_NUM_FAIL                  1520
 #  define SYN_NUM_ILLEGAL_DIGIT_FAIL    1521
+# define SYN_RGX_FAIL                  1530
+#  define SYN_RGX_BAD_FLAG_FAIL         1531
 
 struct Token {
     char *raw;
@@ -294,7 +296,7 @@ bool skip_between(Tokenizer from) {
     return skipped;
 }
 
-char escape_next(Tokenizer from) {
+char str_escape_next(Tokenizer from) {
     // TODO actually escape things
     return read_char(from);
 }
@@ -340,7 +342,7 @@ Token get_string(Tokenizer from, char *next_char, Token partial) {
             if (tknr_err(from)) {
                 return NULL;
             }
-            sb_append(raw, escape_next(from));
+            sb_append(raw, str_escape_next(from));
             if (tknr_err(from)) {
                 return NULL;
             }
@@ -451,6 +453,21 @@ Token get_number(Tokenizer from, char *next_char, Token partial) {
     return partial;
 }
 
+char rgx_escape_next(Tokenizer from) {
+    // TODO actually escape things
+    return read_char(from);
+}
+
+bool is_flag(char c) {
+    return c == 'g' ||
+           c == 'x' ||
+           c == 'i' ||
+           c == 'D' ||
+           c == 'a' ||
+           c == 'm' ||
+           c == 's';
+}
+
 Token tknr_next(Tokenizer from) {
     if (tknr_err(from)) {
         ERROR(tknr_err(from));
@@ -503,8 +520,34 @@ Token tknr_next(Tokenizer from) {
     StringBuilder raw = sb_new(STARTING_RAW_MEM);
     if (next_char == ':') {
         ret->type = TKN_IDENTIFIER;
+    } else if (next_char == 'r') {
+        sb_append(raw, read_char(from));
+        next_char = peek_char(from);
+        if (next_char == '/') {
+            sb_append(raw, read_char(from));
+            next_char = peek_char(from);
+            while (true) {
+                if (next_char == '\\') {
+                    sb_append(raw, read_char(from));
+                    sb_append(raw, rgx_escape_next(from));
+                }
+                if (next_char == '/') {
+                    sb_append(raw, read_char(from));
+                    break;
+                }
+                next_char = peek_char(from);
+            }
+            while (is_flag(next_char)) {
+                sb_append(raw, read_char(from));
+                next_char = peek_char(from);
+            }
+            if (!is_ws(next_char) && !tknr_end(from)) {
+                from->error = SYN_RGX_BAD_FLAG_FAIL;
+                sb_free(raw);
+                return NULL;
+            }
+        }
     }
-    // TODO regex
     while (!is_ws(next_char) && !tknr_end(from)) {
         sb_append(raw, read_char(from));
         next_char = peek_char(from);

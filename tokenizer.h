@@ -30,7 +30,6 @@ char *tkn_origin(Token);
 size_t tkn_line(Token);
 size_t tkn_index(Token);
 char *tkn_raw(Token);
-// token errors are stored in the relevant tokenizer, not in the token itself
 void tkn_free(Token);
 // object_t tkn_value(Token) // defined in object.h
 
