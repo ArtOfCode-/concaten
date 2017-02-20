@@ -534,6 +534,7 @@ Token tknr_next(Tokenizer from) {
                 sb_append(raw, read_char(from));
                 next_char = peek_char(from);
             }
+            next_char = peek_char(from);
             while (is_flag(next_char)) {
                 sb_append(raw, read_char(from));
                 next_char = peek_char(from);
