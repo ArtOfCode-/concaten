@@ -11,33 +11,33 @@
     exit(code % 100);\
     }while(0)
 
-#define TOKENIZER_OPS_FAIL            1000
-# define CTOR_FAIL                     1100
-#  define CTOR_STR_FAIL                 1110
-#   define CTOR_STR_MALLOC_FAIL          1111
-#   define CTOR_STR_BAD_STRLEN_FAIL      1112
-#   define CTOR_STR_NULL_ARG_FAIL        1113
-#  define CTOR_FILE_FAIL                1120
-#   define CTOR_FILE_MALLOC_FAIL         1121
-#   define CTOR_FILE_BAD_STRLEN_FAIL     1122
-#   define CTOR_FILE_NULL_ARG_FAIL       1123
-# define READ_CHAR_FAIL                1200
-#  define FILE_READ_FAIL                1210
-#   define FILE_READ_EOF_FAIL            1211
-#  define STRING_READ_FAIL              1220
-#   define STRING_READ_EOS_FAIL          1221
-# define NEXT_TOKEN_FAIL               1300
-#  define NT_MALLOC_FAIL                1301
-#  define NT_NEW_SB_FAIL                1302
-#  define NT_SB_FREE_COPY_FAIL          1303
-#define TOKENIZER_SYNTAX_FAIL         1500
-# define SYN_NO_SEPARATION_FAIL        1501
-# define SYN_STR_FAIL                  1510
-#  define SYN_STR_MULTILINE_FAIL        1511
-# define SYN_NUM_FAIL                  1520
-#  define SYN_NUM_ILLEGAL_DIGIT_FAIL    1521
-# define SYN_RGX_FAIL                  1530
-#  define SYN_RGX_BAD_FLAG_FAIL         1531
+//define TOKENIZER_OPS_FAIL            1000
+// define CTOR_FAIL                     1100
+//  define CTOR_STR_FAIL                 1110
+#    define CTOR_STR_MALLOC_FAIL          1111
+#    define CTOR_STR_BAD_STRLEN_FAIL      1112
+#    define CTOR_STR_NULL_ARG_FAIL        1113
+//  define CTOR_FILE_FAIL                1120
+#    define CTOR_FILE_MALLOC_FAIL         1121
+#    define CTOR_FILE_BAD_STRLEN_FAIL     1122
+#    define CTOR_FILE_NULL_ARG_FAIL       1123
+// define READ_CHAR_FAIL                1200
+#   define FILE_READ_FAIL                1210
+#    define FILE_READ_EOF_FAIL            1211
+//  define STRING_READ_FAIL              1220
+#    define STRING_READ_EOS_FAIL          1221
+// define NEXT_TOKEN_FAIL               1300
+#   define NT_MALLOC_FAIL                1301
+#   define NT_NEW_SB_FAIL                1302
+#   define NT_SB_FREE_COPY_FAIL          1303
+//define TOKENIZER_SYNTAX_FAIL         1500
+#  define SYN_NO_SEPARATION_FAIL        1501
+// define SYN_STR_FAIL                  1510
+#   define SYN_STR_MULTILINE_FAIL        1511
+// define SYN_NUM_FAIL                  1520
+#   define SYN_NUM_ILLEGAL_DIGIT_FAIL    1521
+// define SYN_RGX_FAIL                  1530
+#   define SYN_RGX_BAD_FLAG_FAIL         1531
 
 struct Token {
     char *raw;
@@ -190,6 +190,10 @@ Tokenizer tknr_from_string(const char *mem, const char *origin) {
     
     return ret;
 }
+
+// TODO File-reading tokenizers
+//Tokenizer tknr_from_filepath(const char *path);
+//Tokenizer tknr_from_file(FILE *);
 
 void tknr_free(Tokenizer freeing) {
     // is this it? wow!
@@ -367,7 +371,6 @@ Token get_string(Tokenizer from, char *next_char, Token partial) {
 }
 
 Token get_number(Tokenizer from, char *next_char, Token partial) {
-    // TODO Arbitrary-precision rationals?
     StringBuilder raw = sb_new(STARTING_RAW_MEM);
     if (!raw) {
         from->error = NT_NEW_SB_FAIL;
