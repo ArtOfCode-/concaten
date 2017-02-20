@@ -296,11 +296,6 @@ bool skip_between(Tokenizer from) {
     return skipped;
 }
 
-char str_escape_next(Tokenizer from) {
-    // TODO actually escape things
-    return read_char(from);
-}
-
 bool in_ranges(char c, char *begins, char *ends, size_t count) {
     for (int i = 0; i < count; ++i) {
         if (begins[i] <= c && c <= ends[i]) return true;
@@ -342,7 +337,7 @@ Token get_string(Tokenizer from, char *next_char, Token partial) {
             if (tknr_err(from)) {
                 return NULL;
             }
-            sb_append(raw, str_escape_next(from));
+            sb_append(raw, read_char(from));
             if (tknr_err(from)) {
                 return NULL;
             }
@@ -453,11 +448,6 @@ Token get_number(Tokenizer from, char *next_char, Token partial) {
     return partial;
 }
 
-char rgx_escape_next(Tokenizer from) {
-    // TODO actually escape things
-    return read_char(from);
-}
-
 bool is_flag(char c) {
     return c == 'g' ||
            c == 'x' ||
@@ -529,12 +519,19 @@ Token tknr_next(Tokenizer from) {
             while (true) {
                 if (next_char == '\\') {
                     sb_append(raw, read_char(from));
-                    sb_append(raw, rgx_escape_next(from));
+                    if (tknr_err(from)) {
+                        return NULL;
+                    }
+                    sb_append(raw, read_char(from));
+                    if (tknr_err(from)) {
+                        return NULL;
+                    }
                 }
                 if (next_char == '/') {
                     sb_append(raw, read_char(from));
                     break;
                 }
+                sb_append(raw, read_char(from));
                 next_char = peek_char(from);
             }
             while (is_flag(next_char)) {
@@ -546,6 +543,15 @@ Token tknr_next(Tokenizer from) {
                 sb_free(raw);
                 return NULL;
             }
+            ret->type = TKN_REGEX;
+            ret->raw_len = sb_size(raw);
+            ret->raw = sb_free_copy(raw);
+            if (!ret->raw) {
+                from->error = NT_SB_FREE_COPY_FAIL;
+                sb_free(raw);
+                return NULL;
+            }
+            return ret;
         }
     }
     while (!is_ws(next_char) && !tknr_end(from)) {
