@@ -71,9 +71,13 @@
 #include "tokenizer.h"
 
 int main() {
+    // TODO test edge cases
     char *test_cases[] = {
             "",
-            "\"string\" 42 0x1Fe94 0b11001 0o127635 1.2e3 :foobar foobar2 r/asdf boofar/xgi"
+            "\"string\" 42 0x1Fe94\n"
+            "0b11001 0o127635 1.2e3\n"
+            ":foobar foobar2\n"
+            "r/asdf boofar/xgi"
     };
     size_t test_count = sizeof(test_cases) / sizeof(char *);
     for (size_t i = 0; i < test_count; ++i) {
