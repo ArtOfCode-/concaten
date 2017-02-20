@@ -67,22 +67,25 @@
 #include <string.h>
 #include <stdlib.h>
 #include <stdio.h>
+#include <sys/time.h>
+#include <w32api/_timeval.h>
 
 #include "tokenizer.h"
 
-int main() {
+size_t string_tests() {
     // TODO test edge cases
-    char *test_cases[] = {
+    char *tests[] = {
             "",
             "\"string\" 42 0x1Fe94\n"
-            "0b11001 0o127635 1.2e3\n"
-            ":foobar foobar2\n"
-            "r/asdf boofar/xgi"
+                    "0b11001 0o127635 1.2e3\n"
+                    ":foobar foobar2\n"
+                    "r/asdf boofar/xgi"
     };
-    size_t test_count = sizeof(test_cases) / sizeof(char *);
+    size_t test_count = sizeof(tests) / sizeof(char *);
     for (size_t i = 0; i < test_count; ++i) {
-        printf("Test case #%zu:\n", i + 1);
-        char *test_string = test_cases[i];
+        printf("String test case #%zu:\n", i + 1);
+        puts(tests[i]);
+        char *test_string = tests[i];
         Tokenizer tknr = tknr_from_string(test_string, "test");
         int err = tknr_err(tknr);
         if (err != 0) {
@@ -92,7 +95,7 @@ int main() {
         Token next;
         while ((next = tknr_next(tknr)) != NULL) {
             printf(" `%s` (%d) at %s@%zu:%zu\n", tkn_raw(next), tkn_type(next),
-                    tkn_origin(next), tkn_line(next), tkn_index(next));
+                   tkn_origin(next), tkn_line(next), tkn_index(next));
         }
         err = tknr_err(tknr);
         if (err != 0 && !tknr_end(tknr)) {
@@ -100,5 +103,52 @@ int main() {
         }
         tknr_free(tknr);
     }
-    puts("Finished running all test cases.");
+    return test_count;
+}
+
+size_t file_tests() {
+    // TODO test edge cases
+    char *test_paths[] = {
+            "test.ctn"
+    };
+    size_t test_count = sizeof(test_paths) / sizeof(char *);
+    for (size_t i = 0; i < test_count; ++i) {
+        printf("File test case #%zu: %s\n", i + 1, test_paths[i]);
+        Tokenizer tknr = tknr_from_filepath(test_paths[i]);
+        int err = tknr_err(tknr);
+        if (err != 0) {
+            printf(" Error %d occured when initializing.\n", err);
+            continue;
+        }
+        Token next;
+        while ((next = tknr_next(tknr)) != NULL) {
+            printf(" `%s` (%d) at %s@%zu:%zu\n", tkn_raw(next), tkn_type(next),
+                   tkn_origin(next), tkn_line(next), tkn_index(next));
+        }
+        err = tknr_err(tknr);
+        if (err != 0 && !tknr_end(tknr)) {
+            printf(" Error %d occured while tokenizing.\n", err);
+        }
+        tknr_free(tknr);
+    }
+    return test_count;
+}
+
+int main() {
+    struct timeval start, stop;
+    size_t num;
+    
+    gettimeofday(&start, NULL);
+    num = string_tests();
+    gettimeofday(&stop, NULL);
+    printf("%lu string test cases took %lu microseconds\n",
+           num, stop.tv_usec - start.tv_usec);
+    
+    puts("");
+    
+    gettimeofday(&start, NULL);
+    num = file_tests();
+    gettimeofday(&stop, NULL);
+    printf("%lu file test cases took %lu microseconds\n",
+           num, stop.tv_usec - start.tv_usec);
 }

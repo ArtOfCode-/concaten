@@ -101,7 +101,7 @@ void tkn_free(Token t) {
     }
 }
 
-struct FileSource_s {
+struct FileSource {
     FILE *fptr;
     char next_chars[TKNR_BUF_SIZE];
     size_t next_chars_pos;
@@ -117,7 +117,7 @@ struct StringSource {
 struct Tokenizer {
     union {
         struct StringSource string;
-        struct FileSource_s file;
+        struct FileSource file;
     } source;
     bool is_from_file;
     char next_char;
@@ -199,7 +199,7 @@ Tokenizer tknr_from_filepath(const char *path) {
     }
     
     ret->origin = NULL;
-    ret->source.file = (struct FileSource_s) {
+    ret->source.file = (struct FileSource) {
             .eof = TKNR_BUF_SIZE,
             .fptr = NULL,
             .next_chars = {0},
@@ -226,14 +226,12 @@ Tokenizer tknr_from_filepath(const char *path) {
         ret->error = CTOR_FILE_FOPEN_FAIL;
         return ret;
     }
-    ret->source.file = (struct FileSource_s) {
-            .fptr = fptr
-    };
+    ret->source.file.fptr = fptr;
     
     // location
     char *path_c = malloc(path_len * sizeof(char) + 1);
     if (!path_c) {
-        free(ret->source.string.begin);
+        fclose(ret->source.file.fptr);
         ret->error = CTOR_FILE_MALLOC_FAIL;
         return ret;
     }
@@ -261,7 +259,7 @@ void tknr_free(Tokenizer freeing) {
 }
 
 int get_next_char_file(Tokenizer from) {
-    struct FileSource_s *fs = &from->source.file;
+    struct FileSource *fs = &from->source.file;
     if (tknr_end(from)) {
         ERROR(FILE_READ_EOF_FAIL);
     } else if (fs->next_chars_pos == TKNR_BUF_SIZE) {
@@ -324,10 +322,8 @@ char peek_char(Tokenizer peeking) {
 }
 
 bool is_ws(char c) {
-    return c == ' ' ||
-           c == '\t' ||
-           c == '\n' ||
-           c == '\r';
+    return c == ' ' || c == '\t' ||
+           c == '\n' || c == '\r';
 }
 
 bool skip_ws(Tokenizer from) {
@@ -506,13 +502,9 @@ Token get_number(Tokenizer from, char *next_char, Token partial) {
 }
 
 bool is_flag(char c) {
-    return c == 'g' ||
-           c == 'x' ||
-           c == 'i' ||
-           c == 'D' ||
-           c == 'a' ||
-           c == 'm' ||
-           c == 's';
+    return c == 'g' || c == 'x' ||
+           c == 'i' || c == 'a' ||
+           c == 'm' || c == 's';
 }
 
 Token tknr_next(Tokenizer from) {
