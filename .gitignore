@@ -4,3 +4,4 @@
 #CMake files/build
 cmake-build-*/
 
+*.swp
