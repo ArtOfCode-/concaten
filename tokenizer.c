@@ -21,6 +21,7 @@
 #    define CTOR_FILE_MALLOC_FAIL         1121
 #    define CTOR_FILE_BAD_STRLEN_FAIL     1122
 #    define CTOR_FILE_NULL_ARG_FAIL       1123
+#    define CTOR_FILE_FOPEN_FAIL          1124
 // define READ_CHAR_FAIL                1200
 #   define FILE_READ_FAIL                1210
 #    define FILE_READ_EOF_FAIL            1211
@@ -192,7 +193,23 @@ Tokenizer tknr_from_string(const char *mem, const char *origin) {
 }
 
 // TODO File-reading tokenizers
-//Tokenizer tknr_from_filepath(const char *path);
+Tokenizer tknr_from_filepath(const char *path) {
+    Tokenizer ret = malloc(sizeof(struct Tokenizer));
+    if (!ret) return NULL;
+    if (!path) {
+        ret->error = CTOR_FILE_NULL_ARG_FAIL;
+        return ret;
+    }
+    size_t path_len = strlen(path);
+    if (path_len == 0) {
+        ret->error = CTOR_FILE_BAD_STRLEN_FAIL;
+        return ret;
+    }
+
+    FILE *f = fopen(path, "r");
+    
+    return ret;
+}
 //Tokenizer tknr_from_file(FILE *);
 
 void tknr_free(Tokenizer freeing) {
