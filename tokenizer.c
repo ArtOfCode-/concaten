@@ -102,7 +102,7 @@ void tkn_free(Token t) {
 }
 
 struct FileSource_s {
-    FILE *file;
+    FILE *fptr;
     char next_chars[TKNR_BUF_SIZE];
     size_t next_chars_pos;
     size_t eof; // if we're at EOF, this marks where in next_chars it is
@@ -145,9 +145,6 @@ Tokenizer tknr_from_string(const char *mem, const char *origin) {
             .cur_pos = NULL
     };
     ret->is_from_file = false;
-    ret->line = 1;
-    ret->index = 0;
-    ret->error = 0;
     ret->next_char = '\0';
     ret->last_read = NULL;
     ret->just_started = true;
@@ -164,7 +161,7 @@ Tokenizer tknr_from_string(const char *mem, const char *origin) {
     }
     
     // .source
-    char *mem_c = malloc(mem_len * sizeof(char));
+    char *mem_c = malloc(mem_len * sizeof(char) + 1);
     if (!mem_c) {
         ret->error = CTOR_STR_MALLOC_FAIL;
         return ret;
@@ -177,7 +174,7 @@ Tokenizer tknr_from_string(const char *mem, const char *origin) {
     };
     
     // location
-    char *origin_c = malloc(origin_len * sizeof(char));
+    char *origin_c = malloc(origin_len * sizeof(char) + 1);
     if (!origin_c) {
         free(ret->source.string.begin);
         ret->error = CTOR_STR_MALLOC_FAIL;
@@ -187,7 +184,9 @@ Tokenizer tknr_from_string(const char *mem, const char *origin) {
     ret->origin = origin_c;
     
     read_char(ret);
-    --ret->index;
+    ret->line = 1;
+    ret->index = 0;
+    ret->error = 0;
     
     return ret;
 }
@@ -195,18 +194,56 @@ Tokenizer tknr_from_string(const char *mem, const char *origin) {
 // TODO File-reading tokenizers
 Tokenizer tknr_from_filepath(const char *path) {
     Tokenizer ret = malloc(sizeof(struct Tokenizer));
-    if (!ret) return NULL;
+    if (!ret) {
+        return NULL;
+    }
+    
+    ret->origin = NULL;
+    ret->source.file = (struct FileSource_s) {
+            .eof = TKNR_BUF_SIZE,
+            .fptr = NULL,
+            .next_chars = {0},
+            .next_chars_pos = 0,
+    };
+    ret->is_from_file = true;
+    ret->next_char = '\0';
+    ret->last_read = NULL;
+    ret->just_started = true;
+    
     if (!path) {
         ret->error = CTOR_FILE_NULL_ARG_FAIL;
         return ret;
     }
     size_t path_len = strlen(path);
-    if (path_len == 0) {
+    if (!path_len) {
         ret->error = CTOR_FILE_BAD_STRLEN_FAIL;
         return ret;
     }
-
-    FILE *f = fopen(path, "r");
+    
+    // .source
+    FILE *fptr = fopen(path, "r");
+    if (!fptr) {
+        ret->error = CTOR_FILE_FOPEN_FAIL;
+        return ret;
+    }
+    ret->source.file = (struct FileSource_s) {
+            .fptr = fptr
+    };
+    
+    // location
+    char *path_c = malloc(path_len * sizeof(char) + 1);
+    if (!path_c) {
+        free(ret->source.string.begin);
+        ret->error = CTOR_FILE_MALLOC_FAIL;
+        return ret;
+    }
+    strcpy(path_c, path);
+    ret->origin = path_c;
+    
+    read_char(ret);
+    ret->line = 1;
+    ret->index = 0;
+    ret->error = 0;
     
     return ret;
 }
@@ -216,7 +253,7 @@ void tknr_free(Tokenizer freeing) {
     // is this it? wow!
     if (freeing->origin) free(freeing->origin);
     if (freeing->is_from_file) {
-        fclose(freeing->source.file.file);
+        if (freeing->source.file.fptr) fclose(freeing->source.file.fptr);
     } else {
         free(freeing->source.string.begin);
     }
@@ -228,9 +265,9 @@ int get_next_char_file(Tokenizer from) {
     if (tknr_end(from)) {
         ERROR(FILE_READ_EOF_FAIL);
     } else if (fs->next_chars_pos == TKNR_BUF_SIZE) {
-        size_t count = fread(fs->next_chars, sizeof(char), TKNR_BUF_SIZE + 1, fs->file);
+        size_t count = fread(fs->next_chars, sizeof(char), TKNR_BUF_SIZE + 1, fs->fptr);
         if (count != TKNR_BUF_SIZE) {
-            if (feof(fs->file)) {
+            if (feof(fs->fptr)) {
                 fs->eof = count;
             } else {
                 return FILE_READ_FAIL;
