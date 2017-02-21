@@ -73,14 +73,22 @@ Token tkn_copy(Token copying) {
 
 char *tkn_type_name(Token t) {
     switch (t->type) {
-        case TKN_UNKNOWN:    return "unknown";
-        case TKN_WORD:       return "word";
-        case TKN_STRING:     return "string";
-        case TKN_REGEX:      return "regex";
-        case TKN_INTEGER:    return "integer";
-        case TKN_REAL:       return "real";
-        case TKN_IDENTIFIER: return "identifier";
+        case TKN_UNKNOWN:
+            return "unknown";
+        case TKN_WORD:
+            return "word";
+        case TKN_STRING:
+            return "string";
+        case TKN_REGEX:
+            return "regex";
+        case TKN_INTEGER:
+            return "integer";
+        case TKN_REAL:
+            return "real";
+        case TKN_IDENTIFIER:
+            return "identifier";
     }
+    abort();
 }
 
 enum token_type_e tkn_type(Token t) {
@@ -383,7 +391,7 @@ bool in_ranges(char c, char *begins, char *ends, size_t count) {
 }
 
 bool add_while_in_ranges(Tokenizer from, StringBuilder raw, char *next_char,
-                                char *begins, char *ends, size_t num_ranges) {
+                         char *begins, char *ends, size_t num_ranges) {
     *next_char = peek_char(from);
     while (in_ranges(*next_char, begins, ends, num_ranges)) {
         sb_append(raw, read_char(from));
@@ -396,7 +404,7 @@ bool add_while_in_ranges(Tokenizer from, StringBuilder raw, char *next_char,
 }
 
 bool add_while_in_range(Tokenizer from, StringBuilder raw, char *next_char,
-                               char begin, char end) {
+                        char begin, char end) {
     return add_while_in_ranges(from, raw, next_char, &begin, &end, 1);
 }
 
@@ -452,7 +460,9 @@ Token get_number(Tokenizer from, char *next_char, Token partial) {
         return NULL;
     }
     partial->type = TKN_INTEGER;
-    enum { B2, B8, B10, B16 } base = B10;
+    enum {
+        B2, B8, B10, B16
+    } base = B10;
     if (*next_char == '0') {
         sb_append(raw, read_char(from));
         *next_char = peek_char(from);
