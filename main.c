@@ -122,7 +122,7 @@ size_t file_tests() {
         }
         Token next;
         while ((next = tknr_next(tknr)) != NULL) {
-            printf(" `%s` (%d) at %s@%zu:%zu\n", tkn_raw(next), tkn_type(next),
+            printf(" `%s` (%s) at %s@%zu:%zu\n", tkn_raw(next), tkn_type_name(next),
                    tkn_origin(next), tkn_line(next), tkn_index(next));
         }
         err = tknr_err(tknr);
