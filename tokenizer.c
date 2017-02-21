@@ -148,6 +148,7 @@ Tokenizer tknr_from_string(const char *mem, const char *origin) {
     ret->next_char = '\0';
     ret->last_read = NULL;
     ret->just_started = true;
+    ret->error = 0;
     
     if (!mem || !origin) {
         ret->error = CTOR_STR_NULL_ARG_FAIL;
@@ -186,7 +187,6 @@ Tokenizer tknr_from_string(const char *mem, const char *origin) {
     read_char(ret);
     ret->line = 1;
     ret->index = 0;
-    ret->error = 0;
     
     return ret;
 }
@@ -209,6 +209,7 @@ Tokenizer tknr_from_filepath(const char *path) {
     ret->next_char = '\0';
     ret->last_read = NULL;
     ret->just_started = true;
+    ret->error = 0;
     
     if (!path) {
         ret->error = CTOR_FILE_NULL_ARG_FAIL;
@@ -241,7 +242,6 @@ Tokenizer tknr_from_filepath(const char *path) {
     read_char(ret);
     ret->line = 1;
     ret->index = 0;
-    ret->error = 0;
     
     return ret;
 }
