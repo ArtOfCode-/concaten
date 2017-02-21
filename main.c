@@ -135,6 +135,8 @@ size_t file_tests() {
 }
 
 int main() {
+    // TODO thoroughly test tokenizer (file > memory)
+    
     struct timeval start, stop;
     size_t num;
     
