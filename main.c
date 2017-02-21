@@ -96,6 +96,7 @@ size_t string_tests() {
         while ((next = tknr_next(tknr)) != NULL) {
             printf(" `%s` (%d) at %s@%zu:%zu\n", tkn_raw(next), tkn_type(next),
                    tkn_origin(next), tkn_line(next), tkn_index(next));
+            tkn_free(next);
         }
         err = tknr_err(tknr);
         if (err != 0 && !tknr_end(tknr)) {
@@ -124,6 +125,7 @@ size_t file_tests() {
         while ((next = tknr_next(tknr)) != NULL) {
             printf(" `%s` (%s) at %s@%zu:%zu\n", tkn_raw(next), tkn_type_name(next),
                    tkn_origin(next), tkn_line(next), tkn_index(next));
+            tkn_free(next);
         }
         err = tknr_err(tknr);
         if (err != 0 && !tknr_end(tknr)) {

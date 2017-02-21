@@ -146,7 +146,6 @@ struct Tokenizer {
     size_t line, index;
     int error;
     
-    Token last_read;
     bool just_started;
 };
 
@@ -166,7 +165,6 @@ Tokenizer tknr_from_string(const char *mem, const char *origin) {
     };
     ret->is_from_file = false;
     ret->next_char = '\0';
-    ret->last_read = NULL;
     ret->just_started = true;
     ret->error = 0;
     
@@ -211,7 +209,6 @@ Tokenizer tknr_from_string(const char *mem, const char *origin) {
     return ret;
 }
 
-// TODO File-reading tokenizers
 Tokenizer tknr_from_filepath(const char *path) {
     Tokenizer ret = malloc(sizeof(struct Tokenizer));
     if (!ret) {
@@ -227,7 +224,6 @@ Tokenizer tknr_from_filepath(const char *path) {
     };
     ret->is_from_file = true;
     ret->next_char = '\0';
-    ret->last_read = NULL;
     ret->just_started = true;
     ret->error = 0;
     
@@ -569,9 +565,6 @@ Token tknr_next(Tokenizer from) {
         from->error = NT_MALLOC_FAIL;
         return NULL;
     }
-    if (from->last_read) {
-        tkn_free(from->last_read);
-    }
     char *origin_c = malloc(from->origin_len * sizeof(char));
     if (!origin_c) {
         from->error = NT_MALLOC_FAIL;
@@ -579,7 +572,6 @@ Token tknr_next(Tokenizer from) {
         return NULL;
     }
     strcpy(origin_c, from->origin);
-    from->last_read = ret;
     ret->index = from->index;
     ret->line = from->line;
     ret->origin = origin_c;
@@ -660,7 +652,7 @@ bool tknr_end(Tokenizer t) {
     if (t->is_from_file) {
         return t->source.file.eof == t->source.file.next_chars_pos;
     } else {
-        return t->source.string.cur_pos == t->source.string.end;
+        return t->source.string.end == t->source.string.cur_pos;
     }
 }
 
