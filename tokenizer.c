@@ -71,6 +71,18 @@ Token tkn_copy(Token copying) {
     return ret;
 }
 
+char *tkn_type_name(Token t) {
+    switch (t->type) {
+        case TKN_UNKNOWN:    return "unknown";
+        case TKN_WORD:       return "word";
+        case TKN_STRING:     return "string";
+        case TKN_REGEX:      return "regex";
+        case TKN_INTEGER:    return "integer";
+        case TKN_REAL:       return "real";
+        case TKN_IDENTIFIER: return "identifier";
+    }
+}
+
 enum token_type_e tkn_type(Token t) {
     return t->type;
 }
@@ -103,7 +115,7 @@ void tkn_free(Token t) {
 
 struct FileSource {
     FILE *fptr;
-    char next_chars[TKNR_BUF_SIZE];
+    unsigned char next_chars[TKNR_FILE_BUF_SIZE];
     size_t next_chars_pos;
     size_t eof; // if we're at EOF, this marks where in next_chars it is
 };
@@ -200,7 +212,7 @@ Tokenizer tknr_from_filepath(const char *path) {
     
     ret->origin = NULL;
     ret->source.file = (struct FileSource) {
-            .eof = TKNR_BUF_SIZE,
+            .eof = TKNR_FILE_BUF_SIZE,
             .fptr = NULL,
             .next_chars = {0},
             .next_chars_pos = 0,
@@ -222,7 +234,7 @@ Tokenizer tknr_from_filepath(const char *path) {
     }
     
     // .source
-    FILE *fptr = fopen(path, "r");
+    FILE *fptr = fopen(path, "rb");
     if (!fptr) {
         ret->error = CTOR_FILE_FOPEN_FAIL;
         return ret;
@@ -239,13 +251,26 @@ Tokenizer tknr_from_filepath(const char *path) {
     strcpy(path_c, path);
     ret->origin = path_c;
     
-    read_char(ret);
+    struct FileSource *fs = &ret->source.file;
+    size_t count = fread(fs->next_chars, sizeof(char), TKNR_FILE_BUF_SIZE, fs->fptr);
+    if (count != TKNR_FILE_BUF_SIZE) {
+        if (feof(fs->fptr)) {
+            fs->eof = count;
+        } else {
+            ret->error = FILE_READ_FAIL;
+            fclose(fptr);
+            free(path_c);
+            return ret;
+        }
+    }
+    ret->next_char = fs->next_chars[0];
+    fs->next_chars_pos = 1;
+    
     ret->line = 1;
     ret->index = 0;
     
     return ret;
 }
-//Tokenizer tknr_from_file(FILE *);
 
 void tknr_free(Tokenizer freeing) {
     // is this it? wow!
@@ -262,9 +287,9 @@ int get_next_char_file(Tokenizer from) {
     struct FileSource *fs = &from->source.file;
     if (tknr_end(from)) {
         ERROR(FILE_READ_EOF_FAIL);
-    } else if (fs->next_chars_pos == TKNR_BUF_SIZE) {
-        size_t count = fread(fs->next_chars, sizeof(char), TKNR_BUF_SIZE + 1, fs->fptr);
-        if (count != TKNR_BUF_SIZE) {
+    } else if (fs->next_chars_pos == TKNR_FILE_BUF_SIZE) {
+        size_t count = fread(fs->next_chars, sizeof(char), TKNR_FILE_BUF_SIZE, fs->fptr);
+        if (count != TKNR_FILE_BUF_SIZE) {
             if (feof(fs->fptr)) {
                 fs->eof = count;
             } else {
@@ -522,7 +547,9 @@ Token tknr_next(Tokenizer from) {
             return NULL;
         }
     }
-    if (from->just_started) from->just_started = false;
+    if (from->just_started) {
+        from->just_started = false;
+    }
     if (tknr_end(from)) {
         from->error = from->is_from_file ? FILE_READ_EOF_FAIL : STRING_READ_EOS_FAIL;
         return NULL;

@@ -5,11 +5,11 @@
 #include <stdbool.h>
 #include <stdio.h>
 
-#ifndef TKNR_BUF_SIZE
-# define TKNR_BUF_SIZE 256
+#ifndef TKNR_FILE_BUF_SIZE
+# define TKNR_FILE_BUF_SIZE 256
 #endif
-#if TKNR_BUF_SIZE <= 0
-# error TKNR_BUF_SIZE cannot be <= 0
+#if TKNR_FILE_BUF_SIZE <= 0
+# error TKNR_FILE_BUF_SIZE cannot be <= 0
 #endif
 
 struct Tokenizer;
@@ -35,7 +35,6 @@ void tkn_free(Token);
 
 Tokenizer tknr_from_string(const char *, const char *origin);
 Tokenizer tknr_from_filepath(const char *path);
-Tokenizer tknr_from_file(FILE *);
 Token tknr_next(Tokenizer);
 int tknr_err(Tokenizer);
 char *tknr_err_to_string(int);
