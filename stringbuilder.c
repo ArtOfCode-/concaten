@@ -60,9 +60,6 @@ char *sb_into_string(struct StringBuilder sb) {
     sb_free(&sb);
     return ret;
 }
-size_t sb_size(struct StringBuilder sb) {
-    return sb.count;
-}
 void sb_free(struct StringBuilder *sb) {
     free(sb->mem);
     sb->mem = NULL;
