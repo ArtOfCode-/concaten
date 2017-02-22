@@ -4,6 +4,7 @@
 #include <stddef.h>
 #include <stdbool.h>
 
+// TODO No pointers to objects; does bad things with `const` apparently
 struct StringBuilder;
 typedef struct StringBuilder *StringBuilder;
 StringBuilder sb_new(size_t);

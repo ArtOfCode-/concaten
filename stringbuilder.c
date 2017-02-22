@@ -41,7 +41,7 @@ char *sb_as_string(StringBuilder sb) {
     return sb->mem;
 }
 char *sb_free_copy(StringBuilder sb) {
-    char *ret = malloc(sb->count + 1 * sizeof(char));
+    char *ret = malloc((sb->count + 1) * sizeof(char));
     if (!ret) {
         return NULL;
     }
