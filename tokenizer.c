@@ -33,6 +33,7 @@
 #   define NT_SB_FREE_COPY_FAIL          1303
 //define TOKENIZER_SYNTAX_FAIL         1500
 #  define SYN_NO_SEPARATION_FAIL        1501
+#  define SYN_UNEXPECTED_END_FAIL       1502
 // define SYN_STR_FAIL                  1510
 #   define SYN_STR_MULTILINE_FAIL        1511
 // define SYN_NUM_FAIL                  1520
@@ -115,8 +116,12 @@ char *tkn_raw(Token t) {
 
 void tkn_free(Token t) {
     if (t) {
-        if (t->raw) free(t->raw);
-        if (t->origin) free(t->origin);
+        if (t->raw) {
+            free(t->raw);
+        }
+        if (t->origin) {
+            free(t->origin);
+        }
         free(t);
     }
 }
@@ -410,25 +415,29 @@ Token get_string(Tokenizer from, char *next_char, Token partial) {
     StringBuilder raw = sb_new(STARTING_RAW_MEM);
     if (!raw) {
         from->error = NT_NEW_SB_FAIL;
-        return NULL;
+        goto get_string_error;
     }
     while (1) {
         sb_append(raw, read_char(from));
+        if (tknr_end(from)) {
+            from->error = SYN_UNEXPECTED_END_FAIL;
+            goto get_string_error;
+            return NULL;
+        }
         *next_char = peek_char(from);
         if (*next_char == '\\') {
             sb_append(raw, read_char(from));
             if (tknr_err(from)) {
-                return NULL;
+                goto get_string_error;
             }
             sb_append(raw, read_char(from));
             if (tknr_err(from)) {
-                return NULL;
+                goto get_string_error;
             }
         }
         if (*next_char == '\n') {
             from->error = SYN_STR_MULTILINE_FAIL;
-            sb_free(raw);
-            return NULL;
+            goto get_string_error;
         }
         if (*next_char == '"') {
             // add the quote
@@ -440,13 +449,16 @@ Token get_string(Tokenizer from, char *next_char, Token partial) {
     char *raw_cstr = sb_free_copy(raw);
     if (!raw_cstr) {
         from->error = NT_SB_FREE_COPY_FAIL;
-        sb_free(raw);
-        return NULL;
+        goto get_string_error;
     }
     partial->raw = raw_cstr;
     partial->raw_len = raw_cstr_len;
     partial->type = TKN_STRING;
     return partial;
+get_string_error:;
+    if (raw) sb_free(raw);
+    if (partial) tkn_free(partial);
+    return NULL;
 }
 
 Token get_number(Tokenizer from, char *next_char, Token partial) {
@@ -542,15 +554,19 @@ Token tknr_next(Tokenizer from) {
     if (tknr_err(from)) {
         ERROR(tknr_err(from));
     }
+    // now we can `goto error;` from anywhere, without paying
+    // the initialization cost until later. blegh.
+    StringBuilder raw = NULL;
+    Token ret = NULL;
     if (!skip_between(from)) {
         if (tknr_err(from)) {
-            return NULL;
+            goto error;
         }
         // at the very beginning, it's OK not to have separation
         // (files don't have to start with code)
         if (!from->just_started) {
             from->error = SYN_NO_SEPARATION_FAIL;
-            return NULL;
+            goto error;
         }
     }
     if (from->just_started) {
@@ -558,34 +574,38 @@ Token tknr_next(Tokenizer from) {
     }
     if (tknr_end(from)) {
         from->error = from->is_from_file ? FILE_READ_EOF_FAIL : STRING_READ_EOS_FAIL;
-        return NULL;
+        goto error;
     }
-    Token ret = malloc(sizeof(struct Token));
+    ret = malloc(sizeof(struct Token));
     if (!ret) {
         from->error = NT_MALLOC_FAIL;
-        return NULL;
+        goto error;
     }
     char *origin_c = malloc(from->origin_len * sizeof(char));
     if (!origin_c) {
         from->error = NT_MALLOC_FAIL;
-        tkn_free(ret);
-        return NULL;
+        goto error;
     }
     strcpy(origin_c, from->origin);
     ret->index = from->index;
     ret->line = from->line;
     ret->origin = origin_c;
     ret->type = TKN_UNKNOWN;
+    ret->raw = NULL;
     char next_char = peek_char(from);
     if (!next_char && tknr_err(from)) {
-        return NULL;
+        goto error;
     }
     if (next_char == '"') { // single-line string
         return get_string(from, &next_char, ret);
     } else if ('0' <= next_char && next_char <= '9') {
         return get_number(from, &next_char, ret);
     }
-    StringBuilder raw = sb_new(STARTING_RAW_MEM);
+    raw = sb_new(STARTING_RAW_MEM);
+    if (!raw) {
+        from->error = NT_NEW_SB_FAIL;
+        goto error;
+    }
     if (next_char == ':') {
         ret->type = TKN_IDENTIFIER;
     } else if (next_char == 'r') {
@@ -598,11 +618,17 @@ Token tknr_next(Tokenizer from) {
                 if (next_char == '\\') {
                     sb_append(raw, read_char(from));
                     if (tknr_err(from)) {
-                        return NULL;
+                        goto error;
+                    } else if (tknr_end(from)) {
+                        from->error = SYN_UNEXPECTED_END_FAIL;
+                        goto error;
                     }
                     sb_append(raw, read_char(from));
                     if (tknr_err(from)) {
-                        return NULL;
+                        goto error;
+                    } else if (tknr_end(from)) {
+                        from->error = SYN_UNEXPECTED_END_FAIL;
+                        goto error;
                     }
                 }
                 if (next_char == '/') {
@@ -610,6 +636,12 @@ Token tknr_next(Tokenizer from) {
                     break;
                 }
                 sb_append(raw, read_char(from));
+                if (tknr_err(from)) {
+                    goto error;
+                } else if (tknr_end(from)) {
+                    from->error = SYN_UNEXPECTED_END_FAIL;
+                    goto error;
+                }
                 next_char = peek_char(from);
             }
             next_char = peek_char(from);
@@ -619,16 +651,14 @@ Token tknr_next(Tokenizer from) {
             }
             if (!is_ws(next_char) && !tknr_end(from)) {
                 from->error = SYN_RGX_BAD_FLAG_FAIL;
-                sb_free(raw);
-                return NULL;
+                goto error;
             }
             ret->type = TKN_REGEX;
             ret->raw_len = sb_size(raw);
             ret->raw = sb_free_copy(raw);
             if (!ret->raw) {
                 from->error = NT_SB_FREE_COPY_FAIL;
-                sb_free(raw);
-                return NULL;
+                goto error;
             }
             return ret;
         }
@@ -643,9 +673,12 @@ Token tknr_next(Tokenizer from) {
     if (!ret->raw) {
         from->error = NT_SB_FREE_COPY_FAIL;
         sb_free(raw);
-        return NULL;
     }
     return ret;
+error:;
+    if (raw) sb_free(raw);
+    if (ret) tkn_free(ret);
+    return NULL;
 }
 
 bool tknr_end(Tokenizer t) {
