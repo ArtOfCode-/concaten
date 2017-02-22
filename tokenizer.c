@@ -554,6 +554,9 @@ Token tknr_next(Tokenizer from) {
     if (tknr_err(from)) {
         ERROR(tknr_err(from));
     }
+    if (tknr_end(from)) {
+        return NULL;
+    }
     // now we can `goto error;` from anywhere, without paying
     // the initialization cost until later. blegh.
     StringBuilder raw = NULL;
@@ -683,7 +686,7 @@ error:;
 
 bool tknr_end(Tokenizer t) {
     if (t->is_from_file) {
-        return t->source.file.eof == t->source.file.next_chars_pos;
+        return t->source.file.eof < t->source.file.next_chars_pos;
     } else {
         return t->source.string.end == t->source.string.cur_pos;
     }
