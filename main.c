@@ -68,7 +68,6 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <sys/time.h>
-#include <w32api/_timeval.h>
 
 #include "tokenizer.h"
 
@@ -106,6 +105,7 @@ size_t string_tests() {
             printf(" Error %d occured while tokenizing.\n", err);
         }
         tknr_free(tknr);
+        puts("---");
     }
     return test_count;
 }
@@ -135,6 +135,7 @@ size_t file_tests() {
             printf(" Error %d occured while tokenizing.\n", err);
         }
         tknr_free(tknr);
+        puts("---");
     }
     return test_count;
 }
