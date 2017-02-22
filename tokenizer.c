@@ -41,6 +41,7 @@
 // define SYN_RGX_FAIL                  1530
 #   define SYN_RGX_BAD_FLAG_FAIL         1531
 
+// TODO Do to this what we just did to StringBuilder
 struct Token {
     char *raw;
     size_t raw_len;
@@ -391,7 +392,7 @@ bool in_ranges(char c, char *begins, char *ends, size_t count) {
     return false;
 }
 
-bool add_while_in_ranges(Tokenizer from, StringBuilder raw, char *next_char,
+bool add_while_in_ranges(Tokenizer from, struct StringBuilder *raw, char *next_char,
                          char *begins, char *ends, size_t num_ranges) {
     *next_char = peek_char(from);
     while (in_ranges(*next_char, begins, ends, num_ranges)) {
@@ -404,7 +405,7 @@ bool add_while_in_ranges(Tokenizer from, StringBuilder raw, char *next_char,
     return true;
 }
 
-bool add_while_in_range(Tokenizer from, StringBuilder raw, char *next_char,
+bool add_while_in_range(Tokenizer from, struct StringBuilder *raw, char *next_char,
                         char begin, char end) {
     return add_while_in_ranges(from, raw, next_char, &begin, &end, 1);
 }
@@ -412,25 +413,24 @@ bool add_while_in_range(Tokenizer from, StringBuilder raw, char *next_char,
 #define STARTING_RAW_MEM 16
 
 Token get_string(Tokenizer from, char *next_char, Token partial) {
-    StringBuilder raw = sb_new(STARTING_RAW_MEM);
-    if (!raw) {
+    struct StringBuilder raw = sb_new();
+    if (!sb_init(&raw, STARTING_RAW_MEM)) {
         from->error = NT_NEW_SB_FAIL;
-        goto get_string_error;
+        return NULL;
     }
     while (1) {
-        sb_append(raw, read_char(from));
+        sb_append(&raw, read_char(from));
         if (tknr_end(from)) {
             from->error = SYN_UNEXPECTED_END_FAIL;
             goto get_string_error;
-            return NULL;
         }
         *next_char = peek_char(from);
         if (*next_char == '\\') {
-            sb_append(raw, read_char(from));
+            sb_append(&raw, read_char(from));
             if (tknr_err(from)) {
                 goto get_string_error;
             }
-            sb_append(raw, read_char(from));
+            sb_append(&raw, read_char(from));
             if (tknr_err(from)) {
                 goto get_string_error;
             }
@@ -441,12 +441,12 @@ Token get_string(Tokenizer from, char *next_char, Token partial) {
         }
         if (*next_char == '"') {
             // add the quote
-            sb_append(raw, read_char(from));
+            sb_append(&raw, read_char(from));
             break;
         }
     }
-    size_t raw_cstr_len = sb_size(raw);
-    char *raw_cstr = sb_free_copy(raw);
+    size_t raw_cstr_len = raw.count;
+    char *raw_cstr = sb_into_string(raw);
     if (!raw_cstr) {
         from->error = NT_SB_FREE_COPY_FAIL;
         goto get_string_error;
@@ -456,14 +456,14 @@ Token get_string(Tokenizer from, char *next_char, Token partial) {
     partial->type = TKN_STRING;
     return partial;
 get_string_error:;
-    if (raw) sb_free(raw);
+    sb_free(&raw);
     if (partial) tkn_free(partial);
     return NULL;
 }
 
 Token get_number(Tokenizer from, char *next_char, Token partial) {
-    StringBuilder raw = sb_new(STARTING_RAW_MEM);
-    if (!raw) {
+    struct StringBuilder raw = sb_new();
+    if (!sb_init(&raw, STARTING_RAW_MEM)) {
         from->error = NT_NEW_SB_FAIL;
         return NULL;
     }
@@ -472,7 +472,7 @@ Token get_number(Tokenizer from, char *next_char, Token partial) {
         B2, B8, B10, B16
     } base = B10;
     if (*next_char == '0') {
-        sb_append(raw, read_char(from));
+        sb_append(&raw, read_char(from));
         *next_char = peek_char(from);
         if (*next_char == 'x') {
             base = B16;
@@ -481,63 +481,63 @@ Token get_number(Tokenizer from, char *next_char, Token partial) {
         } else if (*next_char == 'b') {
             base = B2;
         }
-        sb_append(raw, read_char(from));
+        sb_append(&raw, read_char(from));
     }
     bool decimal = false;
     if (base == B16) {
-        if (!add_while_in_ranges(from, raw, next_char, "0aA", "9fF", 3)) {
-            sb_free(raw);
+        if (!add_while_in_ranges(from, &raw, next_char, "0aA", "9fF", 3)) {
+            sb_free(&raw);
             return NULL;
         }
     } else if (base == B8) {
-        if (!add_while_in_range(from, raw, next_char, '0', '7')) {
-            sb_free(raw);
+        if (!add_while_in_range(from, &raw, next_char, '0', '7')) {
+            sb_free(&raw);
             return NULL;
         }
     } else if (base == B2) {
-        if (!add_while_in_range(from, raw, next_char, '0', '1')) {
-            sb_free(raw);
+        if (!add_while_in_range(from, &raw, next_char, '0', '1')) {
+            sb_free(&raw);
             return NULL;
         }
     } else if (base == B10) {
         // add decimal digits
-        if (!add_while_in_range(from, raw, next_char, '0', '9')) {
-            sb_free(raw);
+        if (!add_while_in_range(from, &raw, next_char, '0', '9')) {
+            sb_free(&raw);
             return NULL;
         }
         // un punto
         if (*next_char == '.') {
             decimal = true;
-            sb_append(raw, read_char(from));
-            if (!add_while_in_range(from, raw, next_char, '0', '9')) {
-                sb_free(raw);
+            sb_append(&raw, read_char(from));
+            if (!add_while_in_range(from, &raw, next_char, '0', '9')) {
+                sb_free(&raw);
                 return NULL;
             }
         }
         // exponents
         if (*next_char == 'e') {
             decimal = true;
-            sb_append(raw, read_char(from));
-            if (!add_while_in_range(from, raw, next_char, '0', '9')) {
-                sb_free(raw);
+            sb_append(&raw, read_char(from));
+            if (!add_while_in_range(from, &raw, next_char, '0', '9')) {
+                sb_free(&raw);
                 return NULL;
             }
         }
     }
     if (tknr_err(from)) {
-        sb_free(raw);
+        sb_free(&raw);
         return NULL;
     }
     if (!is_ws(*next_char) && !tknr_end(from)) {
         from->error = SYN_NUM_ILLEGAL_DIGIT_FAIL;
-        sb_free(raw);
+        sb_free(&raw);
         return NULL;
     }
-    partial->raw_len = sb_size(raw);
-    partial->raw = sb_free_copy(raw);
+    partial->raw_len = raw.count;
+    partial->raw = sb_into_string(raw);
     if (!partial->raw) {
         from->error = NT_SB_FREE_COPY_FAIL;
-        sb_free(raw);
+        sb_free(&raw);
         return NULL;
     }
     partial->type = decimal ? TKN_REAL : TKN_INTEGER;
@@ -559,7 +559,7 @@ Token tknr_next(Tokenizer from) {
     }
     // now we can `goto error;` from anywhere, without paying
     // the initialization cost until later. blegh.
-    StringBuilder raw = NULL;
+    struct StringBuilder raw = sb_new();
     Token ret = NULL;
     if (!skip_between(from)) {
         if (tknr_err(from)) {
@@ -604,29 +604,29 @@ Token tknr_next(Tokenizer from) {
     } else if ('0' <= next_char && next_char <= '9') {
         return get_number(from, &next_char, ret);
     }
-    raw = sb_new(STARTING_RAW_MEM);
-    if (!raw) {
+    raw = sb_new();
+    if (!sb_init(&raw, STARTING_RAW_MEM)) {
         from->error = NT_NEW_SB_FAIL;
         goto error;
     }
     if (next_char == ':') {
         ret->type = TKN_IDENTIFIER;
     } else if (next_char == 'r') {
-        sb_append(raw, read_char(from));
+        sb_append(&raw, read_char(from));
         next_char = peek_char(from);
         if (next_char == '/') {
-            sb_append(raw, read_char(from));
+            sb_append(&raw, read_char(from));
             next_char = peek_char(from);
             while (true) {
                 if (next_char == '\\') {
-                    sb_append(raw, read_char(from));
+                    sb_append(&raw, read_char(from));
                     if (tknr_err(from)) {
                         goto error;
                     } else if (tknr_end(from)) {
                         from->error = SYN_UNEXPECTED_END_FAIL;
                         goto error;
                     }
-                    sb_append(raw, read_char(from));
+                    sb_append(&raw, read_char(from));
                     if (tknr_err(from)) {
                         goto error;
                     } else if (tknr_end(from)) {
@@ -635,10 +635,10 @@ Token tknr_next(Tokenizer from) {
                     }
                 }
                 if (next_char == '/') {
-                    sb_append(raw, read_char(from));
+                    sb_append(&raw, read_char(from));
                     break;
                 }
-                sb_append(raw, read_char(from));
+                sb_append(&raw, read_char(from));
                 if (tknr_err(from)) {
                     goto error;
                 } else if (tknr_end(from)) {
@@ -649,7 +649,7 @@ Token tknr_next(Tokenizer from) {
             }
             next_char = peek_char(from);
             while (is_flag(next_char)) {
-                sb_append(raw, read_char(from));
+                sb_append(&raw, read_char(from));
                 next_char = peek_char(from);
             }
             if (!is_ws(next_char) && !tknr_end(from)) {
@@ -657,8 +657,8 @@ Token tknr_next(Tokenizer from) {
                 goto error;
             }
             ret->type = TKN_REGEX;
-            ret->raw_len = sb_size(raw);
-            ret->raw = sb_free_copy(raw);
+            ret->raw_len = raw.count;
+            ret->raw = sb_into_string(raw);
             if (!ret->raw) {
                 from->error = NT_SB_FREE_COPY_FAIL;
                 goto error;
@@ -667,20 +667,20 @@ Token tknr_next(Tokenizer from) {
         }
     }
     while (!is_ws(next_char) && !tknr_end(from)) {
-        sb_append(raw, read_char(from));
+        sb_append(&raw, read_char(from));
         next_char = peek_char(from);
     }
     if (ret->type == TKN_UNKNOWN) ret->type = TKN_WORD;
-    ret->raw_len = sb_size(raw);
-    ret->raw = sb_free_copy(raw);
+    ret->raw_len = raw.count;
+    ret->raw = sb_into_string(raw);
     if (!ret->raw) {
         from->error = NT_SB_FREE_COPY_FAIL;
-        sb_free(raw);
+        sb_free(&raw);
     }
     return ret;
 error:;
-    if (raw) sb_free(raw);
-    if (ret) tkn_free(ret);
+    sb_free(&raw);
+    tkn_free(ret);
     return NULL;
 }
 
