@@ -41,36 +41,32 @@
 // define SYN_RGX_FAIL                  1530
 #   define SYN_RGX_BAD_FLAG_FAIL         1531
 
-// TODO Do to this what we just did to StringBuilder
-struct Token {
-    char *raw;
-    size_t raw_len;
-    char *origin;
-    size_t origin_len;
-    size_t line, index;
-    enum token_type_e type;
-};
-
-Token tkn_copy(Token copying) {
-    Token ret = malloc(sizeof(struct Token));
-    if (!ret) return NULL;
-    ret->raw = malloc(copying->raw_len * sizeof(char));
-    if (!ret->raw) {
-        free(ret);
-        return NULL;
+bool tkn_copy(struct Token copying, struct Token *into) {
+    struct Token ret = (struct Token) {
+            .index = copying.index,
+            .line = copying.line,
+            .origin = NULL,
+            .origin_len = copying.origin_len,
+            .raw = NULL,
+            .raw_len = copying.origin_len,
+            .type = copying.type
+    };
+    ret.raw = malloc(copying.raw_len);
+    if (!ret.raw) {
+        return false;
     }
-    strncpy(ret->raw, copying->raw, copying->raw_len);
-    ret->origin = malloc(copying->origin_len * sizeof(char));
-    if (!ret->origin) {
-        free(ret->raw);
-        free(ret);
-        return NULL;
+    memcpy(ret.raw, copying.raw, copying.raw_len);
+    ret.origin = malloc(copying.origin_len);
+    if (!ret.origin) {
+        free(ret.raw);
+        return false;
     }
-    strncpy(ret->origin, copying->origin, copying->origin_len);
-    ret->index = copying->index;
-    ret->line = copying->index;
-    ret->type = copying->type;
-    return ret;
+    memcpy(ret.origin, copying.origin, copying.origin_len);
+    ret.index = copying.index;
+    ret.line = copying.index;
+    ret.type = copying.type;
+    *into = ret;
+    return true;
 }
 
 char *tkn_type_name(Token t) {
