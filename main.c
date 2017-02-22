@@ -75,16 +75,19 @@
 size_t string_tests() {
     // TODO test edge cases
     char *tests[] = {
-            "",
-            "\"string\" 42 0x1Fe94\n"
-                    "0b11001 0o127635 1.2e3\n"
-                    ":foobar foobar2\n"
-                    "r/asdf boofar/xgi"
+            "", "\"ends early", "r/ends early",
+            "bad-digit 0x123gi", "bad-digit 0b123",
+            "bad-digit 0o678", "r/bad flag/gli",
+            "success: \"string\" 42 0x1Fe94\n"
+            "0b11001 0o127635 1.2e3\n"
+            ":foobar foobar2\n"
+            "r/asdf boofar/xgi"
     };
     size_t test_count = sizeof(tests) / sizeof(char *);
     for (size_t i = 0; i < test_count; ++i) {
         printf("String test case #%zu:\n", i + 1);
         puts(tests[i]);
+        puts("---");
         char *test_string = tests[i];
         Tokenizer tknr = tknr_from_string(test_string, "test");
         int err = tknr_err(tknr);
@@ -94,12 +97,12 @@ size_t string_tests() {
         }
         Token next;
         while ((next = tknr_next(tknr)) != NULL) {
-            printf(" `%s` (%d) at %s@%zu:%zu\n", tkn_raw(next), tkn_type(next),
-                   tkn_origin(next), tkn_line(next), tkn_index(next));
+            printf(" `%s` (%s - %d) at %s@%zu:%zu\n", tkn_raw(next), tkn_type_name(next),
+                   tkn_type(next), tkn_origin(next), tkn_line(next), tkn_index(next));
             tkn_free(next);
         }
         err = tknr_err(tknr);
-        if (err != 0 && !tknr_end(tknr)) {
+        if (err != 0) {
             printf(" Error %d occured while tokenizing.\n", err);
         }
         tknr_free(tknr);
@@ -123,12 +126,12 @@ size_t file_tests() {
         }
         Token next;
         while ((next = tknr_next(tknr)) != NULL) {
-            printf(" `%s` (%s) at %s@%zu:%zu\n", tkn_raw(next), tkn_type_name(next),
-                   tkn_origin(next), tkn_line(next), tkn_index(next));
+            printf(" `%s` (%s - %d) at %s@%zu:%zu\n", tkn_raw(next), tkn_type_name(next),
+                   tkn_type(next), tkn_origin(next), tkn_line(next), tkn_index(next));
             tkn_free(next);
         }
         err = tknr_err(tknr);
-        if (err != 0 && !tknr_end(tknr)) {
+        if (err != 0) {
             printf(" Error %d occured while tokenizing.\n", err);
         }
         tknr_free(tknr);
