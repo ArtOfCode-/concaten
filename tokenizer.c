@@ -570,7 +570,6 @@ bool tknr_next(Tokenizer from, struct Token *out) {
         from->just_started = false;
     }
     if (tknr_end(from)) {
-        from->error = from->is_from_file ? FILE_READ_EOF_FAIL : STRING_READ_EOS_FAIL;
         goto nt_error;
     }
     char *origin_c = malloc(from->origin_len * sizeof(char));
