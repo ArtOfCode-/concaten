@@ -94,11 +94,11 @@ size_t string_tests() {
             printf(" Error %d occured when initializing.\n", err);
             continue;
         }
-        Token next;
-        while ((next = tknr_next(tknr)) != NULL) {
+        struct Token next;
+        while (tknr_next(tknr, &next)) {
             printf(" `%s` (%s - %d) at %s@%zu:%zu\n", tkn_raw(next), tkn_type_name(next),
                    tkn_type(next), tkn_origin(next), tkn_line(next), tkn_index(next));
-            tkn_free(next);
+            tkn_free(&next);
         }
         err = tknr_err(tknr);
         if (err != 0) {
@@ -124,11 +124,11 @@ size_t file_tests() {
             printf(" Error %d occured when initializing.\n", err);
             continue;
         }
-        Token next;
-        while ((next = tknr_next(tknr)) != NULL) {
+        struct Token next;
+        while (tknr_next(tknr, &next)) {
             printf(" `%s` (%s - %d) at %s@%zu:%zu\n", tkn_raw(next), tkn_type_name(next),
                    tkn_type(next), tkn_origin(next), tkn_line(next), tkn_index(next));
-            tkn_free(next);
+            tkn_free(&next);
         }
         err = tknr_err(tknr);
         if (err != 0) {
