@@ -12,7 +12,6 @@ struct StringBuilder {
 struct StringBuilder sb_new();
 bool sb_init(struct StringBuilder *, size_t);
 bool sb_append(struct StringBuilder *, char);
-char *sb_as_string(struct StringBuilder);
 char *sb_into_string(struct StringBuilder);
 void sb_free(struct StringBuilder*);
 

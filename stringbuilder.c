@@ -47,9 +47,6 @@ bool sb_append(struct StringBuilder *to, char c) {
     ++to->count;
     return true;
 }
-char *sb_as_string(struct StringBuilder sb) {
-    return sb.mem;
-}
 char *sb_into_string(struct StringBuilder sb) {
     char *ret = malloc(sb.count + 1);
     if (!ret) {
