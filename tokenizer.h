@@ -12,6 +12,7 @@
 # error TKNR_FILE_BUF_SIZE cannot be <= 0
 #endif
 
+// TODO 2 down, one to go...
 struct Tokenizer;
 typedef struct Tokenizer *Tokenizer;
 

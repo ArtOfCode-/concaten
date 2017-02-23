@@ -538,6 +538,7 @@ bool is_flag(char c) {
            c == 'm' || c == 's';
 }
 
+// TODO Look through for any possible code prettifications. this is ugly.
 bool tknr_next(Tokenizer from, struct Token *out) {
     if (tknr_err(from)) {
         ERROR(tknr_err(from));
