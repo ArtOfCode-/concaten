@@ -41,6 +41,18 @@
 // define SYN_RGX_FAIL                  1530
 #   define SYN_RGX_BAD_FLAG_FAIL         1531
 
+struct Token tkn_new(size_t line, size_t index) {
+    return (struct Token) {
+            .type = TKN_UNKNOWN,
+            .index = index,
+            .line = line,
+            .origin = NULL,
+            .raw = NULL,
+            .origin_len = 0,
+            .raw_len = 0,
+    };
+}
+
 bool tkn_copy(struct Token copying, struct Token *into) {
     struct Token ret = (struct Token) {
             .index = copying.index,
@@ -413,22 +425,22 @@ bool get_string(Tokenizer from, char *next_char, struct Token partial, struct To
         sb_append(&raw, read_char(from));
         if (tknr_end(from)) {
             from->error = SYN_UNEXPECTED_END_FAIL;
-            goto get_string_error;
+            goto error;
         }
         *next_char = peek_char(from);
         if (*next_char == '\\') {
             sb_append(&raw, read_char(from));
             if (tknr_err(from)) {
-                goto get_string_error;
+                goto error;
             }
             sb_append(&raw, read_char(from));
             if (tknr_err(from)) {
-                goto get_string_error;
+                goto error;
             }
         }
         if (*next_char == '\n') {
             from->error = SYN_STR_MULTILINE_FAIL;
-            goto get_string_error;
+            goto error;
         }
         if (*next_char == '"') {
             // add the quote
@@ -440,14 +452,14 @@ bool get_string(Tokenizer from, char *next_char, struct Token partial, struct To
     char *raw_cstr = sb_into_string(raw);
     if (!raw_cstr) {
         from->error = NT_SB_FREE_COPY_FAIL;
-        goto get_string_error;
+        goto error;
     }
     partial.raw = raw_cstr;
     partial.raw_len = raw_cstr_len;
     partial.type = TKN_STRING;
     *out = partial;
     return true;
-get_string_error:;
+error:;
     sb_free(&raw);
     tkn_free(&partial);
     return false;
@@ -457,7 +469,7 @@ bool get_number(Tokenizer from, char *next_char, struct Token partial, struct To
     struct StringBuilder raw = sb_new();
     if (!sb_init(&raw, STARTING_RAW_MEM)) {
         from->error = NT_NEW_SB_FAIL;
-        goto get_num_error;
+        goto error;
     }
     partial.type = TKN_INTEGER;
     enum {
@@ -478,27 +490,27 @@ bool get_number(Tokenizer from, char *next_char, struct Token partial, struct To
     bool decimal = false;
     if (base == B16) {
         if (!add_while_in_ranges(from, &raw, next_char, "0aA", "9fF", 3)) {
-            goto get_num_error;
+            goto error;
         }
     } else if (base == B8) {
         if (!add_while_in_range(from, &raw, next_char, '0', '7')) {
-            goto get_num_error;
+            goto error;
         }
     } else if (base == B2) {
         if (!add_while_in_range(from, &raw, next_char, '0', '1')) {
-            goto get_num_error;
+            goto error;
         }
     } else if (base == B10) {
         // add decimal digits
         if (!add_while_in_range(from, &raw, next_char, '0', '9')) {
-            goto get_num_error;
+            goto error;
         }
         // un punto
         if (*next_char == '.') {
             decimal = true;
             sb_append(&raw, read_char(from));
             if (!add_while_in_range(from, &raw, next_char, '0', '9')) {
-                goto get_num_error;
+                goto error;
             }
         }
         // exponents
@@ -506,27 +518,27 @@ bool get_number(Tokenizer from, char *next_char, struct Token partial, struct To
             decimal = true;
             sb_append(&raw, read_char(from));
             if (!add_while_in_range(from, &raw, next_char, '0', '9')) {
-                goto get_num_error;
+                goto error;
             }
         }
     }
     if (tknr_err(from)) {
-        goto get_num_error;
+        goto error;
     }
     if (!is_ws(*next_char) && !tknr_end(from)) {
         from->error = SYN_NUM_ILLEGAL_DIGIT_FAIL;
-        goto get_num_error;
+        goto error;
     }
     partial.raw_len = raw.count;
     partial.raw = sb_into_string(raw);
     if (!partial.raw) {
         from->error = NT_SB_FREE_COPY_FAIL;
-        goto get_num_error;
+        goto error;
     }
     partial.type = decimal ? TKN_REAL : TKN_INTEGER;
     *out = partial;
     return true;
-get_num_error:;
+error:;
     sb_free(&raw);
     tkn_free(&partial);
     return false;
@@ -538,6 +550,63 @@ bool is_flag(char c) {
            c == 'm' || c == 's';
 }
 
+bool get_regex(Tokenizer from, struct StringBuilder raw, struct Token ret, struct Token *out) {
+    sb_append(&raw, read_char(from));
+    char next_char = peek_char(from);
+    while (true) {
+        if (next_char == '\\') {
+            sb_append(&raw, read_char(from));
+            if (tknr_err(from)) {
+                goto error;
+            } else if (tknr_end(from)) {
+                from->error = SYN_UNEXPECTED_END_FAIL;
+                goto error;
+            }
+            sb_append(&raw, read_char(from));
+            if (tknr_err(from)) {
+                goto error;
+            } else if (tknr_end(from)) {
+                from->error = SYN_UNEXPECTED_END_FAIL;
+                goto error;
+            }
+        }
+        if (next_char == '/') {
+            sb_append(&raw, read_char(from));
+            break;
+        }
+        sb_append(&raw, read_char(from));
+        if (tknr_err(from)) {
+            goto error;
+        } else if (tknr_end(from)) {
+            from->error = SYN_UNEXPECTED_END_FAIL;
+            goto error;
+        }
+        next_char = peek_char(from);
+    }
+    next_char = peek_char(from);
+    while (is_flag(next_char)) {
+        sb_append(&raw, read_char(from));
+        next_char = peek_char(from);
+    }
+    if (!is_ws(next_char) && !tknr_end(from)) {
+        from->error = SYN_RGX_BAD_FLAG_FAIL;
+        goto error;
+    }
+    ret.type = TKN_REGEX;
+    ret.raw_len = raw.count;
+    ret.raw = sb_into_string(raw);
+    if (!ret.raw) {
+        from->error = NT_SB_FREE_COPY_FAIL;
+        goto error;
+    }
+    *out = ret;
+    return true;
+error:;
+    sb_free(&raw);
+    tkn_free(&ret);
+    return false;
+}
+
 // TODO Look through for any possible code prettifications. this is ugly.
 bool tknr_next(Tokenizer from, struct Token *out) {
     if (tknr_err(from)) {
@@ -546,53 +615,44 @@ bool tknr_next(Tokenizer from, struct Token *out) {
     if (tknr_end(from)) {
         return NULL;
     }
-    struct StringBuilder raw = sb_new();
-    struct Token ret = (struct Token) {
-            .type = TKN_UNKNOWN,
-            .index = from->index,
-            .line = from->line,
-            .origin = NULL,
-            .raw = NULL,
-            .origin_len = 0,
-            .raw_len = 0,
-    };
     if (!skip_between(from)) {
         if (tknr_err(from)) {
-            goto nt_error;
+            return false;
         }
         // at the very beginning, it's OK not to have separation
         // (files don't have to start with code)
         if (!from->just_started) {
             from->error = SYN_NO_SEPARATION_FAIL;
-            goto nt_error;
+            return false;
         }
     }
     if (from->just_started) {
         from->just_started = false;
     }
     if (tknr_end(from)) {
-        goto nt_error;
+        return false;
     }
-    char *origin_c = malloc(from->origin_len * sizeof(char));
-    if (!origin_c) {
+    
+    struct StringBuilder raw = sb_new();
+    struct Token ret = tkn_new(from->line, from->index);
+    ret.origin = malloc(from->origin_len * sizeof(char));
+    if (!ret.origin) {
         from->error = NT_MALLOC_FAIL;
-        goto nt_error;
+        goto error;
     }
-    strcpy(origin_c, from->origin);
-    ret.origin = origin_c;
+    strcpy(ret.origin, from->origin);
     char next_char = peek_char(from);
     if (!next_char && tknr_err(from)) {
-        goto nt_error;
+        goto error;
     }
     if (next_char == '"') { // single-line string
         return get_string(from, &next_char, ret, out);
     } else if ('0' <= next_char && next_char <= '9') {
         return get_number(from, &next_char, ret, out);
     }
-    raw = sb_new();
     if (!sb_init(&raw, STARTING_RAW_MEM)) {
         from->error = NT_NEW_SB_FAIL;
-        goto nt_error;
+        goto error;
     }
     if (next_char == ':') {
         ret.type = TKN_IDENTIFIER;
@@ -600,56 +660,7 @@ bool tknr_next(Tokenizer from, struct Token *out) {
         sb_append(&raw, read_char(from));
         next_char = peek_char(from);
         if (next_char == '/') {
-            sb_append(&raw, read_char(from));
-            next_char = peek_char(from);
-            while (true) {
-                if (next_char == '\\') {
-                    sb_append(&raw, read_char(from));
-                    if (tknr_err(from)) {
-                        goto nt_error;
-                    } else if (tknr_end(from)) {
-                        from->error = SYN_UNEXPECTED_END_FAIL;
-                        goto nt_error;
-                    }
-                    sb_append(&raw, read_char(from));
-                    if (tknr_err(from)) {
-                        goto nt_error;
-                    } else if (tknr_end(from)) {
-                        from->error = SYN_UNEXPECTED_END_FAIL;
-                        goto nt_error;
-                    }
-                }
-                if (next_char == '/') {
-                    sb_append(&raw, read_char(from));
-                    break;
-                }
-                sb_append(&raw, read_char(from));
-                if (tknr_err(from)) {
-                    goto nt_error;
-                } else if (tknr_end(from)) {
-                    from->error = SYN_UNEXPECTED_END_FAIL;
-                    goto nt_error;
-                }
-                next_char = peek_char(from);
-            }
-            next_char = peek_char(from);
-            while (is_flag(next_char)) {
-                sb_append(&raw, read_char(from));
-                next_char = peek_char(from);
-            }
-            if (!is_ws(next_char) && !tknr_end(from)) {
-                from->error = SYN_RGX_BAD_FLAG_FAIL;
-                goto nt_error;
-            }
-            ret.type = TKN_REGEX;
-            ret.raw_len = raw.count;
-            ret.raw = sb_into_string(raw);
-            if (!ret.raw) {
-                from->error = NT_SB_FREE_COPY_FAIL;
-                goto nt_error;
-            }
-            *out = ret;
-            return true;
+            return get_regex(from, raw, ret, out);
         }
     }
     while (!is_ws(next_char) && !tknr_end(from)) {
@@ -665,7 +676,7 @@ bool tknr_next(Tokenizer from, struct Token *out) {
     }
     *out = ret;
     return true;
-nt_error:;
+error:;
     sb_free(&raw);
     tkn_free(&ret);
     return false;
