@@ -101,7 +101,7 @@ char *tkn_type_name(struct Token t) {
     abort();
 }
 
-enum token_type_e tkn_type(struct Token t) {
+enum TokenType tkn_type(struct Token t) {
     return t.type;
 }
 

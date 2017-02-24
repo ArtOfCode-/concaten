@@ -16,7 +16,7 @@
 struct Tokenizer;
 typedef struct Tokenizer *Tokenizer;
 
-enum token_type_e {
+enum TokenType {
     TKN_UNKNOWN, TKN_WORD, TKN_STRING, TKN_REGEX,
     TKN_INTEGER, TKN_REAL, TKN_IDENTIFIER
 };
@@ -26,11 +26,11 @@ struct Token {
     char *origin;
     size_t origin_len;
     size_t line, index;
-    enum token_type_e type;
+    enum TokenType type;
 };
 
 bool tkn_copy(struct Token, struct Token *);
-enum token_type_e tkn_type(struct Token);
+enum TokenType tkn_type(struct Token);
 char *tkn_type_name(struct Token);
 char *tkn_origin(struct Token);
 size_t tkn_line(struct Token);
