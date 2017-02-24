@@ -31,12 +31,7 @@ struct Token {
 
 struct Token tkn_empty(size_t line, size_t index);
 bool tkn_copy(struct Token, struct Token *);
-enum TokenType tkn_type(struct Token);
 char *tkn_type_name(struct Token);
-char *tkn_origin(struct Token);
-size_t tkn_line(struct Token);
-size_t tkn_index(struct Token);
-char *tkn_raw(struct Token);
 void tkn_free(struct Token *);
 // object_t tkn_value(Token) // defined in object.h
 

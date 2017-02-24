@@ -101,28 +101,6 @@ char *tkn_type_name(struct Token t) {
     abort();
 }
 
-enum TokenType tkn_type(struct Token t) {
-    return t.type;
-}
-
-//char *tkn_type_name(Token);
-
-char *tkn_origin(struct Token t) {
-    return t.origin;
-}
-
-size_t tkn_line(struct Token t) {
-    return t.line;
-}
-
-size_t tkn_index(struct Token t) {
-    return t.index;
-}
-
-char *tkn_raw(struct Token t) {
-    return t.raw;
-}
-
 void tkn_free(struct Token *t) {
     free(t->raw);
     t->raw = NULL;
