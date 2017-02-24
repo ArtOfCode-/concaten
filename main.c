@@ -8,9 +8,9 @@
 enum FailType {
     FT_SUCCESS = 0,
     FT_WRONG_ERR = 1,
-    FT_TOO_MANY_TOKENS = FT_WRONG_ERR << 1,
-    FT_TOO_FEW_TOKENS = FT_TOO_MANY_TOKENS << 1,
-    FT_WRONG_TYPE = FT_TOO_FEW_TOKENS << 1
+    FT_LESS_TOKENS = FT_WRONG_ERR << 1,
+    FT_MORE_TOKENS = FT_LESS_TOKENS << 1,
+    FT_WRONG_TYPE = FT_MORE_TOKENS << 1
 };
 struct TestSpec {
     int code;
@@ -53,8 +53,8 @@ struct TestResult test(const struct TestSpec ts) {
     err = tknr_err(t);
 end:;
     gettimeofday(&stop, NULL);
-    if (count > ts.types_count) res |= FT_TOO_MANY_TOKENS;
-    if (count < ts.types_count) res |= FT_TOO_FEW_TOKENS;
+    if (count > ts.types_count) res |= FT_LESS_TOKENS;
+    if (count < ts.types_count) res |= FT_MORE_TOKENS;
     if (!tknr_end(t)) {
         if (next.type != ts.types[count - 1]) res |= FT_WRONG_TYPE;
         tknr_free(t);
@@ -122,9 +122,9 @@ int main() {
             ++fails;
             printf("Failure in %lu usec. Details:\n", res.usec);
             // todo details for each of these
-            if (res.result & FT_TOO_FEW_TOKENS) printf(" Too few tokens parsed. (%zu, not %zu)\n",
+            if (res.result & FT_MORE_TOKENS) printf(" Too few tokens parsed. (%zu, not %zu)\n",
                                                        res.count, current.types_count);
-            if (res.result & FT_TOO_MANY_TOKENS) printf(" Too many tokens parsed. (%zu, not %zu)\n",
+            if (res.result & FT_LESS_TOKENS) printf(" Too many tokens parsed. (%zu, not %zu)\n",
                                                         res.count, current.types_count);
             if (res.result & FT_WRONG_ERR) printf(" Unexpected error code received. (%d, not %d)\n",
                                                   res.code, current.code);
