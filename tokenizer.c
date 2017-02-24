@@ -108,34 +108,6 @@ void tkn_free(struct Token *t) {
     t->origin = NULL;
 }
 
-struct FileSource {
-    FILE *fptr;
-    unsigned char next_chars[TKNR_FILE_BUF_SIZE];
-    size_t next_chars_pos;
-    size_t eof; // if we're at EOF, this marks where in next_chars it is
-};
-
-struct StringSource {
-    char *begin;
-    char *end;
-    char *cur_pos;
-};
-
-struct Tokenizer {
-    union {
-        struct StringSource string;
-        struct FileSource file;
-    } source;
-    bool is_from_file;
-    char next_char;
-    char *origin;
-    size_t origin_len;
-    size_t line, index;
-    int error;
-    
-    bool just_started;
-};
-
 char read_char(Tokenizer reading);
 
 Tokenizer tknr_from_string(const char *mem, const char *origin) {
