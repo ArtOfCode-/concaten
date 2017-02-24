@@ -14,20 +14,22 @@ enum FailType {
 };
 struct TestSpec {
     int code;
-    enum TokenType *types;
     size_t types_count;
     const char *source;
     bool is_from_file;
+    enum TokenType *types;
 };
 struct TestResult {
     enum FailType result;
+    enum TokenType last_token_type;
     int code;
     long usec;
+    size_t count;
 };
 struct TestResult test(const struct TestSpec ts) {
     int err = 0;
     struct timeval start, stop;
-    struct Token next;
+    struct Token next = tkn_empty(0, 0);
     size_t count = 0;
     enum FailType res = FT_SUCCESS;
     Tokenizer t;
@@ -44,7 +46,7 @@ struct TestResult test(const struct TestSpec ts) {
         if (count > ts.types_count) {
             break;
         }
-        if (next.type != ts.types[count - 1]) {
+        if (ts.types && (next.type != ts.types[count - 1])) {
             break;
         }
     }
@@ -53,85 +55,28 @@ end:;
     gettimeofday(&stop, NULL);
     if (count > ts.types_count) res |= FT_TOO_MANY_TOKENS;
     if (count < ts.types_count) res |= FT_TOO_FEW_TOKENS;
-    if (next.type != ts.types[count - 1]) res |= FT_WRONG_TYPE;
+    if (!tknr_end(t)) {
+        if (next.type != ts.types[count - 1]) res |= FT_WRONG_TYPE;
+        tknr_free(t);
+    }
     if (ts.code != err) res |= FT_WRONG_ERR;
     struct TestResult ret = (struct TestResult) {
             .result = res,
             .usec = stop.tv_usec - start.tv_usec,
-            .code = tknr_err(t)
+            .code = tknr_err(t),
+            .last_token_type = next.type,
+            .count = count
     };
-    tknr_free(t);
     tkn_free(&next);
     return ret;
 }
 
-size_t string_tests() {
-    // TODO test edge cases
-    const char *tests[] = {
-            "", "\"ends early", "r/ends early",
-            "bad-digit 0x123gi", "bad-digit 0b123",
-            "bad-digit 0o678", "r/bad flag/gli",
-            "success: \"string\" 42 0x1Fe94\n"
-            "0b11001 0o127635 1.2e3\n"
-            ":foobar foobar2\n"
-            "r/asdf boofar/xgi"
-    };
-    size_t test_count = sizeof(tests) / sizeof(char *);
-    for (size_t i = 0; i < test_count; ++i) {
-        printf("String test case #%zu:\n", i + 1);
-        puts(tests[i]);
-        puts("---");
-        const char *test_string = tests[i];
-        Tokenizer tknr = tknr_from_string(test_string, "test");
-        int err = tknr_err(tknr);
-        if (err != 0) {
-            printf(" Error %d occured when initializing.\n", err);
-            continue;
-        }
-        struct Token next;
-        while (tknr_next(tknr, &next)) {
-            printf(" `%s` (%s - %d) at %s@%zu:%zu\n", tkn_raw(next), tkn_type_name(next),
-                   tkn_type(next), tkn_origin(next), tkn_line(next), tkn_index(next));
-            tkn_free(&next);
-        }
-        err = tknr_err(tknr);
-        if (err != 0) {
-            printf(" Error %d occured while tokenizing.\n", err);
-        }
-        tknr_free(tknr);
-        puts("---");
-    }
-    return test_count;
-}
-
-size_t file_tests() {
-    // TODO test edge cases
-    char *test_paths[] = {
-            "test.ctn"
-    };
-    size_t test_count = sizeof(test_paths) / sizeof(char *);
-    for (size_t i = 0; i < test_count; ++i) {
-        printf("File test case #%zu: %s\n", i + 1, test_paths[i]);
-        Tokenizer tknr = tknr_from_filepath(test_paths[i]);
-        int err = tknr_err(tknr);
-        if (err != 0) {
-            printf(" Error %d occured when initializing.\n", err);
-            continue;
-        }
-        struct Token next;
-        while (tknr_next(tknr, &next)) {
-            printf(" `%s` (%s - %d) at %s@%zu:%zu\n", tkn_raw(next), tkn_type_name(next),
-                   tkn_type(next), tkn_origin(next), tkn_line(next), tkn_index(next));
-            tkn_free(&next);
-        }
-        err = tknr_err(tknr);
-        if (err != 0) {
-            printf(" Error %d occured while tokenizing.\n", err);
-        }
-        tknr_free(tknr);
-        puts("---");
-    }
-    return test_count;
+#define steste(_source, _code) (struct TestSpec) { \
+    .source = _source, \
+    .code = _code, \
+    .types = (enum TokenType[]){ }, \
+    .types_count = 0, \
+    .is_from_file = false \
 }
 
 int main() {
@@ -140,45 +85,55 @@ int main() {
     // this will reduce code duplication and make it easy to track how many unit tests fail
     
     struct TestSpec tests[] = {
+            steste("", 1112),
+            steste("\"ends early", 1502),
+            steste("r/ends early", 1502),
             (struct TestSpec) {
-                    .source = "",
+                    .source = "success: \"string\" 42 0x1Fe94\n"
+                              "0b11001 0o127635 1.2e3\n"
+                              ":foobar foobar2\n"
+                              "r/asdf boofar/xgi",
                     .is_from_file = false,
-                    .code = 1112,
-                    .types = NULL,
-                    .types_count = 0
+                    .code = 0,
+                    .types = (enum TokenType[]) {
+                            TKN_WORD, TKN_WORD, TKN_WORD, TKN_WORD,
+                            TKN_WORD, TKN_INTEGER, TKN_WORD, TKN_WORD,
+                            TKN_WORD, TKN_WORD, TKN_INTEGER, TKN_WORD, TKN_WORD,
+                    },
+                    .types_count = 72
             },
             (struct TestSpec) {
-                    .source = "\"ends early",
-                    .is_from_file = false,
+                    .source = "test.ctn",
+                    .is_from_file = true,
+                    .code = 0,
                     .types = NULL,
-                    .types_count = 0,
-                    .code = 1502
-            },
-            (struct TestSpec) {
-                    .source = "r/ends early",
-                    .is_from_file = false,
-                    .types = NULL,
-                    .types_count = 0,
-                    .code = 1502
+                    .types_count = 72
             }
     };
     size_t total = sizeof(tests) / sizeof(struct TestSpec);
     size_t fails = 0;
-    for (size_t i; i < total; ++i) {
+    for (size_t i = 0; i < total; ++i) {
         struct TestSpec current = tests[i];
-        printf("Test case %zu from %s:", i, current.is_from_file ? "file" : "string");
+        printf("Test case %zu from %s:\n", i + 1, current.is_from_file ? "file" : "string");
         puts(tests[i].source);
+        puts("---");
         struct TestResult res = test(tests[i]);
         if (res.result != FT_SUCCESS) {
             ++fails;
-            printf("Tokenizer error %d (expected %d). Details:\n", res.code, current.code);
+            printf("Failure in %lu usec. Details:\n", res.usec);
             // todo details for each of these
-            if (res.result & FT_TOO_FEW_TOKENS) printf(" Too few tokens parsed.\n");
-            if (res.result & FT_TOO_MANY_TOKENS) printf(" Too many tokens parsed.\n");
+            if (res.result & FT_TOO_FEW_TOKENS) printf(" Too few tokens parsed. (%zu, not %zu)\n",
+                                                       res.count, current.types_count);
+            if (res.result & FT_TOO_MANY_TOKENS) printf(" Too many tokens parsed. (%zu, not %zu)\n",
+                                                        res.count, current.types_count);
             if (res.result & FT_WRONG_ERR) printf(" Unexpected error code received. (%d, not %d)\n",
                                                   res.code, current.code);
             if (res.result & FT_WRONG_TYPE) printf(" Unexpected token type received. (%d, not %d)\n",
-                                                   foo, current.code); // todo add those data
+                                                   res.last_token_type, current.types[res.count - 1]);
+        } else {
+            printf("Success in %lu usec\n", res.usec);
         }
+        puts("---");
     }
+    printf("%zu/%zu failed.", fails, total);
 }

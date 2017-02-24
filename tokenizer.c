@@ -41,7 +41,7 @@
 // define SYN_RGX_FAIL                  1530
 #   define SYN_RGX_BAD_FLAG_FAIL         1531
 
-struct Token tkn_new(size_t line, size_t index) {
+struct Token tkn_empty(size_t line, size_t index) {
     return (struct Token) {
             .type = TKN_UNKNOWN,
             .index = index,
@@ -634,7 +634,7 @@ bool tknr_next(Tokenizer from, struct Token *out) {
     }
     
     struct StringBuilder raw = sb_new();
-    struct Token ret = tkn_new(from->line, from->index);
+    struct Token ret = tkn_empty(from->line, from->index);
     ret.origin = malloc(from->origin_len * sizeof(char));
     if (!ret.origin) {
         from->error = NT_MALLOC_FAIL;

@@ -10,5 +10,6 @@
 
 [[ "foo" 12 ][ "asdf" 91 ][ "cuckoo clock" 8 ]]
 dup *puts
+# 50
 { "%d is the rating of %s" format puts } each
 [ "a" "bc" "def" "ghij" "klmno" "pqrstu" "vwxyz" ] { length < 3 } select *puts

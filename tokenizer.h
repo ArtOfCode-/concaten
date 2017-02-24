@@ -29,6 +29,7 @@ struct Token {
     enum TokenType type;
 };
 
+struct Token tkn_empty(size_t line, size_t index);
 bool tkn_copy(struct Token, struct Token *);
 enum TokenType tkn_type(struct Token);
 char *tkn_type_name(struct Token);
