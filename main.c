@@ -88,6 +88,7 @@ void test_tokenizer() {
             steste("", 1112),
             steste("\"ends early", 1502),
             steste("r/ends early", 1502),
+            // TODO bad digit tests
             (struct TestSpec) {
                     .source = "success: \"string\" 42 0x1Fe94\n"
                             "0b11001 0o127635 1.2e3 # Hello!\n"
@@ -141,4 +142,5 @@ void test_tokenizer() {
 
 int main() {
     test_tokenizer();
+    // TODO test_prop_map();
 }

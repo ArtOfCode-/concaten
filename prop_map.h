@@ -15,4 +15,6 @@ struct PropMap {
     Bucket *buckets;
 };
 
+// TODO finish this
+
 #endif //CONCATEN_PROP_MAP_H
