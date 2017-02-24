@@ -96,11 +96,12 @@ int main() {
                     .is_from_file = false,
                     .code = 0,
                     .types = (enum TokenType[]) {
-                            TKN_WORD, TKN_WORD, TKN_WORD, TKN_WORD,
-                            TKN_WORD, TKN_INTEGER, TKN_WORD, TKN_WORD,
-                            TKN_WORD, TKN_WORD, TKN_INTEGER, TKN_WORD, TKN_WORD,
+                            TKN_WORD, TKN_STRING, TKN_INTEGER, TKN_INTEGER,
+                            TKN_INTEGER, TKN_INTEGER, TKN_REAL,
+                            TKN_IDENTIFIER, TKN_WORD,
+                            TKN_REGEX
                     },
-                    .types_count = 72
+                    .types_count = 10
             },
             (struct TestSpec) {
                     .source = "test.ctn",
@@ -123,9 +124,9 @@ int main() {
             printf("Failure in %lu usec. Details:\n", res.usec);
             // todo details for each of these
             if (res.result & FT_MORE_TOKENS) printf(" Too few tokens parsed. (%zu, not %zu)\n",
-                                                       res.count, current.types_count);
+                                                    res.count, current.types_count);
             if (res.result & FT_LESS_TOKENS) printf(" Too many tokens parsed. (%zu, not %zu)\n",
-                                                        res.count, current.types_count);
+                                                    res.count, current.types_count);
             if (res.result & FT_WRONG_ERR) printf(" Unexpected error code received. (%d, not %d)\n",
                                                   res.code, current.code);
             if (res.result & FT_WRONG_TYPE) printf(" Unexpected token type received. (%d, not %d)\n",

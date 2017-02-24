@@ -344,7 +344,7 @@ bool is_ws(char c) {
 
 bool skip_ws(Tokenizer from) {
     bool skipped = false;
-    while (is_ws(peek_char(from))) {
+    while (is_ws(peek_char(from)) && !tknr_end(from)) {
         skipped = true;
         read_char(from);
     }
@@ -355,7 +355,9 @@ bool skip_slc(Tokenizer from) {
     if (peek_char(from) != '#') {
         return false;
     }
-    while (peek_char(from) != '\n') read_char(from);
+    while (peek_char(from) != '\n' && !tknr_end(from)) {
+        read_char(from);
+    }
     read_char(from); // take the newline
     return true;
 }
