@@ -79,7 +79,7 @@ end:;
     .is_from_file = false \
 }
 
-int main() {
+void test_tokenizer() {
     // TODO thoroughly test tokenizer (file > memory)
     // TODO better test framework (pass in just-created tokenizer, expected error, etc., get success/fail)
     // this will reduce code duplication and make it easy to track how many unit tests fail
@@ -90,9 +90,9 @@ int main() {
             steste("r/ends early", 1502),
             (struct TestSpec) {
                     .source = "success: \"string\" 42 0x1Fe94\n"
-                              "0b11001 0o127635 1.2e3\n"
-                              ":foobar foobar2\n"
-                              "r/asdf boofar/xgi",
+                            "0b11001 0o127635 1.2e3 # Hello!\n"
+                            ":foobar foobar2\n"
+                            "r/asdf boofar/xgi",
                     .is_from_file = false,
                     .code = 0,
                     .types = (enum TokenType[]) {
@@ -137,4 +137,8 @@ int main() {
         puts("---");
     }
     printf("%zu/%zu failed.", fails, total);
+}
+
+int main() {
+    test_tokenizer();
 }
