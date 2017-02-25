@@ -34,13 +34,16 @@ struct TestResult test(const struct TestSpec ts) {
     enum FailType res = FT_SUCCESS;
     struct Tokenizer t;
     gettimeofday(&start, NULL);
-    err = ts.is_from_file
-        ? tknr_from_filepath(ts.source, &t)
-        : tknr_from_string(ts.source, "<test>", &t);
+    if (ts.is_from_file) {
+        t = tknr_from_filepath(ts.source);
+    } else {
+        t = tknr_from_string(ts.source, "<test>");
+    }
+    err = t.error;
     if (err) {
         goto end;
     }
-    while ((err = tknr_next(&t, &next)) == 0) {
+    while (tknr_next(&t, &next)) {
         ++count;
         if (count > ts.types_count) {
             break;
@@ -54,7 +57,7 @@ end:;
     gettimeofday(&stop, NULL);
     if (count > ts.types_count) res |= FT_LESS_TOKENS;
     if (count < ts.types_count) res |= FT_MORE_TOKENS;
-    if (!tknr_end(&t)) {
+    if (ts.types && !tknr_end(&t)) {
         if (next.type != ts.types[count - 1]) res |= FT_WRONG_TYPE;
         tknr_free(&t);
     }
