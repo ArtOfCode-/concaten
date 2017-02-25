@@ -32,16 +32,15 @@ struct TestResult test(const struct TestSpec ts) {
     struct Token next = tkn_empty(0, 0);
     size_t count = 0;
     enum FailType res = FT_SUCCESS;
-    Tokenizer t;
+    struct Tokenizer t;
     gettimeofday(&start, NULL);
-    t = ts.is_from_file
-        ? tknr_from_filepath(ts.source)
-        : tknr_from_string(ts.source, "<test>");
-    err = tknr_err(t);
+    err = ts.is_from_file
+        ? tknr_from_filepath(ts.source, &t)
+        : tknr_from_string(ts.source, "<test>", &t);
     if (err) {
         goto end;
     }
-    while (tknr_next(t, &next)) {
+    while ((err = tknr_next(&t, &next)) == 0) {
         ++count;
         if (count > ts.types_count) {
             break;
@@ -50,20 +49,20 @@ struct TestResult test(const struct TestSpec ts) {
             break;
         }
     }
-    err = tknr_err(t);
+    err = t.error;
 end:;
     gettimeofday(&stop, NULL);
     if (count > ts.types_count) res |= FT_LESS_TOKENS;
     if (count < ts.types_count) res |= FT_MORE_TOKENS;
-    if (!tknr_end(t)) {
+    if (!tknr_end(&t)) {
         if (next.type != ts.types[count - 1]) res |= FT_WRONG_TYPE;
-        tknr_free(t);
+        tknr_free(&t);
     }
     if (ts.code != err) res |= FT_WRONG_ERR;
     struct TestResult ret = (struct TestResult) {
             .result = res,
             .usec = stop.tv_usec - start.tv_usec,
-            .code = tknr_err(t),
+            .code = t.error,
             .last_token_type = next.type,
             .count = count
     };

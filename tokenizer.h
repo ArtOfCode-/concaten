@@ -38,7 +38,6 @@ struct Tokenizer {
     
     bool just_started;
 };
-typedef struct Tokenizer *Tokenizer;
 
 enum TokenType {
     TKN_UNKNOWN, TKN_WORD, TKN_STRING, TKN_REGEX,
@@ -55,16 +54,15 @@ struct Token {
 
 struct Token tkn_empty(size_t line, size_t index);
 bool tkn_copy(struct Token, struct Token *);
-char *tkn_type_name(struct Token);
+char *tkn_type_name(int);
 void tkn_free(struct Token *);
 // object_t tkn_value(Token) // defined in object.h
 
-Tokenizer tknr_from_string(const char *, const char *origin);
-Tokenizer tknr_from_filepath(const char *path);
-bool tknr_next(Tokenizer, struct Token *);
-int tknr_err(Tokenizer);
+int tknr_from_string(const char *, const char *origin, struct Tokenizer *);
+int tknr_from_filepath(const char *path, struct Tokenizer *);
+bool tknr_next(struct Tokenizer *, struct Token *);
 char *tknr_err_to_string(int);
-bool tknr_end(Tokenizer);
-void tknr_free(Tokenizer);
+bool tknr_end(struct Tokenizer *);
+void tknr_free(struct Tokenizer *);
 
 #endif // ndef CONCATEN_TOKENIZER_H
