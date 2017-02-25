@@ -8,3 +8,10 @@ cmake-build-*/
 *.stackdump
 
 test.c
+
+*.cmake
+*.txt
+*.exe
+*.cbp
+Makefile
+-CMakeLists.txt
