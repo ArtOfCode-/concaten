@@ -58,8 +58,8 @@ char *tkn_type_name(int);
 void tkn_free(struct Token *);
 // object_t tkn_value(Token) // defined in object.h
 
-int tknr_from_string(const char *, const char *origin, struct Tokenizer *);
-int tknr_from_filepath(const char *path, struct Tokenizer *);
+struct Tokenizer tknr_from_string(const char *, const char *origin);
+struct Tokenizer tknr_from_filepath(const char *path);
 bool tknr_next(struct Tokenizer *, struct Token *);
 char *tknr_err_to_string(int);
 bool tknr_end(struct Tokenizer *);

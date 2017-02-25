@@ -110,7 +110,8 @@ void tkn_free(struct Token *t) {
 }
 
 char read_char(struct Tokenizer *);
-int tknr_from_string(const char *mem, const char *origin, struct Tokenizer *out) {
+
+struct Tokenizer tknr_from_string(const char *mem, const char *origin) {
     struct Tokenizer ret = (struct Tokenizer) {
             .origin = NULL,
             .is_from_file = false,
@@ -125,18 +126,21 @@ int tknr_from_string(const char *mem, const char *origin, struct Tokenizer *out)
     };
     
     if (!mem || !origin) {
-        return CTOR_STR_NULL_ARG_FAIL;
+        ret.error = CTOR_STR_NULL_ARG_FAIL;
+        return ret;
     }
     size_t mem_len = strlen(mem);
     size_t origin_len = strlen(origin);
     if (!mem_len || !origin_len) {
-        return CTOR_STR_BAD_STRLEN_FAIL;
+        ret.error = CTOR_STR_BAD_STRLEN_FAIL;
+        return ret;
     }
     
     // .source
     char *mem_c = malloc(mem_len + 1);
     if (!mem_c) {
-        return CTOR_STR_MALLOC_FAIL;
+        ret.error = CTOR_STR_MALLOC_FAIL;
+        return ret;
     }
     strcpy(mem_c, mem);
     ret.source.string = (struct StringSource) {
@@ -149,7 +153,8 @@ int tknr_from_string(const char *mem, const char *origin, struct Tokenizer *out)
     char *origin_c = malloc(origin_len * sizeof(char) + 1);
     if (!origin_c) {
         free(ret.source.string.begin);
-        return CTOR_STR_MALLOC_FAIL;
+        ret.error = CTOR_STR_MALLOC_FAIL;
+        return ret;
     }
     strcpy(origin_c, origin);
     ret.origin = origin_c;
@@ -158,11 +163,10 @@ int tknr_from_string(const char *mem, const char *origin, struct Tokenizer *out)
     ret.line = 1;
     ret.index = 0;
     
-    *out = ret;
-    return 0;
+    return ret;
 }
 
-int tknr_from_filepath(const char *path, struct Tokenizer *out) {
+struct Tokenizer tknr_from_filepath(const char *path) {
     struct Tokenizer ret = (struct Tokenizer) {
             .origin = NULL,
             .source.file = (struct FileSource) {
@@ -178,17 +182,20 @@ int tknr_from_filepath(const char *path, struct Tokenizer *out) {
     };
     
     if (!path) {
-        return CTOR_FILE_NULL_ARG_FAIL;
+        ret.error = CTOR_FILE_NULL_ARG_FAIL;
+        return ret;
     }
     size_t path_len = strlen(path);
     if (!path_len) {
-        return CTOR_FILE_BAD_STRLEN_FAIL;
+        ret.error = CTOR_FILE_BAD_STRLEN_FAIL;
+        return ret;
     }
     
     // .source
     FILE *fptr = fopen(path, "rb");
     if (!fptr) {
-        return CTOR_FILE_FOPEN_FAIL;
+        ret.error = CTOR_FILE_FOPEN_FAIL;
+        return ret;
     }
     ret.source.file.fptr = fptr;
     
@@ -196,7 +203,8 @@ int tknr_from_filepath(const char *path, struct Tokenizer *out) {
     char *path_c = malloc(path_len * sizeof(char) + 1);
     if (!path_c) {
         fclose(fptr);
-        return CTOR_FILE_MALLOC_FAIL;
+        ret.error = CTOR_FILE_MALLOC_FAIL;
+        return ret;
     }
     strcpy(path_c, path);
     ret.origin = path_c;
@@ -210,7 +218,8 @@ int tknr_from_filepath(const char *path, struct Tokenizer *out) {
             fclose(fptr);
             free(ret.origin);
             ret.origin = NULL;
-            return FILE_READ_FAIL;
+            ret.error = FILE_READ_FAIL;
+            return ret;
         }
     }
     ret.next_char = fs->next_chars[0];
@@ -219,8 +228,7 @@ int tknr_from_filepath(const char *path, struct Tokenizer *out) {
     ret.line = 1;
     ret.index = 0;
     
-    *out = ret;
-    return 0;
+    return ret;
 }
 
 void tknr_free(struct Tokenizer *freeing) {
