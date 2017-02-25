@@ -14,7 +14,7 @@ enum FailType {
 };
 struct TestSpec {
     int code;
-    size_t types_count;
+    size_t token_count;
     const char *source;
     bool is_from_file;
     enum TokenType *types;
@@ -45,7 +45,7 @@ struct TestResult test(const struct TestSpec ts) {
     }
     while (tknr_next(&t, &next)) {
         ++count;
-        if (count > ts.types_count) {
+        if (count > ts.token_count) {
             break;
         }
         if (ts.types && (next.type != ts.types[count - 1])) {
@@ -55,8 +55,8 @@ struct TestResult test(const struct TestSpec ts) {
     err = t.error;
 end:;
     gettimeofday(&stop, NULL);
-    if (count > ts.types_count) res |= FT_LESS_TOKENS;
-    if (count < ts.types_count) res |= FT_MORE_TOKENS;
+    if (count > ts.token_count) res |= FT_LESS_TOKENS;
+    if (count < ts.token_count) res |= FT_MORE_TOKENS;
     if (ts.types && !tknr_end(&t)) {
         if (next.type != ts.types[count - 1]) res |= FT_WRONG_TYPE;
         tknr_free(&t);
@@ -73,24 +73,26 @@ end:;
     return ret;
 }
 
-#define steste(_source, _code) (struct TestSpec) { \
+#define stest_e(_source, _code) (struct TestSpec) { \
     .source = _source, \
     .code = _code, \
     .types = (enum TokenType[]){ }, \
-    .types_count = 0, \
+    .token_count = 0, \
+    .is_from_file = false \
+}
+#define stest_bd(_source) (struct TestSpec) { \
+    .source = _source, \
+    .code = 1521, \
+    .types = NULL, \
+    .token_count = 0, \
     .is_from_file = false \
 }
 
 void test_tokenizer() {
-    // TODO thoroughly test tokenizer (file > memory)
-    // TODO better test framework (pass in just-created tokenizer, expected error, etc., get success/fail)
-    // this will reduce code duplication and make it easy to track how many unit tests fail
-    
     struct TestSpec tests[] = {
-            steste("", 1112),
-            steste("\"ends early", 1502),
-            steste("r/ends early", 1502),
-            // TODO bad digit tests
+            stest_e("", 1112),
+            stest_e("\"ends early", 1502), stest_e("r/ends early", 1502),
+            stest_bd("0b012"), stest_bd("0x1fg"), stest_bd("0o178"), stest_bd("1f"),
             (struct TestSpec) {
                     .source = "success: \"string\" 42 0x1Fe94\n"
                             "0b11001 0o127635 1.2e3 # Hello!\n"
@@ -104,14 +106,14 @@ void test_tokenizer() {
                             TKN_IDENTIFIER, TKN_WORD,
                             TKN_REGEX
                     },
-                    .types_count = 10
+                    .token_count = 10
             },
             (struct TestSpec) {
                     .source = "test.ctn",
                     .is_from_file = true,
                     .code = 0,
                     .types = NULL,
-                    .types_count = 72
+                    .token_count = 72
             }
     };
     size_t total = sizeof(tests) / sizeof(struct TestSpec);
@@ -125,15 +127,15 @@ void test_tokenizer() {
         if (res.result != FT_SUCCESS) {
             ++fails;
             printf("Failure in %lu usec. Details:\n", res.usec);
-            // todo details for each of these
             if (res.result & FT_MORE_TOKENS) printf(" Too few tokens parsed. (%zu, not %zu)\n",
-                                                    res.count, current.types_count);
+                                                    res.count, current.token_count);
             if (res.result & FT_LESS_TOKENS) printf(" Too many tokens parsed. (%zu, not %zu)\n",
-                                                    res.count, current.types_count);
+                                                    res.count, current.token_count);
             if (res.result & FT_WRONG_ERR) printf(" Unexpected error code received. (%d, not %d)\n",
                                                   res.code, current.code);
-            if (res.result & FT_WRONG_TYPE) printf(" Unexpected token type received. (%d, not %d)\n",
-                                                   res.last_token_type, current.types[res.count - 1]);
+            if (res.result & FT_WRONG_TYPE) printf(" Unexpected token type received. (%s, not %s)\n",
+                                                   tkn_type_name(res.last_token_type),
+                                                   tkn_type_name(current.types[res.count - 1]));
         } else {
             printf("Success in %lu usec\n", res.usec);
         }
