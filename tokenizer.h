@@ -12,7 +12,6 @@
 # error TKNR_FILE_BUF_SIZE cannot be <= 0
 #endif
 
-// TODO 2 down, one to go...
 struct FileSource {
     FILE *fptr;
     unsigned char next_chars[TKNR_FILE_BUF_SIZE];
@@ -53,7 +52,6 @@ struct Token {
 };
 
 struct Token tkn_empty(size_t line, size_t index);
-bool tkn_copy(struct Token, struct Token *);
 char *tkn_type_name(int);
 void tkn_free(struct Token *);
 // object_t tkn_value(Token) // defined in object.h

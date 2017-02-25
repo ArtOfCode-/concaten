@@ -53,34 +53,6 @@ struct Token tkn_empty(size_t line, size_t index) {
     };
 }
 
-bool tkn_copy(struct Token copying, struct Token *into) {
-    struct Token ret = (struct Token) {
-            .index = copying.index,
-            .line = copying.line,
-            .origin = NULL,
-            .origin_len = copying.origin_len,
-            .raw = NULL,
-            .raw_len = copying.origin_len,
-            .type = copying.type
-    };
-    ret.raw = malloc(copying.raw_len);
-    if (!ret.raw) {
-        return false;
-    }
-    memcpy(ret.raw, copying.raw, copying.raw_len);
-    ret.origin = malloc(copying.origin_len);
-    if (!ret.origin) {
-        free(ret.raw);
-        return false;
-    }
-    memcpy(ret.origin, copying.origin, copying.origin_len);
-    ret.index = copying.index;
-    ret.line = copying.index;
-    ret.type = copying.type;
-    *into = ret;
-    return true;
-}
-
 char *tkn_type_name(int t) {
     switch (t) {
         case TKN_UNKNOWN:
@@ -563,7 +535,6 @@ error:;
     return false;
 }
 
-// TODO Look through for any possible code prettifications. this is ugly.
 bool tknr_next(struct Tokenizer *from, struct Token *out) {
     if (from->error) {
         ERROR(from->error);
