@@ -9,9 +9,3 @@ cmake-build-*/
 
 test.c
 
-*.cmake
-*.txt
-*.exe
-*.cbp
-Makefile
--CMakeLists.txt
