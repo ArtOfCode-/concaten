@@ -1,4 +1,4 @@
-##Concaten v0.1.0
+##Concaten v0.1.1.0
 
 Concaten is a concatenative, stack-based, optionally strictly but always strongly typed programming language.
 
@@ -20,12 +20,12 @@ I'm working on right now.
 The building block of the language. In Concaten, everything is either a token (an instruction to the parser)
 or an object (data stored by the parser). Even words, Concaten's equivalent for functions, are objects.
 
-- [ ] `prop_map.h` - 0.1.0
+- [x] `prop_map.h` - 0.1.0
   * PropMap is the property map in `Object`s. It'll also serve nicely as the template from which to draw
     when I'm writing `MethodMap` and, possibly, `ScopeStack` (much later)
   * [x] Define interface
-  * [ ] Implement methods
-  * [ ] Test methods
+  * [x] Implement methods
+  * [x] Test methods
 - [ ] `method_map.h` - 0.1.1
   * Should be mostly the same as `prop_map`, with a different value.
   * [ ] Define interface (if different)

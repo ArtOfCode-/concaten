@@ -140,6 +140,7 @@ bool pm_is_value(const struct PropMap pm, PM_VALUE_TYPE v) {
 
 // doesn't do any preexistence-checking, just bounds.
 // will produce duplicate keys if not used carefully!
+// but also marginally faster.
 bool raw_add(struct PropMap *pm, const char *key, PM_VALUE_TYPE val) {
     size_t bucket_idx = hash(key) % pm->bucket_count;
     struct Bucket *bk = &pm->buckets[bucket_idx];
@@ -154,7 +155,6 @@ bool raw_add(struct PropMap *pm, const char *key, PM_VALUE_TYPE val) {
     return true;
 }
 
-// this is the meat of the hashmap
 bool pm_rehash(struct PropMap *pm, size_t new_size) {
     if (new_size < pm->bucket_count) return false;
     struct PropMap new = pm_new(new_size);
