@@ -170,3 +170,8 @@ bool pm_rehash(struct PropMap *pm, size_t new_size) {
     *pm = new;
     return true;
 }
+
+void pm_free(struct PropMap *pm) {
+    free(pm->buckets);
+    pm->buckets = NULL;
+}
