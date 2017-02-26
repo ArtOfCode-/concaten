@@ -87,7 +87,6 @@ end:;
     .token_count = 0, \
     .is_from_file = false \
 }
-
 void test_tokenizer() {
     struct TestSpec tests[] = {
             stest_e("", 1112),
@@ -144,7 +143,11 @@ void test_tokenizer() {
     printf("%zu/%zu failed.", fails, total);
 }
 
+void test_prop_map() {
+    
+}
+
 int main() {
     test_tokenizer();
-    // TODO test_prop_map();
+    test_prop_map();
 }
