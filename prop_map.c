@@ -3,18 +3,9 @@
 #include <stdlib.h>
 #include <string.h>
 
-// if any 1 bucket is > this size, rehash
-#define MAX_BUCKET_DEPTH 8
-// if more than 1/2 the buckets are > this size, rehash
-#define PREF_BUCKET_DEPTH 4
 // the amount by which we increase the map's capacity each time
 #define LOAD_FACTOR 2
 
-struct KeyValPair {
-    const char *key;
-    size_t key_len;
-    PROP_MAP_VAL val;
-};
 struct KeyValPair kvp_zero() {
     return (struct KeyValPair) {
             .key_len = 0,
@@ -22,15 +13,10 @@ struct KeyValPair kvp_zero() {
             .val = 0
     };
 }
-struct Bucket {
-    // count = last index + 1
-    size_t count;
-    struct KeyValPair items[MAX_BUCKET_DEPTH];
-};
 struct Bucket bk_zero() {
     struct Bucket ret;
     ret.count = 0;
-    for (size_t i = 0; i < MAX_BUCKET_DEPTH; ++i) {
+    for (size_t i = 0; i < PM_MAX_BUCKET_DEPTH; ++i) {
         ret.items[i] = kvp_zero();
     }
     return ret;
@@ -49,7 +35,7 @@ struct PropMap pm_new(size_t width) {
     if (!buckets) {
         return (struct PropMap) { .error = 1 };
     }
-    for (size_t i = 0; i < MAX_BUCKET_DEPTH; ++i) {
+    for (size_t i = 0; i < PM_MAX_BUCKET_DEPTH; ++i) {
         buckets[i] = bk_zero();
     }
     return (struct PropMap) {
@@ -60,8 +46,8 @@ struct PropMap pm_new(size_t width) {
     };
 }
 
-bool pm_set(struct PropMap *pm, const char *key, PROP_MAP_VAL val) {
-    if (!pm || !key || val == PROP_MAP_INVALID) return false;
+bool pm_set(struct PropMap *pm, const char *key, PM_VALUE_TYPE val) {
+    if (!pm || !key || val == PM_INVALID_VALUE) return false;
     size_t key_len = strlen(key);
     size_t idx = hash(key) % pm->bucket_count;
     struct Bucket *bucket = &pm->buckets[idx];
@@ -72,7 +58,7 @@ bool pm_set(struct PropMap *pm, const char *key, PROP_MAP_VAL val) {
             return true;
         }
     }
-    if (bucket->count == MAX_BUCKET_DEPTH) {
+    if (bucket->count == PM_MAX_BUCKET_DEPTH) {
         if (!pm_rehash(pm, pm->bucket_count * LOAD_FACTOR)) {
             return false;
         }
@@ -90,8 +76,8 @@ bool pm_set(struct PropMap *pm, const char *key, PROP_MAP_VAL val) {
     return true;
 }
 
-PROP_MAP_VAL pm_get(const struct PropMap pm, const char *key) {
-    if (pm.item_count == 0) return PROP_MAP_INVALID;
+PM_VALUE_TYPE pm_get(const struct PropMap pm, const char *key) {
+    if (pm.item_count == 0) return PM_INVALID_VALUE;
     size_t idx = hash(key) % pm.bucket_count;
     size_t key_len = strlen(key);
     struct Bucket bucket = pm.buckets[idx];
@@ -101,7 +87,7 @@ PROP_MAP_VAL pm_get(const struct PropMap pm, const char *key) {
             return bucket.items[i].val;
         }
     }
-    return PROP_MAP_INVALID;
+    return PM_INVALID_VALUE;
 }
 
 bool pm_remove(struct PropMap *pm, const char *finding) {
@@ -142,7 +128,7 @@ bool pm_is_key(const struct PropMap pm, const char *key) {
     return false;
 }
 
-bool pm_is_value(const struct PropMap pm, PROP_MAP_VAL v) {
+bool pm_is_value(const struct PropMap pm, PM_VALUE_TYPE v) {
     for (size_t bucket_idx = 0; bucket_idx < pm.bucket_count; ++bucket_idx) {
         const struct Bucket bk = pm.buckets[bucket_idx];
         for (size_t in_idx = 0; in_idx < bk.count; ++in_idx) {
@@ -154,16 +140,17 @@ bool pm_is_value(const struct PropMap pm, PROP_MAP_VAL v) {
 
 // doesn't do any preexistence-checking, just bounds.
 // will produce duplicate keys if not used carefully!
-bool raw_add(struct PropMap *pm, const char *key, PROP_MAP_VAL val) {
+bool raw_add(struct PropMap *pm, const char *key, PM_VALUE_TYPE val) {
     size_t bucket_idx = hash(key) % pm->bucket_count;
     struct Bucket *bk = &pm->buckets[bucket_idx];
-    if (bk->count == MAX_BUCKET_DEPTH) return false;
+    if (bk->count == PM_MAX_BUCKET_DEPTH) return false;
     bk->items[bk->count] = (struct KeyValPair) {
             .val = val,
             .key = key,
             .key_len = strlen(key)
     };
     ++bk->count;
+    ++pm->item_count;
     return true;
 }
 
