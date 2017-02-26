@@ -5,7 +5,7 @@
 #include <stdio.h>
 #include <sys/time.h>
 
-#include "tokenizer.h"
+#include "../tokenizer.h"
 
 enum FailType {
     FT_SUCCESS = 0,
@@ -142,5 +142,5 @@ void test_tokenizer() {
         }
         puts("---");
     }
-    printf("%zu/%zu failed.", fails, total);
+    printf("%zu/%zu failed.\n", fails, total);
 }
