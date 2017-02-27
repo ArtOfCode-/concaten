@@ -23,11 +23,13 @@ struct Bucket bk_zero() {
 }
 
 size_t hash(const char *key) {
-    // this will do for now.
-    // sure, it will be an utter failure if we try to add more
-    // than 8 items of the same length to the map, but that's
-    // something to fix later.
-    return strlen(key);
+    // taken from http://stackoverflow.com/a/7666577/1863564
+    size_t hash = 5381;
+    char c;
+    while ((c = *key++) != 0) {
+        hash = (hash * 33) ^ c;
+    }
+    return hash;
 }
 
 struct PropMap pm_new(size_t width) {
