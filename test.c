@@ -1,6 +1,9 @@
 #include "tests.h"
 
+#include <stdio.h>
+
 int main() {
-//    test_tokenizer();
+    test_tokenizer();
+    puts("");
     test_prop_map();
 }
