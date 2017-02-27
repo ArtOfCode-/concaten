@@ -22,9 +22,10 @@ or an object (data stored by the parser). Even words, Concaten's equivalent for 
 
 - [x] `prop_map.h` - 0.1.0
   * PropMap is the property map in `Object`s. It'll also serve nicely as the template from which to draw
-    when I'm writing `MethodMap` and, possibly, `ScopeStack` (much later)
+    when I'm writing `MethodMap` and, possibly, `ScopeStack` (much later).
   * [x] Define interface
-  * [x] Implement methods
+  * [x] Implement methods - NOTE: Initially implemented with `int` values, but a macro should make switching
+        those out for Object when that's complete easy.
   * [x] Test methods
 - [ ] `method_map.h` - 0.1.1
   * Should be mostly the same as `prop_map`, with a different value.
