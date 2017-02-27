@@ -15,21 +15,22 @@
 // if more than 1/2 the buckets are > this size, rehash
 #define PM_PREF_BUCKET_DEPTH 4
 
-struct KeyValPair {
+struct PM_KeyValPair {
     const char *key;
     size_t key_len;
     PM_VALUE_TYPE val;
 };
-struct Bucket {
+struct PM_Bucket {
     // count = last index + 1
     size_t count;
-    struct KeyValPair items[PM_MAX_BUCKET_DEPTH];
+    struct PM_KeyValPair items[PM_MAX_BUCKET_DEPTH];
 };
 struct PropMap {
     size_t bucket_count;
+    size_t bk_gr_pref;
     size_t item_count;
     // size_t (*hash)(const char *) // private function in .c
-    struct Bucket *buckets;
+    struct PM_Bucket *buckets;
 
     int error;
 };
