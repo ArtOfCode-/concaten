@@ -37,7 +37,6 @@ struct PropMap {
 
 struct PropMap pm_new(size_t);
 bool pm_set(struct PropMap *, const char *, PM_VALUE_TYPE);
-// TODO try_get_value?
 PM_VALUE_TYPE pm_get(const struct PropMap, const char *);
 // NB: `true` means it was removed, `false` means it wasn't there
 bool pm_remove(struct PropMap *, const char *);
