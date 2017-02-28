@@ -5,5 +5,7 @@
 int main() {
 //    test_tokenizer();
 //    puts("");
-    test_prop_map();
+//    test_prop_map();
+//    puts("");
+    test_method_map();
 }
