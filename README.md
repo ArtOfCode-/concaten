@@ -13,6 +13,10 @@ I'm working on right now.
 > some of the parts may be done, but not all of it. Major version `1` is the first completed version of
 > the language; from there, I'll iterate based on feedback and input from the users.
 
+> You may sometimes see the version as `x.x.x-[name]`. This indicates that it's not the version from the
+> master branch, but some other branch. You'll only see this in the results of `concaten --version`; it
+> doesn't appear in the git repo READMEs.
+
 ###Current milestone
 
 #### `ctn_object.h` - 0.1
