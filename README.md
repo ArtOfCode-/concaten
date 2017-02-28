@@ -31,11 +31,11 @@ or an object (data stored by the parser). Even words, Concaten's equivalent for 
   * [x] Implement methods - NOTE: Initially implemented with `int` values, but a macro should make switching
         those out for Object when that's complete easy.
   * [x] Test methods
-- [ ] `method_map.h` - 0.1.1
+- [x] `method_map.h` - 0.1.1
   * Should be mostly the same as `prop_map`, with a different value type.
   * [x] Define interface (if different)
   * [x] Implement methods (probably via copy/paste)
-  * [ ] Test methods (even if mostly similar)
+  * [x] Test methods (even if mostly similar)
 - [ ] `ctn_object.h` 0.1.2
   * The basic data container for the language. Most commonly seen *everywhere*.
   * [ ] Define interface
