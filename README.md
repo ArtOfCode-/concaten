@@ -7,11 +7,11 @@ I'm working on right now.
 
 ---
 
-> **A note about versions**: My format is `major.milestone.task.commit`, where each is the number for the
-> most recently finished. For example, version `1.1.0.5` is 5 commits in to the first task of milestone 2 of
+> **A note about versions**: My format is `major.milestone.task`, where each is the number for the
+> most recently finished. For example, version `1.1.0` just completed the first task of milestone 2 of
 > verison 1 -- probably something about expanding the standard library. Major version `0` is pre-completion;
-> some of the parts may be done, but not all of it. Major version `1` is the first version of the language;
-> from there, I'll iterate based on feedback and input from the users.
+> some of the parts may be done, but not all of it. Major version `1` is the first completed version of
+> the language; from there, I'll iterate based on feedback and input from the users.
 
 ###Current milestone
 
@@ -29,7 +29,7 @@ or an object (data stored by the parser). Even words, Concaten's equivalent for 
   * [x] Test methods
 - [ ] `method_map.h` - 0.1.1
   * Should be mostly the same as `prop_map`, with a different value.
-  * [ ] Define interface (if different)
+  * [x] Define interface (if different)
   * [ ] Implement methods (probably via copy/paste)
   * [ ] Test methods (even if mostly similar)
 - [ ] `ctn_object.h` 0.1.2
