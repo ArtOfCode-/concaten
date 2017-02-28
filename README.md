@@ -32,9 +32,9 @@ or an object (data stored by the parser). Even words, Concaten's equivalent for 
         those out for Object when that's complete easy.
   * [x] Test methods
 - [ ] `method_map.h` - 0.1.1
-  * Should be mostly the same as `prop_map`, with a different value.
+  * Should be mostly the same as `prop_map`, with a different value type.
   * [x] Define interface (if different)
-  * [ ] Implement methods (probably via copy/paste)
+  * [x] Implement methods (probably via copy/paste)
   * [ ] Test methods (even if mostly similar)
 - [ ] `ctn_object.h` 0.1.2
   * The basic data container for the language. Most commonly seen *everywhere*.

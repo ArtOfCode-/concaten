@@ -8,7 +8,7 @@
 // those are written; for now, we want a compileable and testable
 // version, so we need existing types as arguments.
 #define MM_VALUE_ARGS int, char *
-typedef void (*mm_func)(MM_VALUE_ARGS);
+typedef void (*MM_FUNC_TYPE)(MM_VALUE_ARGS);
 
 // same definitions as in prop_map.h
 #define MM_MAX_BUCKET_DEPTH 8
@@ -33,12 +33,12 @@ struct MethodMap {
 };
 
 struct MethodMap mm_new(size_t);
-bool mm_set(struct MethodMap *, const char *, mm_func);
-mm_func mm_get(const struct MethodMap, const char *);
+bool mm_set(struct MethodMap *, const char *, MM_FUNC_TYPE);
+MM_FUNC_TYPE mm_get(const struct MethodMap, const char *);
 // NB: `true` means it was removed, `false` means it wasn't there
 bool mm_remove(struct MethodMap *, const char *);
 bool mm_is_key(const struct MethodMap, const char *);
-bool mm_is_value(const struct MethodMap, mm_func);
+bool mm_is_value(const struct MethodMap, MM_FUNC_TYPE);
 bool mm_rehash(struct MethodMap *, size_t);
 void mm_free(struct MethodMap *);
 
