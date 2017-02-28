@@ -160,7 +160,7 @@ bool raw_add(struct PropMap *pm, const char *key, PM_VALUE_TYPE val) {
             .key_len = strlen(key)
     };
     ++bk->count;
-    if (bk->count > PM_PREF_BUCKET_DEPTH) ++pm->bk_gr_pref;
+    if (bk->count == PM_PREF_BUCKET_DEPTH) ++pm->bk_gr_pref;
     ++pm->item_count;
     return true;
 }
