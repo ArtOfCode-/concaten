@@ -6,23 +6,23 @@
 // the amount by which we increase the map's capacity each time
 #define LOAD_FACTOR 2
 
-struct PM_KeyValPair kvp_zero() {
+struct PM_KeyValPair pm_kvp_zero() {
     return (struct PM_KeyValPair) {
             .key_len = 0,
             .key = NULL,
             .val = 0
     };
 }
-struct PM_Bucket bk_zero() {
+struct PM_Bucket pm_bk_zero() {
     struct PM_Bucket ret;
     ret.count = 0;
     for (size_t i = 0; i < PM_MAX_BUCKET_DEPTH; ++i) {
-        ret.items[i] = kvp_zero();
+        ret.items[i] = pm_kvp_zero();
     }
     return ret;
 }
 
-size_t hash(const char *key) {
+size_t pm_hash(const char *key) {
     // taken from http://stackoverflow.com/a/7666577/1863564
     size_t hash = 5381;
     char c;
@@ -38,7 +38,7 @@ struct PropMap pm_new(size_t width) {
         return (struct PropMap) { .error = 1 };
     }
     for (size_t i = 0; i < PM_MAX_BUCKET_DEPTH; ++i) {
-        buckets[i] = bk_zero();
+        buckets[i] = pm_bk_zero();
     }
     return (struct PropMap) {
             .bucket_count = width,
@@ -52,7 +52,7 @@ struct PropMap pm_new(size_t width) {
 bool pm_set(struct PropMap *pm, const char *key, PM_VALUE_TYPE val) {
     if (!pm || !key || val == PM_INVALID_VALUE) return false;
     size_t key_len = strlen(key);
-    size_t idx = hash(key) % pm->bucket_count;
+    size_t idx = pm_hash(key) % pm->bucket_count;
     struct PM_Bucket *bucket = &pm->buckets[idx];
     for (size_t i = 0; i < bucket->count; ++i) {
         if (bucket->items[i].key_len == key_len &&
@@ -67,7 +67,7 @@ bool pm_set(struct PropMap *pm, const char *key, PM_VALUE_TYPE val) {
             return false;
         }
         // since things are in different places now, we have to reorganize
-        idx = hash(key) % pm->bucket_count;
+        idx = pm_hash(key) % pm->bucket_count;
         bucket = &pm->buckets[idx];
         // note that we're not searching to see if it exists again, since
         // we already checked if it's in there.
@@ -87,7 +87,7 @@ bool pm_set(struct PropMap *pm, const char *key, PM_VALUE_TYPE val) {
 
 PM_VALUE_TYPE pm_get(const struct PropMap pm, const char *key) {
     if (pm.item_count == 0) return PM_INVALID_VALUE;
-    size_t idx = hash(key) % pm.bucket_count;
+    size_t idx = pm_hash(key) % pm.bucket_count;
     size_t key_len = strlen(key);
     struct PM_Bucket bucket = pm.buckets[idx];
     for (size_t i = 0; i < bucket.count; ++i) {
@@ -101,7 +101,7 @@ PM_VALUE_TYPE pm_get(const struct PropMap pm, const char *key) {
 
 bool pm_remove(struct PropMap *pm, const char *finding) {
     if (pm->item_count == 0) return false;
-    size_t idx = hash(finding) % pm->bucket_count;
+    size_t idx = pm_hash(finding) % pm->bucket_count;
     struct PM_Bucket *bucket = &pm->buckets[idx];
     size_t finding_len = strlen(finding);
     // this should work as-is for edge cases like empty buckets and found
@@ -125,7 +125,7 @@ bool pm_remove(struct PropMap *pm, const char *finding) {
 }
 
 bool pm_is_key(const struct PropMap pm, const char *key) {
-    size_t idx = hash(key) % pm.bucket_count;
+    size_t idx = pm_hash(key) % pm.bucket_count;
     struct PM_Bucket *bucket = &pm.buckets[idx];
     size_t finding_len = strlen(key);
     for (size_t i = 0; i < bucket->count; ++i) {
@@ -150,8 +150,8 @@ bool pm_is_value(const struct PropMap pm, PM_VALUE_TYPE v) {
 // doesn't do any preexistence-checking, just bounds.
 // will produce duplicate keys if not used carefully!
 // but also marginally faster.
-bool raw_add(struct PropMap *pm, const char *key, PM_VALUE_TYPE val) {
-    size_t bucket_idx = hash(key) % pm->bucket_count;
+bool pm_raw_add(struct PropMap *pm, const char *key, PM_VALUE_TYPE val) {
+    size_t bucket_idx = pm_hash(key) % pm->bucket_count;
     struct PM_Bucket *bk = &pm->buckets[bucket_idx];
     if (bk->count == PM_MAX_BUCKET_DEPTH) return false;
     bk->items[bk->count] = (struct PM_KeyValPair) {
@@ -172,7 +172,7 @@ bool pm_rehash(struct PropMap *pm, size_t new_size) {
     for (size_t bucket_idx = 0; bucket_idx < pm->bucket_count; ++bucket_idx) {
         struct PM_Bucket bk = pm->buckets[bucket_idx];
         for (size_t i = 0; i < bk.count; ++i) {
-            if (!raw_add(&new, bk.items[i].key, bk.items[i].val)) {
+            if (!pm_raw_add(&new, bk.items[i].key, bk.items[i].val)) {
                 return false;
             }
         }
