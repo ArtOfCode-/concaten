@@ -1,7 +1,7 @@
 ##Concaten v0.1.1.0
 
 Concaten is a concatenative, stack-based, strongly but optionally strictly typed, hyperdynamic,
-garbage-collected programming language. In order, that means that:
+garbage-collected, interpreted programming language. In order, that means that:
 
 1. **concatenative** - Each "word" (Concaten's version of a function) is applied to the results of the one
    that appears before it in the source code. There are a few exceptions, though; notably, `{` and `->`. 
@@ -23,8 +23,12 @@ garbage-collected programming language. In order, that means that:
    reference-counting garbage collector. Because of its nature, you can also usually rely on the GC deleting
    and destructing an object when you expect it to -- in comparison to tracing GCs, which run effectively
    whenever they want to, a refcounter imposes a constant, slight overhead in exchange for deleting an object
-   as soon as it's no longer used, which means that destructors have meaning. Cyclical references are a
-   problem, but not an overwhelming one.
+   as soon as it's no longer used, which means that destructors have meaning. Most of the time, at least.
+   Cyclical references may exist.
+6. **interpreted** - Rather than being converted to machine language or assembly, then executed directly by
+   the computer, Concaten code is executed as-is by an intermediary program. Depending on the OS and specific
+   circumstances, this might be abstracted away such that the user doesn't see it happening directly (e.g.
+   through file extension assocations).
 0. **programming langauge** - Hopefully, if you're reading this, self-explanatory.
 
 For an example of how the language will probably look, see `test.ctn`. However, keep in mind that this is
