@@ -12,8 +12,8 @@ garbage-collected programming language. In order, that means that:
 3. **strongly but optionally strictly typed** - Most methods related to variable assignment take a type as
    an optional parameter, and check that the datum to be stored is of that type. However, they are optional
    parameters, and duck typing works fine in Concaten. At the same time, objects of one type are never
-   implicitly converted to another type by the language -- though, of course, words are free to do this.
-   (c.f. `puts*`, and indeed all standard library words ending in `*`)
+   implicitly converted to another type by the language -- though, of course, words, including those in the
+   standard library, are free to. (c.f. `puts*`, and indeed all standard library words ending in `*`)
 4. **hyperdynamic** - Every keyword is an overrideable (though *not* replaceable) word, and everything is an
    object that can have methods monkey-patched in or out. Every function's code can be read, analyzed, and
    changed at runtime. The one exception to this is an object's properties -- to allow fundamental objects
@@ -23,11 +23,13 @@ garbage-collected programming language. In order, that means that:
    reference-counting garbage collector. Because of its nature, you can also usually rely on the GC deleting
    and destructing an object when you expect it to -- in comparison to tracing GCs, which run effectively
    whenever they want to, a refcounter imposes a constant, slight overhead in exchange for deleting an object
-   as soon as it's no longer used, which means that destructors have meaning.
+   as soon as it's no longer used, which means that destructors have meaning. Cyclical references are a
+   problem, but not an overwhelming one.
 0. **programming langauge** - Hopefully, if you're reading this, self-explanatory.
 
-For an example of how the language (might; it's specced out but usage testing might reveal things that have
-to change) look, see `test.ctn`.
+For an example of how the language will probably look, see `test.ctn`. However, keep in mind that this is
+subject to change; though the language is specced out, actual usage might reveal things that I didn't
+consider, and need to add in or change.
 
 ---
 
