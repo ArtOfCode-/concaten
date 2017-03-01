@@ -66,25 +66,24 @@ or an object (data stored by the parser). Even words, Concaten's equivalent for 
   * [x] Define interface (if different)
   * [x] Implement methods (probably via copy/paste)
   * [x] Test methods (even if mostly similar)
-- [ ] `ctn_object.h` 0.1.2  
+- [ ] `ctn_object.h`
   The basic data container for the language. Most commonly seen *everywhere*. Note that each task implicitly
   includes "test what you just wrote".
-  * [x] Define interface
-  * [ ] Type erasure - 0.1.3
+  * For each of these, design/implement/test
+  * [ ] Type erasure - 0.1.2
     * object which stores `void *` and size, and has function (macro?) to convert to or from arbitrary types.
       Note that *no type-checking is necessary*, due to how it'll be used. However, it'll make debugging
       easier if it's added, so it'll be worthwhile.
-  * [ ] Refcounter - 0.1.4
+  * [ ] Refcounter - 0.1.3
     * An object should be freed once its references reach 0. The trick will be architecting things such that
       it can work like that, without being deleted when it's transferred from (for example) the data stack
       to C code that's just using its value.
     * Remember to use [atomics](http://en.cppreference.com/w/c/atomic), to mitigate possible threading-related
       issues. If we decide to do threading in v1, at least.
-  * [ ] Circular references - 0.1.5
+  * [ ] Circular references - 0.1.4
     * The big downside to refcounters is that they don't catch circular references. I need to figure out
       a way to deal with that. Maybe something that keeps track of all objects with refcount > 0 and searches
-      through their references to ensure no loops? Graph theory should have an answer.
-  * [ ] Tests at every stage, but especially after 0.1.5
+      through their references to ensure no loops? Graph theory has an answer. So does TCS, probably.
 
 ###After that
 
