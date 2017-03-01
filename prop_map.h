@@ -7,8 +7,9 @@
 // Note: I'm writing this so it can be used with a different type, which is significantly more
 // complex, and that I don't want to spend the time to write just yet. I'm using `int` in its
 // place. These macros are defined so it's easy to switch the types out.
-#define PM_VALUE_TYPE int
-#define PM_INVALID_VALUE -1
+struct Object;
+#define PM_VALUE_TYPE struct Object *
+#define PM_INVALID_VALUE NULL
 
 // if any 1 bucket is > this size, rehash
 #define PM_MAX_BUCKET_DEPTH 8
