@@ -5,23 +5,23 @@
 
 #define LOAD_FACTOR 2
 
-struct MM_KeyValPair kvp_zero() {
+struct MM_KeyValPair mm_kvp_zero() {
     return (struct MM_KeyValPair) {
             .key_len = 0,
             .key = NULL,
             .func = NULL
     };
 }
-struct MM_Bucket bk_zero() {
+struct MM_Bucket mm_bk_zero() {
     struct MM_Bucket ret;
     ret.count = 0;
     for (size_t i = 0; i < MM_MAX_BUCKET_DEPTH; ++i) {
-        ret.items[i] = kvp_zero();
+        ret.items[i] = mm_kvp_zero();
     }
     return ret;
 }
 
-size_t hash(const char *key) {
+size_t mm_hash(const char *key) {
     // taken from http://stackoverflow.com/a/7666577/1863564
     size_t hash = 5381;
     char c;
@@ -37,7 +37,7 @@ struct MethodMap mm_new(size_t width) {
         return (struct MethodMap) { .error = 1 };
     }
     for (size_t i = 0; i < MM_MAX_BUCKET_DEPTH; ++i) {
-        buckets[i] = bk_zero();
+        buckets[i] = mm_bk_zero();
     }
     return (struct MethodMap) {
             .bucket_count = width,
@@ -51,7 +51,7 @@ struct MethodMap mm_new(size_t width) {
 bool mm_set(struct MethodMap *mm, const char *key, MM_FUNC_TYPE f) {
     if (!mm || !key) return false;
     size_t key_len = strlen(key);
-    size_t idx = hash(key) % mm->bucket_count;
+    size_t idx = mm_hash(key) % mm->bucket_count;
     struct MM_Bucket *bucket = &mm->buckets[idx];
     for (size_t i = 0; i < bucket->count; ++i) {
         if (bucket->items[i].key_len == key_len &&
@@ -66,7 +66,7 @@ bool mm_set(struct MethodMap *mm, const char *key, MM_FUNC_TYPE f) {
             return false;
         }
         // since things are in different places now, we have to reorganize
-        idx = hash(key) % mm->bucket_count;
+        idx = mm_hash(key) % mm->bucket_count;
         bucket = &mm->buckets[idx];
         // note that we're not searching to see if it exists again, since
         // we already checked if it's in there.
@@ -86,7 +86,7 @@ bool mm_set(struct MethodMap *mm, const char *key, MM_FUNC_TYPE f) {
 
 MM_FUNC_TYPE mm_get(const struct MethodMap mm, const char *key) {
     if (mm.item_count == 0) return NULL;
-    size_t idx = hash(key) % mm.bucket_count;
+    size_t idx = mm_hash(key) % mm.bucket_count;
     size_t key_len = strlen(key);
     struct MM_Bucket bucket = mm.buckets[idx];
     for (size_t i = 0; i < bucket.count; ++i) {
@@ -100,7 +100,7 @@ MM_FUNC_TYPE mm_get(const struct MethodMap mm, const char *key) {
 
 bool mm_remove(struct MethodMap *mm, const char *finding) {
     if (mm->item_count == 0) return false;
-    size_t idx = hash(finding) % mm->bucket_count;
+    size_t idx = mm_hash(finding) % mm->bucket_count;
     struct MM_Bucket *bucket = &mm->buckets[idx];
     size_t finding_len = strlen(finding);
     // this should work as-is for edge cases like empty buckets and found
@@ -124,7 +124,7 @@ bool mm_remove(struct MethodMap *mm, const char *finding) {
 }
 
 bool mm_is_key(const struct MethodMap mm, const char *key) {
-    size_t idx = hash(key) % mm.bucket_count;
+    size_t idx = mm_hash(key) % mm.bucket_count;
     struct MM_Bucket *bucket = &mm.buckets[idx];
     size_t finding_len = strlen(key);
     for (size_t i = 0; i < bucket->count; ++i) {
@@ -136,11 +136,11 @@ bool mm_is_key(const struct MethodMap mm, const char *key) {
     return false;
 }
 
-bool mm_is_value(const struct MethodMap mm, MM_FUNC_TYPE v) {
+bool mm_is_value(const struct MethodMap mm, MM_FUNC_TYPE f) {
     for (size_t bucket_idx = 0; bucket_idx < mm.bucket_count; ++bucket_idx) {
-        const struct PM_Bucket bk = mm.buckets[bucket_idx];
+        const struct MM_Bucket bk = mm.buckets[bucket_idx];
         for (size_t in_idx = 0; in_idx < bk.count; ++in_idx) {
-            if (bk.items[in_idx].val == v) return true;
+            if (bk.items[in_idx].func == f) return true;
         }
     }
     return false;
@@ -149,8 +149,8 @@ bool mm_is_value(const struct MethodMap mm, MM_FUNC_TYPE v) {
 // doesn't do any preexistence-checking, just bounds.
 // will produce duplicate keys if not used carefully!
 // but also marginally faster.
-bool raw_add(struct MethodMap *mm, const char *key, MM_FUNC_TYPE val) {
-    size_t bucket_idx = hash(key) % mm->bucket_count;
+bool mm_raw_add(struct MethodMap *mm, const char *key, MM_FUNC_TYPE val) {
+    size_t bucket_idx = mm_hash(key) % mm->bucket_count;
     struct MM_Bucket *bk = &mm->buckets[bucket_idx];
     if (bk->count == MM_MAX_BUCKET_DEPTH) return false;
     bk->items[bk->count] = (struct MM_KeyValPair) {
@@ -171,7 +171,7 @@ bool mm_rehash(struct MethodMap *mm, size_t new_size) {
     for (size_t bucket_idx = 0; bucket_idx < mm->bucket_count; ++bucket_idx) {
         struct MM_Bucket bk = mm->buckets[bucket_idx];
         for (size_t i = 0; i < bk.count; ++i) {
-            if (!raw_add(&new, bk.items[i].key, bk.items[i].func)) {
+            if (!mm_raw_add(&new, bk.items[i].key, bk.items[i].func)) {
                 return false;
             }
         }
