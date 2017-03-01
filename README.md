@@ -54,21 +54,22 @@ consider, and need to add in or change.
 The building block of the language. In Concaten, everything is either a token (an instruction to the parser)
 or an object (data stored by the parser). Even words, Concaten's equivalent for functions, are objects.
 
-- [x] `prop_map.h` - 0.1.0
-  * PropMap is the property map in `Object`s. It'll also serve nicely as the template from which to draw
+- [x] `prop_map.h` - 0.1.0  
+  PropMap is the property map in `Object`s. It'll also serve nicely as the template from which to draw
     when I'm writing `MethodMap` and, possibly, `ScopeStack` (much later).
   * [x] Define interface
   * [x] Implement methods - NOTE: Initially implemented with `int` values, but a macro should make switching
         those out for Object when that's complete easy.
   * [x] Test methods
-- [x] `method_map.h` - 0.1.1
-  * Should be mostly the same as `prop_map`, with a different value type.
+- [x] `method_map.h` - 0.1.1  
+  Should be mostly the same as `prop_map`, with a different value type.
   * [x] Define interface (if different)
   * [x] Implement methods (probably via copy/paste)
   * [x] Test methods (even if mostly similar)
-- [ ] `ctn_object.h` 0.1.2
-  * The basic data container for the language. Most commonly seen *everywhere*.
-  * [ ] Define interface
+- [ ] `ctn_object.h` 0.1.2  
+  The basic data container for the language. Most commonly seen *everywhere*. Note that each task implicitly
+  includes "test what you just wrote".
+  * [x] Define interface
   * [ ] Type erasure - 0.1.3
     * object which stores `void *` and size, and has function (macro?) to convert to or from arbitrary types.
       Note that *no type-checking is necessary*, due to how it'll be used. However, it'll make debugging
@@ -84,8 +85,17 @@ or an object (data stored by the parser). Even words, Concaten's equivalent for 
       a way to deal with that. Maybe something that keeps track of all objects with refcount > 0 and searches
       through their references to ensure no loops? Graph theory should have an answer.
   * [ ] Tests at every stage, but especially after 0.1.5
-  
 
+###After that
+
+* `code_block.h` - 0.2
+* `ctn_runnable.h` - 0.3
+* `data_stack.h` - 0.4
+* `token_stack.h` - 0.5
+* `scope_stack.h` - 0.6
+* Thorough code review
+* Misc. required updates (as needed)
+* Main method - 1.0
 
 ###Previous milestones
 
