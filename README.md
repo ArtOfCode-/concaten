@@ -1,9 +1,33 @@
 ##Concaten v0.1.1.0
 
-Concaten is a concatenative, stack-based, optionally strictly but always strongly typed programming language.
+Concaten is a concatenative, stack-based, strongly but optionally strictly typed, hyperdynamic,
+garbage-collected programming language. In order, that means that:
 
-For now, not much is done -- see "Previous milestones" for what's been done, and "Current milestone" for what
-I'm working on right now.
+1. **concatenative** - Each "word" (Concaten's version of a function) is applied to the results of the one
+   that appears before it in the source code. There are a few exceptions, though; notably, `{` and `->`. 
+2. **stack-based** - Results, rather than being passed directly to methods or stored in variables, go onto
+   an intermediary data stack, on which they can stay indefinitely. Note that this may occur in other
+   languages like C, as part of the implementation of passing parameters to methods; however, Concaten's is
+   persistent.
+3. **strongly but optionally strictly typed** - Most methods related to variable assignment take a type as
+   an optional parameter, and check that the datum to be stored is of that type. However, they are optional
+   parameters, and duck typing works fine in Concaten. At the same time, objects of one type are never
+   implicitly converted to another type by the language -- though, of course, words are free to do this.
+   (c.f. `puts*`, and indeed all standard library words ending in `*`)
+4. **hyperdynamic** - Every keyword is an overrideable (though *not* replaceable) word, and everything is an
+   object that can have methods monkey-patched in or out. Every function's code can be read, analyzed, and
+   changed at runtime. The one exception to this is an object's properties -- to allow fundamental objects
+   and methods to be implemented in the interpreter's language, either for speed boosts or simplicity,
+   properties are neither visible nor editable outside of that object's methods.
+5. **garbage-collected** - You don't need to worry about memory; Concaten will handle it for you with a
+   reference-counting garbage collector. Because of its nature, you can also usually rely on the GC deleting
+   and destructing an object when you expect it to -- in comparison to tracing GCs, which run effectively
+   whenever they want to, a refcounter imposes a constant, slight overhead in exchange for deleting an object
+   as soon as it's no longer used, which means that destructors have meaning.
+0. **programming langauge** - Hopefully, if you're reading this, self-explanatory.
+
+For an example of how the language (might; it's specced out but usage testing might reveal things that have
+to change) look, see `test.ctn`.
 
 ---
 
@@ -47,6 +71,8 @@ or an object (data stored by the parser). Even words, Concaten's equivalent for 
     * An object should be freed once its references reach 0. The trick will be architecting things such that
       it can work like that, without being deleted when it's transferred from (for example) the data stack
       to C code that's just using its value.
+    * Remember to use [atomics](http://en.cppreference.com/w/c/atomic), to mitigate possible threading-related
+      issues. If we decide to do threading in v1, at least.
   * [ ] Circular references - 0.1.5
     * The big downside to refcounters is that they don't catch circular references. I need to figure out
       a way to deal with that. Maybe something that keeps track of all objects with refcount > 0 and searches
