@@ -26,3 +26,24 @@ struct Object ctno_dynamic(struct PropMap pm, struct MethodMap *methods) {
             .error = 0
     };
 }
+
+struct Object ctno_copy(struct Object copying) {
+    if (copying.error) return (struct Object) { .error = 1 };
+    struct Object ret = (struct Object) {
+            .error = 0,
+            .is_literal = copying.is_literal,
+            // intentionally not copied
+            .methods = copying.methods
+    };
+    if (copying.is_literal) {
+        const size_t width = copying.data.literal.size;
+        void *d_c = malloc(width);
+        if (!d_c) return (struct Object) { .error = 1 };
+        ret.data.literal.size = width;
+        ret.data.literal.value = d_c;
+    } else {
+        struct PropMap pm_c = pm_copy(copying.data.properties);
+        ret.data.properties = pm_c;
+    }
+    return ret;
+}
