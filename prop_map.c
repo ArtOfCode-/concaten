@@ -49,6 +49,25 @@ struct PropMap pm_new(size_t width) {
     };
 }
 
+struct PropMap pm_copy(struct PropMap copying) {
+    size_t width = copying.bucket_count;
+    struct PM_Bucket *buckets = malloc(width * sizeof(struct PM_Bucket));
+    if (!buckets) {
+        return (struct PropMap) { .error = 1 };
+    }
+    for (size_t i = 0; i < PM_MAX_BUCKET_DEPTH; ++i) {
+        // by the power of C-skull, copy!
+        buckets[i] = copying.buckets[i];
+    }
+    return (struct PropMap) {
+            .bucket_count = width,
+            .bk_gr_pref = 0,
+            .item_count = 0,
+            .buckets = buckets,
+            .error = 0
+    };
+}
+
 bool pm_set(struct PropMap *pm, const char *key, PM_VALUE_TYPE val) {
     if (!pm || !key || val == PM_INVALID_VALUE) return false;
     size_t key_len = strlen(key);
