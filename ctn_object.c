@@ -16,3 +16,13 @@ struct Object ctno_literal(const void *data, size_t data_size, struct MethodMap 
             .error = 0
     };
 }
+
+struct Object ctno_dynamic(struct PropMap pm, struct MethodMap *methods) {
+    struct PropMap copy = pm_copy(pm);
+    return (struct Object) {
+            .data.properties = copy,
+            .is_literal = false,
+            .methods = methods,
+            .error = 0
+    };
+}

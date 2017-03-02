@@ -23,7 +23,7 @@ struct Object {
 
 #define ctno_from(sth, mthds) ctno_literal(&sth, sizeof(sth), mthds)
 struct Object ctno_literal(const void *, size_t, struct MethodMap *);
-struct Object ctno_dynamic(const struct PropMap);
+struct Object ctno_dynamic(const struct PropMap, struct MethodMap *);
 struct Object ctno_copy(const struct Object);
 // ctno_mk_* methods for every literal type; might be defined elsewhere
 #define p_ctno_to(ctno, type) (ctno)->is_literal ? ((type *) (ctno)->value) : NULL;
