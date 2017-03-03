@@ -48,6 +48,10 @@ struct MethodMap mm_new(size_t width) {
     };
 }
 
+void mm_claim(struct MethodMap *mm) {
+    ++mm->refcount;
+}
+
 bool mm_set(struct MethodMap *mm, const char *key, MM_FUNC_TYPE f) {
     if (!mm || !key) return false;
     size_t key_len = strlen(key);
@@ -181,6 +185,9 @@ bool mm_rehash(struct MethodMap *mm, size_t new_size) {
 }
 
 void mm_free(struct MethodMap *mm) {
-    free(mm->buckets);
-    mm->buckets = NULL;
+    --mm->refcount;
+    if (!mm->refcount) {
+        free(mm->buckets);
+        mm->buckets = NULL;
+    }
 }

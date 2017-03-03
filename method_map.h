@@ -28,11 +28,13 @@ struct MethodMap {
     size_t bk_gr_pref;
     size_t item_count;
     struct MM_Bucket *buckets;
+    size_t refcount;
     
     int error;
 };
 
 struct MethodMap mm_new(size_t);
+void mm_claim(struct MethodMap *);
 bool mm_set(struct MethodMap *, const char *, MM_FUNC_TYPE);
 MM_FUNC_TYPE mm_get(const struct MethodMap, const char *);
 // NB: `true` means it was removed, `false` means it wasn't there
