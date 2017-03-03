@@ -48,8 +48,9 @@ struct MethodMap mm_new(size_t width) {
     };
 }
 
-void mm_claim(struct MethodMap *mm) {
+struct MethodMap *mm_claim(struct MethodMap *mm) {
     ++mm->refcount;
+    return mm;
 }
 
 bool mm_set(struct MethodMap *mm, const char *key, MM_FUNC_TYPE f) {

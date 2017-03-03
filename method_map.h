@@ -34,7 +34,7 @@ struct MethodMap {
 };
 
 struct MethodMap mm_new(size_t);
-void mm_claim(struct MethodMap *);
+struct MethodMap *mm_claim(struct MethodMap *);
 bool mm_set(struct MethodMap *, const char *, MM_FUNC_TYPE);
 MM_FUNC_TYPE mm_get(const struct MethodMap, const char *);
 // NB: `true` means it was removed, `false` means it wasn't there
