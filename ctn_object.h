@@ -17,6 +17,7 @@ struct Object {
     // the methods that every object created from a class has, by modifying the class's
     // central copy. If the object's specific version is modified, the methods are copied then.
     struct MethodMap *methods;
+    size_t refcount;
     
     int error;
 };
@@ -26,9 +27,9 @@ struct Object ctno_literal(const void *, size_t, struct MethodMap *);
 struct Object ctno_dynamic(const struct PropMap, struct MethodMap *);
 struct Object ctno_copy(const struct Object);
 // ctno_mk_* methods for every literal type; might be defined elsewhere
-#define p_ctno_to(ctno, type) (ctno)->is_literal ? ((type *) (ctno)->value) : NULL;
 #define ctno_to(ctno, type, invalid) (cnto).is_literal ? *((type *) (ctno).value) : (invalid);
-struct Object ctno_free(struct Object *);
+struct Object *ctno_claim(struct Object *);
+void ctno_free(struct Object *);
 
 // with reference to tokenizer.h
 struct Token;
