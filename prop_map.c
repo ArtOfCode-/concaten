@@ -7,6 +7,7 @@
 #define LOAD_FACTOR 2
 
 // TODO claim/free objects as they're added and removed
+// TODO free all values when freeing list
 
 struct PM_KeyValPair pm_kvp_zero() {
     return (struct PM_KeyValPair) {
