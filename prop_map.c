@@ -6,6 +6,8 @@
 // the amount by which we increase the map's capacity each time
 #define LOAD_FACTOR 2
 
+// TODO claim/free objects as they're added and removed
+
 struct PM_KeyValPair pm_kvp_zero() {
     return (struct PM_KeyValPair) {
             .key_len = 0,
