@@ -1,6 +1,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include "ctn_object.h"
+#include "tokenizer.h"
 
 struct Object ctno_literal(const void *data, size_t data_size, struct MethodMap *methods) {
     void *new_data = malloc(data_size);
@@ -65,7 +66,14 @@ void ctno_free(struct Object *freeing) {
             free(freeing->data.literal.value);
             freeing->data.literal.value = NULL;
         } else {
-            pm_free(&freeing->data.properties);
+            struct PropMap *pm = &freeing->data.properties;
+            for (size_t bidx = 0; bidx < pm->bucket_count; ++bidx) {
+                struct PM_Bucket *bk = &pm->buckets[bidx];
+                for (size_t iidx = 0; iidx < bk->count; ++iidx) {
+                    ctno_free(bk->items[iidx].val);
+                }
+            }
+            pm_free(pm);
         }
     }
 }
