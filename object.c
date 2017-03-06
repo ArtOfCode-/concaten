@@ -3,7 +3,7 @@
 #include "object.h"
 #include "tokenizer.h"
 
-struct Object ctno_literal(const void *data, size_t data_size, struct MethodMap *methods) {
+struct Object ctno_literal(const void *data, const size_t data_size, struct MethodMap *methods) {
     void *new_data = malloc(data_size);
     if (!new_data) {
         return (struct Object) { .error = 1 };
@@ -52,28 +52,49 @@ struct Object ctno_copy(struct Object copying) {
     return ret;
 }
 
+bool ctno_set_prop(struct Object *to, const char *key, struct Object *adding) {
+    if (to->is_literal) return false;
+    struct Object *old = pm_get(to->data.properties, key);
+    ctno_claim(adding);
+    if (!pm_set(&to->data.properties, key, adding)) return false;
+    if (old) ctno_free(old);
+    return true;
+}
+
+struct Object *ctno_get_prop(const struct Object to, const char *key) {
+    if (to.is_literal) return NULL;
+    return pm_get(to.data.properties, key);
+}
+
 struct Object *ctno_claim(struct Object *claiming) {
     ++claiming->refcount;
     return claiming;
 }
 
 void ctno_free(struct Object *freeing) {
-    --freeing->refcount;
-    if (!freeing->refcount) {
-        mm_free(freeing->methods);
-        freeing->methods = NULL;
-        if (freeing->is_literal) {
-            free(freeing->data.literal.value);
-            freeing->data.literal.value = NULL;
-        } else {
-            struct PropMap *pm = &freeing->data.properties;
-            for (size_t bidx = 0; bidx < pm->bucket_count; ++bidx) {
-                struct PM_Bucket *bk = &pm->buckets[bidx];
-                for (size_t iidx = 0; iidx < bk->count; ++iidx) {
-                    ctno_free(bk->items[iidx].val);
+    if (freeing) {
+        --freeing->refcount;
+        if (!freeing->refcount) {
+            mm_free(freeing->methods);
+            freeing->methods = NULL;
+            if (freeing->is_literal) {
+                free(freeing->data.literal.value);
+                freeing->data.literal.value = NULL;
+            } else {
+                struct PropMap *pm = &freeing->data.properties;
+                for (size_t bidx = 0; bidx < pm->bucket_count; ++bidx) {
+                    struct PM_Bucket *bk = &pm->buckets[bidx];
+                    for (size_t iidx = 0; iidx < bk->count; ++iidx) {
+                        ctno_free(bk->items[iidx].val);
+                    }
                 }
+                pm_free(pm);
             }
-            pm_free(pm);
         }
     }
+}
+
+struct Object tkn_value(struct Token tkn) {
+    // TODO this thing's body
+    return (struct Object) { .error = 1 };
 }
