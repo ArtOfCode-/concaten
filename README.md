@@ -10,10 +10,10 @@ garbage-collected, interpreted programming language. In order, that means that:
    languages like C, as part of the implementation of passing parameters to methods; however, Concaten's is
    persistent.
 3. **strongly but optionally strictly typed** - Most methods related to variable assignment take a type as
-   an optional parameter, and check that the datum to be stored is of that type. However, they are optional
-   parameters, and duck typing works fine in Concaten. At the same time, objects of one type are never
+   an optional parameter, and check that the datum to be stored is of that type. They are **optional**,
+   however, and duck typing works fine in Concaten. At the same time, objects of one type are never
    implicitly converted to another type by the language -- though, of course, words, including those in the
-   standard library, are free to. (c.f. `puts*`, and indeed all standard library words ending in `*`)
+   standard library, are free to. (c.f. all standard library words beginning `*`)
 4. **hyperdynamic** - Every keyword is an overrideable (though *not* replaceable) word, and everything is an
    object that can have methods monkey-patched in or out. Every function's code can be read, analyzed, and
    changed at runtime. The one exception to this is an object's properties -- to allow fundamental objects
@@ -23,12 +23,12 @@ garbage-collected, interpreted programming language. In order, that means that:
    reference-counting garbage collector. Because of its nature, you can also usually rely on the GC deleting
    and destructing an object when you expect it to -- in comparison to tracing GCs, which run effectively
    whenever they want to, a refcounter imposes a constant, slight overhead in exchange for deleting an object
-   as soon as it's no longer used, which means that destructors have meaning. Most of the time, at least.
-   Cyclical references may exist.
+   as soon as it's no longer used, which means that destructors have meaning. As long as cyclical references
+   are avoided, at least.
 6. **interpreted** - Rather than being converted to machine language or assembly, then executed directly by
-   the computer, Concaten code is executed as-is by an intermediary program. Depending on the OS and specific
+   the CPU, Concaten code is executed as-is by an intermediary program. Depending on the OS and specific
    circumstances, this might be abstracted away such that the user doesn't see it happening directly (e.g.
-   through file extension assocations).
+   through file extension assocations); under the hood, it always is.
 0. **programming langauge** - Hopefully, if you're reading this, self-explanatory.
 
 For an example of how the language will probably look, see `test.ctn`. However, keep in mind that this is
@@ -77,8 +77,8 @@ or an object (data stored by the parser). Even words, Concaten's equivalent for 
     * An object should be freed once its references reach 0. The trick will be architecting things such that
       it can work like that, without being deleted when it's transferred from (for example) the data stack
       to C code that's just using its value.
-    * Remember to use [atomics](http://en.cppreference.com/w/c/atomic), to mitigate possible threading-related
-      issues. If we decide to do threading in v1, at least.
+    * ~~Remember to use [atomics](http://en.cppreference.com/w/c/atomic), to mitigate possible threading
+      issues. If we decide to do threading in v1, at least.~~ (Threading not implemented in v1)
   * [ ] Circular references - 0.1.4
     * The big downside to refcounters is that they don't catch circular references. I need to figure out
       a way to deal with that. Maybe something that keeps track of all objects with refcount > 0 and searches
@@ -86,14 +86,20 @@ or an object (data stored by the parser). Even words, Concaten's equivalent for 
 
 ###Upcoming milestones
 
-* `code_block.h` - 0.2
-* `ctn_runnable.h` - 0.3
-* `data_stack.h` - 0.4
-* `token_stack.h` - 0.5
-* `scope_stack.h` - 0.6
-* Thorough code review
-* Misc. required updates as needed
-* Main method - 1.0
+* [ ] `code_block.h` - 0.2
+* [ ] `ctn_runnable.h` - 0.3
+* [ ] `data_stack.h` - 0.4
+* [ ] `token_stack.h` - 0.5
+* [ ] `scope_stack.h` - 0.6
+* [ ] Thorough code review
+* [ ] Misc. required updates as needed
+* [ ] Main method - 0.7
+* [ ] Minimal standard library - 1.0
+* [ ] Debug mode - 1.1
+* [ ] User-created libraries (via namespaces) - 1.2
+* [ ] Decide which libraries to implement first and do them - 1.3
+* [ ] Multithreading - 2.0
+* [ ] C code linking (like Python) - 3.0
 
 ###Previous milestones
 
