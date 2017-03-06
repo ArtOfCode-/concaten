@@ -85,10 +85,10 @@ or an object (data stored by the parser). Even words, Concaten's equivalent for 
       through their references to ensure no loops? Graph theory should have an answer.
   
 
-* `data_stack.h` - 0.4
-* `token_stack.h` - 0.5
 * `code_block.h` - 0.2
 * `ctn_runnable.h` - 0.3
+* `data_stack.h` - 0.4
+* `token_stack.h` - 0.5
 * `scope_stack.h` - 0.6
 * Thorough code review
 * Misc. required updates as needed

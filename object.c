@@ -1,6 +1,7 @@
 #include <stdlib.h>
 #include <string.h>
-#include "ctn_object.h"
+#include "object.h"
+#include "tokenizer.h"
 
 struct Object ctno_literal(const void *data, size_t data_size, struct MethodMap *methods) {
     void *new_data = malloc(data_size);
@@ -13,7 +14,8 @@ struct Object ctno_literal(const void *data, size_t data_size, struct MethodMap 
             .data.literal.value = new_data,
             .is_literal = true,
             .methods = methods,
-            .error = 0
+            .error = 0,
+            .refcount = 0
     };
 }
 
@@ -23,7 +25,8 @@ struct Object ctno_dynamic(struct PropMap pm, struct MethodMap *methods) {
             .data.properties = copy,
             .is_literal = false,
             .methods = methods,
-            .error = 0
+            .error = 0,
+            .refcount = 0
     };
 }
 
@@ -33,7 +36,8 @@ struct Object ctno_copy(struct Object copying) {
             .error = 0,
             .is_literal = copying.is_literal,
             // intentionally not copied
-            .methods = copying.methods
+            .methods = mm_claim(copying.methods),
+            .refcount = 0
     };
     if (copying.is_literal) {
         const size_t width = copying.data.literal.size;
@@ -46,4 +50,30 @@ struct Object ctno_copy(struct Object copying) {
         ret.data.properties = pm_c;
     }
     return ret;
+}
+
+struct Object *ctno_claim(struct Object *claiming) {
+    ++claiming->refcount;
+    return claiming;
+}
+
+void ctno_free(struct Object *freeing) {
+    --freeing->refcount;
+    if (!freeing->refcount) {
+        mm_free(freeing->methods);
+        freeing->methods = NULL;
+        if (freeing->is_literal) {
+            free(freeing->data.literal.value);
+            freeing->data.literal.value = NULL;
+        } else {
+            struct PropMap *pm = &freeing->data.properties;
+            for (size_t bidx = 0; bidx < pm->bucket_count; ++bidx) {
+                struct PM_Bucket *bk = &pm->buckets[bidx];
+                for (size_t iidx = 0; iidx < bk->count; ++iidx) {
+                    ctno_free(bk->items[iidx].val);
+                }
+            }
+            pm_free(pm);
+        }
+    }
 }
