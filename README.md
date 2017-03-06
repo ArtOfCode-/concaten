@@ -72,8 +72,7 @@ or an object (data stored by the parser). Even words, Concaten's equivalent for 
   * For each of these, design/implement/test
   * [ ] Type erasure - 0.1.2
     * object which stores `void *` and size, and has function (macro?) to convert to or from arbitrary types.
-      Note that *no type-checking is necessary*, due to how it'll be used. However, it'll make debugging
-      easier if it's added, so it'll be worthwhile.
+    * Store and compare type on retrieval?
   * [ ] Refcounter - 0.1.3
     * An object should be freed once its references reach 0. The trick will be architecting things such that
       it can work like that, without being deleted when it's transferred from (for example) the data stack
@@ -86,13 +85,13 @@ or an object (data stored by the parser). Even words, Concaten's equivalent for 
       through their references to ensure no loops? Graph theory should have an answer.
   
 
-* `code_block.h` - 0.2
-* `ctn_runnable.h` - 0.3
 * `data_stack.h` - 0.4
 * `token_stack.h` - 0.5
+* `code_block.h` - 0.2
+* `ctn_runnable.h` - 0.3
 * `scope_stack.h` - 0.6
 * Thorough code review
-* Misc. required updates (as needed)
+* Misc. required updates as needed
 * Main method - 1.0
 
 ###Previous milestones
