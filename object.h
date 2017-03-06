@@ -27,12 +27,14 @@ struct Object ctno_literal(const void *, size_t, struct MethodMap *);
 struct Object ctno_dynamic(const struct PropMap, struct MethodMap *);
 struct Object ctno_copy(const struct Object);
 // ctno_mk_* methods for every literal type; might be defined elsewhere
-#define ctno_to(ctno, type, invalid) (cnto).is_literal ? *((type *) (ctno).value) : (invalid);
+bool ctno_set_prop(struct Object *, const char *, struct Object *);
+struct Object *ctno_get_prop(const struct Object, const char *);
+#define ctno_to(ctno, type) ((ctno).is_literal ? ((type *) (ctno).data.literal.value) : NULL)
 struct Object *ctno_claim(struct Object *);
 void ctno_free(struct Object *);
 
 // with reference to tokenizer.h
 struct Token;
-struct Object tkn_to_ctno(struct Token);
+struct Object tkn_value(struct Token);
 
 #endif //CONCATEN_CTN_OBJECT_H
