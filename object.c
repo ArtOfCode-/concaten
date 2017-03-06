@@ -1,6 +1,6 @@
 #include <stdlib.h>
 #include <string.h>
-#include "ctn_object.h"
+#include "object.h"
 #include "tokenizer.h"
 
 struct Object ctno_literal(const void *data, size_t data_size, struct MethodMap *methods) {
