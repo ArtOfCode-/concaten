@@ -15,7 +15,7 @@ struct Object ctno_literal(const void *data, const size_t data_size, struct Meth
             .is_literal = true,
             .methods = methods,
             .error = 0,
-            .refcount = 0
+            .refcount = 1
     };
 }
 
@@ -26,7 +26,7 @@ struct Object ctno_dynamic(struct PropMap pm, struct MethodMap *methods) {
             .is_literal = false,
             .methods = methods,
             .error = 0,
-            .refcount = 0
+            .refcount = 1
     };
 }
 
@@ -55,9 +55,8 @@ struct Object ctno_copy(struct Object copying) {
 bool ctno_set_prop(struct Object *to, const char *key, struct Object *adding) {
     if (to->is_literal) return false;
     struct Object *old = pm_get(to->data.properties, key);
-    ctno_claim(adding);
-    if (!pm_set(&to->data.properties, key, adding)) return false;
-    if (old) ctno_free(old);
+    if (!pm_set(&to->data.properties, key, ctno_claim(adding))) return false;
+    ctno_free(old);
     return true;
 }
 

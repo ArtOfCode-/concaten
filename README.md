@@ -1,4 +1,4 @@
-##Concaten v0.1.1.0
+##Concaten v0.1.3
 
 Concaten is a concatenative, stack-based, strongly but optionally strictly typed, hyperdynamic,
 garbage-collected, interpreted programming language. In order, that means that:
@@ -70,10 +70,10 @@ or an object (data stored by the parser). Even words, Concaten's equivalent for 
   The basic data container for the language. Most commonly seen *everywhere*. Note that each task implicitly
   includes "test what you just wrote".
   * For each of these, design/implement/test
-  * [ ] Type erasure - 0.1.2
+  * [x] Type erasure - 0.1.2
     * object which stores `void *` and size, and has function (macro?) to convert to or from arbitrary types.
     * Store and compare type on retrieval?
-  * [ ] Refcounter - 0.1.3
+  * [x] Refcounter - 0.1.3
     * An object should be freed once its references reach 0. The trick will be architecting things such that
       it can work like that, without being deleted when it's transferred from (for example) the data stack
       to C code that's just using its value.

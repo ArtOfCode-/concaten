@@ -20,7 +20,7 @@ void test_object() {
     ctno_free(&t1);
     ctno_free(&t2);
     // they should still exist, because t3 has a reference to them!
-    printf("freed: %d %s\n", *ctno_to(t1, int), ctno_to(t1, char));
+    printf("freed: %d %s\n", *ctno_to(t1, int), ctno_to(t2, char));
     struct Object t1_get2 = *ctno_get_prop(t3, "1");
     struct Object t2_get2 = *ctno_get_prop(t3, "2");
     printf("retrieved: %d %s\n", *ctno_to(t1_get2, int), ctno_to(t2_get2, char));
