@@ -7,5 +7,7 @@ int main() {
 //    puts("");
 //    test_prop_map();
 //    puts("");
-    test_method_map();
+//    test_method_map();
+//    puts("");
+    test_object();
 }
