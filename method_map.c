@@ -186,9 +186,11 @@ bool mm_rehash(struct MethodMap *mm, size_t new_size) {
 }
 
 void mm_free(struct MethodMap *mm) {
-    --mm->refcount;
-    if (!mm->refcount) {
-        free(mm->buckets);
-        mm->buckets = NULL;
+    if (mm) {
+        --mm->refcount;
+        if (!mm->refcount) {
+            free(mm->buckets);
+            mm->buckets = NULL;
+        }
     }
 }
