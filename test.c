@@ -10,4 +10,5 @@ int main() {
 //    test_method_map();
 //    puts("");
     test_object();
+    puts("");
 }
