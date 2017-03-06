@@ -83,7 +83,8 @@ or an object (data stored by the parser). Even words, Concaten's equivalent for 
     * The big downside to refcounters is that they don't catch circular references. I need to figure out
       a way to deal with that. Maybe something that keeps track of all objects with refcount > 0 and searches
       through their references to ensure no loops? Graph theory should have an answer.
-  
+
+###Upcoming milestones
 
 * `code_block.h` - 0.2
 * `ctn_runnable.h` - 0.3
