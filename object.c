@@ -52,10 +52,22 @@ struct Object ctno_copy(struct Object copying) {
     return ret;
 }
 
+bool check_for_cycles(struct Object *checking, struct Object *in) {
+    if (in->is_literal) return false;
+    for (size_t i = 0; i < in->data.properties.bucket_count; ++i) {
+        struct PM_Bucket *bk = &in->data.properties.buckets[i];
+        for (size_t j = 0; j < bk->count; ++j) {
+            
+        }
+    }
+}
+
 bool ctno_set_prop(struct Object *to, const char *key, struct Object *adding) {
     if (to->is_literal) return false;
     struct Object *old = pm_get(to->data.properties, key);
-    if (!pm_set(&to->data.properties, key, ctno_claim(adding))) return false;
+    if (check_for_cycles(to, adding)) return false;
+    if (!pm_set(&to->data.properties, key, adding)) return false;
+    ctno_claim(adding);
     ctno_free(old);
     return true;
 }
