@@ -57,9 +57,13 @@ bool check_for_cycles(struct Object *checking, struct Object *in) {
     for (size_t i = 0; i < in->data.properties.bucket_count; ++i) {
         struct PM_Bucket *bk = &in->data.properties.buckets[i];
         for (size_t j = 0; j < bk->count; ++j) {
-            
+            if (bk->items[j].val == checking ||
+                    check_for_cycles(checking, bk->items[i].val)) {
+                return true;
+            }
         }
     }
+    return false;
 }
 
 bool ctno_set_prop(struct Object *to, const char *key, struct Object *adding) {
