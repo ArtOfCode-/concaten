@@ -8,7 +8,8 @@ garbage-collected, interpreted programming language. In order, that means that:
 2. **stack-based** - Results, rather than being passed directly to methods or stored in variables, go onto
    an intermediary data stack, on which they can stay indefinitely. Note that this may occur in other
    languages like C, as part of the implementation of passing parameters to methods; however, Concaten's is
-   persistent.
+   persistent -- C's, if not empty after all the parameters have been passed to the method, is messing
+   something up.
 3. **strongly but optionally strictly typed** - Most methods related to variable assignment take a type as
    an optional parameter, and check that the datum to be stored is of that type. They are **optional**,
    however, and duck typing works fine in Concaten. At the same time, objects of one type are never
