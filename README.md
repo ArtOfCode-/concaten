@@ -1,4 +1,4 @@
-##Concaten v0.1.3
+##Concaten v0.1.4
 
 Concaten is a concatenative, stack-based, strongly but optionally strictly typed, hyperdynamic,
 garbage-collected, interpreted programming language. In order, that means that:
@@ -50,44 +50,23 @@ doesn't appear in the git repo READMEs.
 
 ###Current milestone
 
-#### `ctn_object.h` - 0.1
+#### `data_stack.h` - 0.2
 
-The building block of the language. Even lambdas are manipulatable objects.
+This is where things are stored when they're not quite ready to be used yet. The presence of a data stack
+is one thing that makes Concaten unique, and uniquely powerful.
 
-- [x] `prop_map.h` - 0.1.0  
-  PropMap is the property map in `Object`s. It'll also serve nicely as the template from which to draw
-    when I'm writing `MethodMap` and, possibly, `ScopeStack` (much later).
-  * [x] Define interface
-  * [x] Implement methods  
-    Initially implemented with `int` values, but a macro should make switching
-      those out for Object when that's complete easy.
-  * [x] Test methods
-- [x] `method_map.h` - 0.1.1  
-  Should be mostly the same as `prop_map`, with a different value type.
-  * [x] Define interface (if different)
-  * [x] Implement methods (probably via copy/paste)
-  * [x] Test methods (even if mostly similar)
-- [ ] `ctn_object.h`  
-  The basic data container for the language. Most commonly seen *everywhere*.
-  * For each of these, design/implement/test
-  * [x] Type erasure - 0.1.2  
-    An object which stores `void *` and size, and has function (macro?) to convert to/from arbitrary types.
-  * [x] Refcounter - 0.1.3  
-    An object should be freed once its references reach 0. The trick will be architecting things such that
-      it can work like that, without being deleted when it's transferred from (for example) the data stack
-      to C code that's just using its value.
-  * [ ] Circular references - 0.1.4  
-    The big downside to refcounters is that they don't catch circular references. I need to figure out
-      a way to deal with that. Maybe a separate thread that occasionally looks through every object for
-      cycles? Then I just need to do something fancy with mutexes to prevent modification while that object
-      is getting checked, but I'd probably have had to do that to support multithreading anyway.
-  * **NB**: Testing this thoroughly will be difficult, given the complexity of the code that's going to be
-    using it. It may be better to test it indirectly, through known-working pieces that use it.
+* [ ] `data_stack.h`  
+  There isn't much to do in this one (which is a welcome relief after `object.h`). I just need to:
+  * [ ] Pick a data structure.  
+    Requirements: O(1) push/pop, O(n) or better copy. Linked list with mini-refcounter could do that.
+  * [ ] Design the interface.
+    I need, at the very least, `dst_new`, `dst_push`, `dst_pop`, and `dst_copy`. I might need more; time
+      will tell. 
+  * [ ] Implement the functions.
+  * [ ] Test them as rigorously as possible.
 
 ###Upcoming milestones
 
-* [ ] `data_stack.h` - 0.2  
-  The global data stack, used to pass data into and out of functions. Normal FIFO structure of `Object`s.
 * [ ] `token_stack.h` - 0.3
   The stack from which tokens to evaluate are parsed. In the implementation, this isn't actually a stack,
     but it's used as one in Concaten code, so it doesn't really matter.
@@ -141,4 +120,6 @@ The building block of the language. Even lambdas are manipulatable objects.
     even think about things like comments or whitespace -- it just takes the tokens and runs with them.  
   Can read from both a string in memory and a file on the disk directly. The former will make `eval`
     easier to code, and the latter makes the interpreter a little easier to write.
-
+- [x] `ctn_object.h` - 0.1      
+  The building block of the language. Even lambdas are manipulatable objects. Can store any type of data,
+    because Concaten is dynamically typed, after all.
