@@ -121,10 +121,17 @@ The building block of the language. Even lambdas are manipulatable objects.
   * File I/O
   * String manipulation
   * Math
-* [ ] Multithreading - 2.0
+  * Regex (that'll be a lot of effort)
+  * GUI (ditto)
+* [ ] Multithreading - 2.0  
+  This is going to require something close to a complete rewrite, to make sure everything is as thread-safe
+    as it can get.
   * [Task](https://msdn.microsoft.com/en-us/library/dd537609.aspx)s?
   * Asynchronous versions of the Networking and File I/O APIs.
-* [ ] C code linking at runtime (like Python) - 3.0
+  * Events? (technically possible already, but easier with multithreading)
+* [ ] C code linking at runtime (like Python) - 3.0  
+  That way, people can write Concaten libraries in C, for what'll probably be a slight speed boost, but
+    also lower-level access to the OS than Concaten allows.
 
 ###Previous milestones
 
