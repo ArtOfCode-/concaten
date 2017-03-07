@@ -24,6 +24,11 @@ void test_object() {
     struct Object t1_get2 = *ctno_get_prop(t3, "1");
     struct Object t2_get2 = *ctno_get_prop(t3, "2");
     printf("retrieved: %d %s\n", *ctno_to(t1_get2, int), ctno_to(t2_get2, char));
+    printf("direct cycles allowed: %d\n", ctno_set_prop(&t3, "self", &t3) ? 1 : 0);
+    struct Object t4 = ctno_dynamic(pm_new(8), NULL);
+    ctno_set_prop(&t4, "self2", &t3);
+    printf("indirect cycles allowed: %d\n", ctno_set_prop(&t3, "self", &t4) ? 1 : 0);
+    ctno_free(&t4);
     ctno_free(&t3);
     // and _now_ they should be gone.
 }
