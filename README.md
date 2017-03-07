@@ -37,75 +37,100 @@ consider, and need to add in or change.
 
 ---
 
-> **A note about versions**: My format is `major.milestone.task`, where each is the number for the
-> most recently finished. For example, version `1.1.0` just completed the first task of milestone 2 of
-> verison 1 -- probably something about expanding the standard library. Major version `0` is pre-completion;
-> some of the parts may be done, but not all of it. Major version `1` is the first completed version of
-> the language; from there, I'll iterate based on feedback and input from the users.
+**A note about versions**: My format is `major.milestone.task`, where each is the number for the
+most recently finished. For example, version `1.1.0` just completed the first task of milestone 2 of
+verison 1 -- probably something about expanding the standard library. Major version `0` is pre-completion;
+some of the parts may be done, but not all of it. Major version `1` is the first completed version of
+the language; from there, I'll iterate based on feedback and input from the users.
 
-> You may sometimes see the version as `x.x.x-[name]`. This indicates that it's not the version from the
-> master branch, but some other branch. You'll only see this in the results of `concaten --version`; it
-> doesn't appear in the git repo READMEs.
+You may sometimes see the version as `x.x.x-[name]`. This indicates that it's not the version from the
+master branch, but some other branch. You'll only see this in the results of `concaten --version`; it
+doesn't appear in the git repo READMEs.
 
 ###Current milestone
 
 #### `ctn_object.h` - 0.1
 
-The building block of the language. In Concaten, everything is either a token (an instruction to the parser)
-or an object (data stored by the parser). Even words, Concaten's equivalent for functions, are objects.
+The building block of the language. Even lambdas are manipulatable objects.
 
 - [x] `prop_map.h` - 0.1.0  
   PropMap is the property map in `Object`s. It'll also serve nicely as the template from which to draw
     when I'm writing `MethodMap` and, possibly, `ScopeStack` (much later).
   * [x] Define interface
-  * [x] Implement methods - NOTE: Initially implemented with `int` values, but a macro should make switching
-        those out for Object when that's complete easy.
+  * [x] Implement methods  
+    Initially implemented with `int` values, but a macro should make switching
+      those out for Object when that's complete easy.
   * [x] Test methods
 - [x] `method_map.h` - 0.1.1  
   Should be mostly the same as `prop_map`, with a different value type.
   * [x] Define interface (if different)
   * [x] Implement methods (probably via copy/paste)
   * [x] Test methods (even if mostly similar)
-- [ ] `ctn_object.h`
-  The basic data container for the language. Most commonly seen *everywhere*. Note that each task implicitly
-  includes "test what you just wrote".
+- [ ] `ctn_object.h`  
+  The basic data container for the language. Most commonly seen *everywhere*.
   * For each of these, design/implement/test
-  * [x] Type erasure - 0.1.2
-    * object which stores `void *` and size, and has function (macro?) to convert to or from arbitrary types.
-    * Store and compare type on retrieval?
-  * [x] Refcounter - 0.1.3
-    * An object should be freed once its references reach 0. The trick will be architecting things such that
+  * [x] Type erasure - 0.1.2  
+    An object which stores `void *` and size, and has function (macro?) to convert to/from arbitrary types.
+  * [x] Refcounter - 0.1.3  
+    An object should be freed once its references reach 0. The trick will be architecting things such that
       it can work like that, without being deleted when it's transferred from (for example) the data stack
       to C code that's just using its value.
-    * ~~Remember to use [atomics](http://en.cppreference.com/w/c/atomic), to mitigate possible threading
-      issues. If we decide to do threading in v1, at least.~~ (Threading not implemented in v1)
-  * [ ] Circular references - 0.1.4
-    * The big downside to refcounters is that they don't catch circular references. I need to figure out
-      a way to deal with that. Maybe something that keeps track of all objects with refcount > 0 and searches
-      through their references to ensure no loops? Graph theory should have an answer.
+  * [ ] Circular references - 0.1.4  
+    The big downside to refcounters is that they don't catch circular references. I need to figure out
+      a way to deal with that. Maybe a separate thread that occasionally looks through every object for
+      cycles? Then I just need to do something fancy with mutexes to prevent modification while that object
+      is getting checked, but I'd probably have had to do that to support multithreading anyway.
+  * **NB**: Testing this thoroughly will be difficult, given the complexity of the code that's going to be
+    using it. It may be better to test it indirectly, through known-working pieces that use it.
 
 ###Upcoming milestones
 
-* [ ] `code_block.h` - 0.2
-* [ ] `ctn_runnable.h` - 0.3
-* [ ] `data_stack.h` - 0.4
+* [ ] `data_stack.h` - 0.4  
+  The global data stack, used to pass data into and out of functions. Normal FIFO structure of `Object`s.
 * [ ] `token_stack.h` - 0.5
-* [ ] `scope_stack.h` - 0.6
-* [ ] Thorough code review
-* [ ] Misc. required updates as needed
+  The stack from which tokens to evaluate are parsed. In the implementation, this isn't actually a stack,
+    but it's used as one in Concaten code, so it doesn't really matter.
+* [ ] `code_block.h` - 0.2  
+  A simple object which represents Concaten's equivalent of anonymous functions. Can be run, in addition
+    to being modified at runtime, as it's simply an array of token with some extra words.
+* [ ] `ctn_runnable.h` - 0.3  
+  A combination object so I can either define things in Concaten, through code blocks, or in C, through
+    functions with a certain signature, and call them without worrying about which is which. This layer
+    of abstraction will make it much easier to implement user-defined words.
+* [ ] `scope_stack.h` - 0.6  
+  Contains the list of words. This is a stack so we can sensibly implement things like local variables.
+    Shouldn't be too much trouble; it'll mostly be combining `PropMap` and `DataStack`.
 * [ ] Main method - 0.7
-* [ ] Minimal standard library - 1.0
-* [ ] Debug mode - 1.1
-* [ ] User-created libraries (via namespaces) - 1.2
-* [ ] Decide which libraries to implement first and do them - 1.3
+* [ ] Minimal standard library - 0.8  
+  Words like `if`, `{`, and `puts` so we can play with the language at all.
+* [ ] Thorough code review  
+  I want to find every possible opportunity for improvement. This is in part to hunt down bugs and memory
+    leaks, but also because this project is on my resume, and I want it to be as good as possible.
+* [ ] Misc. required updates as needed
+* [ ] Documentation - 1.0  
+  Including demo code, a detailed up-to-date list of every default global word (like `if`) and what they
+    do, as well as a brief overview of how Concaten works and how to install/run it.
+* [ ] Debug mode - 1.1  
+  Allows breakpoints (w/ `breakpoint`?) and stops execution when exception is thrown outside of a `try`.
+* [ ] User-created libraries - 1.2  
+  `namespace` word that uses some Concaten magic to let people define their own modules. This is in part
+    to encourage other people to write ~~my code for me~~ extensions to Concaten, and in part to set up
+    the framework for the next milestone(s).
+* [ ] Decide which extension libraries to implement, scatter the rest over 2.0 and 3.0 as appropriate
+  * Networking
+  * File I/O
+  * String manipulation
+  * Math
 * [ ] Multithreading - 2.0
-* [ ] C code linking (like Python) - 3.0
+  * [Task](https://msdn.microsoft.com/en-us/library/dd537609.aspx)s?
+  * Asynchronous versions of the Networking and File I/O APIs.
+* [ ] C code linking at runtime (like Python) - 3.0
 
 ###Previous milestones
 
-- [x] `tokenizer.h` - 0.0
-
-  Converts a stream of characters into a stream of tokens. Can read from both a string in memory and a file
-  on the disk directly. The former will make `eval` easier to code, and the latter makes the interpreter a
-  little easier to write.
+- [x] `tokenizer.h` - 0.0  
+  Converts a stream of characters into a stream of tokens. That way, the interpreter doesn't need to
+    even think about things like comments or whitespace -- it just takes the tokens and runs with them.  
+  Can read from both a string in memory and a file on the disk directly. The former will make `eval`
+    easier to code, and the latter makes the interpreter a little easier to write.
 
