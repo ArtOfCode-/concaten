@@ -54,11 +54,11 @@ struct Object ctno_copy(struct Object copying) {
 
 bool check_for_cycles(struct Object *checking, struct Object *in) {
     if (in->is_literal) return false;
+    if (checking == in) return true;
     for (size_t i = 0; i < in->data.properties.bucket_count; ++i) {
         struct PM_Bucket *bk = &in->data.properties.buckets[i];
         for (size_t j = 0; j < bk->count; ++j) {
-            if (bk->items[j].val == checking ||
-                    check_for_cycles(checking, bk->items[i].val)) {
+            if (check_for_cycles(checking, bk->items[j].val)) {
                 return true;
             }
         }
@@ -67,6 +67,7 @@ bool check_for_cycles(struct Object *checking, struct Object *in) {
 }
 
 bool ctno_set_prop(struct Object *to, const char *key, struct Object *adding) {
+    if (!to || !adding || !key) return false;
     if (to->is_literal) return false;
     struct Object *old = pm_get(to->data.properties, key);
     if (check_for_cycles(to, adding)) return false;
