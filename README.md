@@ -85,12 +85,12 @@ The building block of the language. Even lambdas are manipulatable objects.
 
 ###Upcoming milestones
 
-* [ ] `data_stack.h` - 0.4  
+* [ ] `data_stack.h` - 0.2  
   The global data stack, used to pass data into and out of functions. Normal FIFO structure of `Object`s.
-* [ ] `token_stack.h` - 0.5
+* [ ] `token_stack.h` - 0.3
   The stack from which tokens to evaluate are parsed. In the implementation, this isn't actually a stack,
     but it's used as one in Concaten code, so it doesn't really matter.
-* [ ] `code_block.h` - 0.2  
+* [ ] `code_block.h` - 0.4  
   A simple object which represents Concaten's equivalent of anonymous functions. Can be run, in addition
     to being modified at runtime, as it's simply an array of token with some extra words.
 * [ ] `ctn_runnable.h` - 0.3  
