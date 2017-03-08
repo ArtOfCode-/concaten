@@ -107,6 +107,7 @@ struct Tokenizer tknr_from_string(const char *mem, const char *origin) {
         ret.error = CTOR_STR_BAD_STRLEN_FAIL;
         return ret;
     }
+    ret.origin_len = origin_len + 1;
     
     // .source
     char *mem_c = malloc(mem_len + 1);
@@ -162,6 +163,7 @@ struct Tokenizer tknr_from_filepath(const char *path) {
         ret.error = CTOR_FILE_BAD_STRLEN_FAIL;
         return ret;
     }
+    ret.origin_len = path_len + 1;
     
     // .source
     FILE *fptr = fopen(path, "rb");
