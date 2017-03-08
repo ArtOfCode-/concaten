@@ -2,25 +2,25 @@
 
 #include <stdlib.h>
 
-void dst_node_init(struct DST_Node *in, struct Object *value, struct DST_Node *next) {
-    in = malloc(sizeof(struct DST_Node));
-    *in = (struct DST_Node) {
-            .refcount = 1,
-            .next = next,
-            .value = value
-    };
-}
-
-void dst_node_claim(struct DST_Node *claiming) {
+inline void dst_node_claim(struct DST_Node *claiming) {
     ++claiming->refcount;
 }
 
-void dst_node_free(struct DST_Node *freeing) {
+inline void dst_node_free(struct DST_Node *freeing) {
     --freeing->refcount;
     if (freeing->refcount == 0) {
         ctno_free(freeing->value);
         dst_node_free(freeing->next);
     }
+}
+
+inline struct DST_Node dst_node_new(struct Object *value, struct DST_Node *next) {
+    dst_node_claim(next);
+    return (struct DST_Node) {
+            .value = value,
+            .next = next,
+            .refcount = 0
+    };
 }
 
 struct DataStack dst_new() {
@@ -35,13 +35,26 @@ struct DataStack dst_new() {
 // the node it points to has its refcount go down by one.
 
 bool dst_push(struct DataStack *dst, struct Object *pushing) {
-    dst->head = dst_node_init(dst->head, pushing, dst->head);
+    struct DST_Node *val = malloc(sizeof(*dst->head));
+    if (!val) {
+        return false;
+    }
+    *val = (struct DST_Node) {
+            .refcount = 1, // claimed for the stack by default
+            .next = dst->head,
+            .value = pushing
+    };
+    // head would be claimed by `val`, then freed by stack, so refcount stays the same
+    dst->head = val;
+    return true;
 }
 
 struct Object *dst_pop(struct DataStack *dst) {
     if (!dst->head) return NULL;
     struct Object *ret = dst->head->value;
     struct DST_Node *next = dst->head->next;
+    // stack is no longer pointing to it; other things might, so it might stay
+    dst_node_free(dst->head);
     dst->head = next;
     return ret;
 }
@@ -57,7 +70,7 @@ struct DataStack dst_copy(const struct DataStack copying) {
 void dst_free(struct DataStack *freeing) {
     struct DST_Node *cur = freeing->head;
     while (cur) {
-        node_free(cur);
+        dst_node_free(cur);
         cur = cur->next;
     }
 }
