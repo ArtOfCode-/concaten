@@ -2,19 +2,21 @@
 
 #include <stdlib.h>
 
-inline void dst_node_claim(struct DST_Node *claiming) {
+void dst_node_claim(struct DST_Node *claiming) {
     ++claiming->refcount;
 }
 
-inline void dst_node_free(struct DST_Node *freeing) {
-    --freeing->refcount;
-    if (freeing->refcount == 0) {
-        ctno_free(freeing->value);
-        dst_node_free(freeing->next);
+void dst_node_free(struct DST_Node *freeing) {
+    if (freeing) {
+        --freeing->refcount;
+        if (freeing->refcount == 0) {
+            ctno_free(freeing->value);
+            dst_node_free(freeing->next);
+        }
     }
 }
 
-inline struct DST_Node dst_node_release(struct Object *value, struct DST_Node *next) {
+struct DST_Node dst_node_init(struct Object *value, struct DST_Node *next) {
     dst_node_claim(next);
     return (struct DST_Node) {
             .value = ctno_claim(value),
@@ -35,7 +37,7 @@ struct DataStack dst_new() {
 // the node it points to has its refcount go down by one.
 
 bool dst_push(struct DataStack *dst, struct Object *pushing) {
-    struct DST_Node *val = malloc(sizeof(*dst->head));
+    struct DST_Node *val = malloc(sizeof(*val));
     if (!val) {
         return false;
     }
