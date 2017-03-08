@@ -1,4 +1,4 @@
-##Concaten v0.2.3
+##Concaten v0.2.4
 
 Concaten is a concatenative, stack-based, strongly but optionally strictly typed, hyperdynamic,
 garbage-collected, interpreted programming language. In order, that means that:
@@ -50,20 +50,12 @@ doesn't appear in the git repo READMEs.
 
 ###Current milestone
 
-#### `data_stack.h` - 0.2
+#### `token_stack.h` - 0.3
 
-This is where things are stored when they're not quite ready to be used yet. The presence of a data stack
-is one thing that makes Concaten unique, and uniquely powerful.
-
-* [ ] `data_stack.h`  
-  There isn't much to do in this one (which is a welcome relief after `object.h`). I just need to:
-  * [x] Pick a data structure - 0.2.1  
-    Requirements: O(1) push/pop, O(n) or better copy. Linked list with mini-refcounter could do that.
-  * [x] Design the interface - 0.2.2  
-    I need, at the very least, `dst_new`, `dst_push`, `dst_pop`, and `dst_copy`. I might need more; time
-      will tell. 
-  * [x] Implement the functions - 0.2.3
-  * [ ] Test them as rigorously as possible.
+* [ ] `token_stack.h` - 0.3.0  
+  A stack of stacks (so `return` works). The bottom "stack" really pulls from a tokenizer.
+  * [ ] Finish defining tasks!
+  * [ ] Define interface. Must include at least `push`, `pop`, `push_group`, `pop_group`, etc.
 
 ###Upcoming milestones
 
@@ -123,3 +115,6 @@ is one thing that makes Concaten unique, and uniquely powerful.
 - [x] `ctn_object.h` - 0.1      
   The building block of the language. Even lambdas are manipulatable objects. Can store any type of data,
     because Concaten is dynamically typed, after all.
+- [x] `data_stack.h` - 0.2  
+  The central data stack. Contains intermediary results; words pull their arguments from it and push their
+    results to it.
