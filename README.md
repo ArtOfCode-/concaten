@@ -52,10 +52,13 @@ doesn't appear in the git repo READMEs.
 
 #### `token_stack.h` - 0.3
 
-* [ ] `token_stack.h` - 0.3.0  
+* [ ] `token_stack.h`  
   A stack of stacks (so `return` works). The bottom "stack" really pulls from a tokenizer.
-  * [ ] Finish defining tasks!
-  * [ ] Define interface. Must include at least `push`, `pop`, `push_group`, `pop_group`, etc.
+  * [ ] Define interface - 0.3.0  
+    Must include at least `push`, `pop`, `push_group`, `pop_group`, plus ctor from tokenizer
+  * [ ] Implement - 0.3.1
+  * [ ] Test - 0.3.2
+  * [ ] Test again, because this is bound to be even more complicated than `DataStack`.
 
 ###Upcoming milestones
 
