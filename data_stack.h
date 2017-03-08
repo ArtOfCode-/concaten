@@ -18,7 +18,7 @@ struct DataStack {
 };
 
 struct DataStack dst_new();
-bool dst_push(struct DataStack *, Object *);
+bool dst_push(struct DataStack *, struct Object *);
 struct Object *dst_pop(struct DataStack *);
 struct DataStack dst_copy(const struct DataStack);
 void dst_free(struct DataStack *);
