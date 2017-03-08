@@ -67,7 +67,7 @@ is one thing that makes Concaten unique, and uniquely powerful.
 
 ###Upcoming milestones
 
-* [ ] `token_stack.h` - 0.3
+* [ ] `token_stack.h` - 0.3  
   The stack from which tokens to evaluate are parsed. In the implementation, this isn't actually a stack,
     but it's used as one in Concaten code, so it doesn't really matter.
 * [ ] `code_block.h` - 0.4  
