@@ -25,24 +25,19 @@ void test_data_stack() {
     printf(LINE "2 got expected value: %c\n", dst2_got ? (dst2_got == &baz ? 't' : 'f') : 'n');
     dst2_got = dst_pop(&dst2);
     printf(LINE "2 got expected value: %c\n", dst2_got ? (dst2_got == &bar ? 't' : 'f') : 'n');
-    
     dst_push(&dst2, &wuf);
     dst_push(&dst2, &baz);
-    
-    dst_push(&dst1, &foo);
-    dst_push(&dst1, &bar);
-    
     dst2_got = dst_pop(&dst2);
     printf(LINE "2 got expected value: %c\n", dst2_got ? (dst2_got == &baz ? 't' : 'f') : 'n');
+    dst_push(&dst1, &foo);
     dst2_got = dst_pop(&dst2);
     printf(LINE "2 got expected value: %c\n", dst2_got ? (dst2_got == &wuf ? 't' : 'f') : 'n');
     dst2_got = dst_pop(&dst2);
+    dst_push(&dst1, &bar);
     printf(LINE "2 got expected value: %c\n", dst2_got ? (dst2_got == &foo ? 't' : 'f') : 'n');
     dst2_got = dst_pop(&dst2);
     printf(LINE "2 got expected value: %c\n", dst2_got ? 'f' : 't');
-    
     puts("");
-    
     struct Object *dst1_got = dst_pop(&dst1);
     printf(LINE "1 got expected value: %c\n", dst1_got ? (dst1_got == &bar ? 't' : 'f') : 'n');
     dst1_got = dst_pop(&dst1);
