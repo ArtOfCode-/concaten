@@ -14,10 +14,10 @@ inline void dst_node_free(struct DST_Node *freeing) {
     }
 }
 
-inline struct DST_Node dst_node_new(struct Object *value, struct DST_Node *next) {
+inline struct DST_Node dst_node_release(struct Object *value, struct DST_Node *next) {
     dst_node_claim(next);
     return (struct DST_Node) {
-            .value = value,
+            .value = ctno_claim(value),
             .next = next,
             .refcount = 0
     };
@@ -44,7 +44,7 @@ bool dst_push(struct DataStack *dst, struct Object *pushing) {
             .next = dst->head,
             .value = pushing
     };
-    // head would be claimed by `val`, then freed by stack, so refcount stays the same
+    // head would be claimed by `val`, then released by stack, so refcount stays the same
     dst->head = val;
     return true;
 }
