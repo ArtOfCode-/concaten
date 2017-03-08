@@ -14,7 +14,6 @@ struct DST_Node {
 };
 struct DataStack {
     struct DST_Node *head;
-    size_t count;
 };
 
 struct DataStack dst_new();
