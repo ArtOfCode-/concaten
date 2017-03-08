@@ -1,4 +1,4 @@
-##Concaten v0.1.4
+##Concaten v0.2.3
 
 Concaten is a concatenative, stack-based, strongly but optionally strictly typed, hyperdynamic,
 garbage-collected, interpreted programming language. In order, that means that:
@@ -57,12 +57,12 @@ is one thing that makes Concaten unique, and uniquely powerful.
 
 * [ ] `data_stack.h`  
   There isn't much to do in this one (which is a welcome relief after `object.h`). I just need to:
-  * [x] Pick a data structure.  
+  * [x] Pick a data structure - 0.2.1  
     Requirements: O(1) push/pop, O(n) or better copy. Linked list with mini-refcounter could do that.
-  * [x] Design the interface.
+  * [x] Design the interface - 0.2.2  
     I need, at the very least, `dst_new`, `dst_push`, `dst_pop`, and `dst_copy`. I might need more; time
       will tell. 
-  * [ ] Implement the functions.
+  * [x] Implement the functions - 0.2.3
   * [ ] Test them as rigorously as possible.
 
 ###Upcoming milestones
