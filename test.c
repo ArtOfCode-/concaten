@@ -9,6 +9,8 @@ int main() {
 //    puts("");
 //    test_method_map();
 //    puts("");
-    test_object();
+//    test_object();
+//    puts("");
+    test_data_stack();
     puts("");
 }
