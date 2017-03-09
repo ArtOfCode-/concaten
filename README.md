@@ -62,9 +62,6 @@ doesn't appear in the git repo READMEs.
 
 ###Upcoming milestones
 
-* [ ] `token_stack.h` - 0.3  
-  The stack from which tokens to evaluate are parsed. In the implementation, this isn't actually a stack,
-    but it's used as one in Concaten code, so it doesn't really matter.
 * [ ] `code_block.h` - 0.4  
   A simple object which represents Concaten's equivalent of anonymous functions. Can be run, in addition
     to being modified at runtime, as it's simply an array of token with some extra words.
@@ -78,10 +75,15 @@ doesn't appear in the git repo READMEs.
 * [ ] Main method - 0.7
 * [ ] Minimal standard library - 0.8  
   Words like `if`, `{`, and `puts` so we can play with the language at all.
-* [ ] Thorough code review  
-  I want to find every possible opportunity for improvement. This is in part to hunt down bugs and memory
-    leaks, but also because this project is on my resume, and I want it to be as good as possible.
 * [ ] Misc. required updates as needed
+  * [ ] Thorough code review  
+    Finding places where the code is needlessly complicated, duplicated, or the like, and fixing it.
+  * [ ] Profiling/optimizing.  
+    Design some code that'll test as many features as possible, as strenuously as possible, so that we
+      have a good program to benchmark and profile with. I want to optimize the slowest parts.
+  * [ ] Benchmarking between Concaten and equivalent-level languages  
+    Probably Python or Ruby. I want at most 3x time taken, and for that value to be as low as possible.
+* [ ] Beta testing?
 * [ ] Documentation - 1.0  
   Including demo code, a detailed up-to-date list of every default global word (like `if`) and what they
     do, as well as a brief overview of how Concaten works and how to install/run it.
@@ -98,15 +100,19 @@ doesn't appear in the git repo READMEs.
   * Math
   * Regex (that'll be a lot of effort)
   * GUI (ditto)
-* [ ] Multithreading - 2.0  
+* [ ] Multithreading/thread safety - 2.0  
   This is going to require something close to a complete rewrite, to make sure everything is as thread-safe
     as it can get.
+  * Make everything thread-safe (mutexes on read/write; allow parallel reads but not parallel writes)
   * [Task](https://msdn.microsoft.com/en-us/library/dd537609.aspx)s?
   * Asynchronous versions of the Networking and File I/O APIs.
   * Events? (technically possible already, but easier with multithreading)
 * [ ] C code linking at runtime (like Python) - 3.0  
   That way, people can write Concaten libraries in C, for what'll probably be a slight speed boost, but
     also lower-level access to the OS than Concaten allows.
+* [ ] Full Unicode support - 4.0  
+  Correctly interprets source code with Unicode characters (might already, but needs testing); strings go
+    from collections of ASCII bytes to collections of Unicode codepoints.
 
 ###Previous milestones
 
