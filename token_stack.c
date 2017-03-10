@@ -30,7 +30,7 @@ bool tst_push_change(struct TokenStack *tst, const struct TS_ChangeNode change) 
         return false;
     }
     *tst->latest_change = change;
-    tst->latest_change->prev_count = old_head ? old_head->prev_count + 1 : 0;
+//    tst->latest_change->prev_count = old_head ? old_head->prev_count + 1 : 0;
     tst->latest_change->prev = old_head;
     return true;
 }
@@ -61,11 +61,18 @@ bool tst_push(struct TokenStack *to, const struct Token pushing) {
         level->token_head = old_head;
         return false;
     }
-    
     *level->token_head = (struct TS_TokenNode) {
             .refcount = 1,
             .next = old_head,
             .value = pushing
     };
     return true;
+}
+
+struct Token *tst_pop(struct TokenStack *from) {
+    if (from->level_head) {
+        
+    } else {
+        
+    }
 }
