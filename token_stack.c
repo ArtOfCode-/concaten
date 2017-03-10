@@ -22,6 +22,7 @@ void tst_layer_node_free(struct TS_LevelNode *freeing) {
 }
 
 bool tst_push_change(struct TokenStack *tst, const struct TS_ChangeNode change) {
+    if (!tst->tracking_changes) return true;
     struct TS_ChangeNode *old_head = tst->latest_change;
     tst->latest_change = malloc(sizeof(struct TS_ChangeNode));
     if (!tst->latest_change) {
@@ -29,6 +30,8 @@ bool tst_push_change(struct TokenStack *tst, const struct TS_ChangeNode change) 
         return false;
     }
     *tst->latest_change = change;
+    tst->latest_change->prev_count = old_head ? old_head->prev_count + 1 : 0;
+    tst->latest_change->prev = old_head;
     return true;
 }
 
@@ -52,9 +55,9 @@ bool tst_push(struct TokenStack *to, const struct Token pushing) {
     // we could claim then free it, but that really serves no purpose other
     // than wasting cycles.
     struct TS_TokenNode *old_head = level->token_head;
-    
     level->token_head = malloc(sizeof(*old_head));
-    if (!level->token_head) {
+    if (!level->token_head ||
+            !tst_push_change(to, { .type = TSCN_TOKEN_PUSH })) {
         level->token_head = old_head;
         return false;
     }
