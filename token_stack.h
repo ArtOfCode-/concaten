@@ -30,7 +30,7 @@ struct TS_ChangeNode {
 struct TokenStack {
     struct TS_LevelNode *level_head;
     struct Tokenizer tknr;
-    bool tknr_ours;
+    bool tknr_ours; // used if we ever offer in-place initialization
     struct TS_ChangeNode *latest_change;
     bool tracking_changes;
 };
