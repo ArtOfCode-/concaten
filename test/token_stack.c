@@ -26,7 +26,8 @@ struct Token gen_token(size_t layer_num) {
 }
 
 void test_token_stack() {
-    struct TokenStack tst = tst_new(tknr_from_string("1 2 3 4 5", "mem"));
+    struct Tokenizer tknr = tknr_from_string("1 2 3 4 5", "mem");
+    struct TokenStack tst = tst_new(tknr);
     struct Token popped;
     
     printf("push: %d\n", tst_push(&tst, gen_token(1)));
@@ -53,14 +54,51 @@ void test_token_stack() {
     printf("push: %d\n", tst_push(&tst, gen_token(6)));
     
     printf("pop: %d\n", tst_pop(&tst, &popped));
+    printf("code: %zu-%zu\n", popped.index, popped.line);
+    printf("pop: %d\n", tst_pop(&tst, &popped));
+    printf("code: %zu-%zu\n", popped.index, popped.line);
+    printf("pop: %d\n", tst_pop(&tst, &popped));
+    printf("code: %zu-%zu\n", popped.index, popped.line);
+    printf("pop: %d\n", tst_pop(&tst, &popped));
+    printf("code: %zu-%zu\n", popped.index, popped.line);
+    printf("pop: %d\n", tst_pop(&tst, &popped));
+    printf("code: %zu-%zu\n", popped.index, popped.line);
     
-    printf("pop: %d\n", tst_pop(&tst, &popped));
-    printf("pop: %d\n", tst_pop(&tst, &popped));
-    printf("pop: %d\n", tst_pop(&tst, &popped));
-    printf("pop: %d\n", tst_pop(&tst, &popped));
-    
+    printf("restoring state...");
     tst_restore_state(&tst);
+    puts("done");
     
-    tknr_free(&tst.tknr);
+    printf("pop: %d\n", tst_pop(&tst, &popped));
+    printf("code: %zu-%zu\n", popped.index, popped.line);
+    printf("pop: %d\n", tst_pop(&tst, &popped));
+    printf("code: %zu-%zu\n", popped.index, popped.line);
+    printf("pop: %d\n", tst_pop(&tst, &popped));
+    printf("code: %zu-%zu\n", popped.index, popped.line);
+    printf("pop: %d\n", tst_pop(&tst, &popped));
+    printf("code: %zu-%zu\n", popped.index, popped.line);
+    printf("pop: %d\n", tst_pop(&tst, &popped));
+    printf("code: %zu-%zu\n", popped.index, popped.line);
+    printf("pop: %d\n", tst_pop(&tst, &popped));
+    printf("code: %zu-%zu\n", popped.index, popped.line);
+    printf("pop: %d\n", tst_pop(&tst, &popped));
+    printf("code: %zu-%zu\n", popped.index, popped.line);
+    printf("pop: %d\n", tst_pop(&tst, &popped));
+    printf("code: %zu-%zu\n", popped.index, popped.line);
+    printf("pop: %d\n", tst_pop(&tst, &popped));
+    printf("code: %zu-%zu\n", popped.index, popped.line);
+    printf("pop: %d\n", tst_pop(&tst, &popped));
+    printf("code: %zu-%zu\n", popped.index, popped.line);
+    printf("pop: %d\n", tst_pop(&tst, &popped));
+    printf("code: %zu-%zu\n", popped.index, popped.line);
+    printf("pop: %d\n", tst_pop(&tst, &popped));
+    printf("code: %zu-%zu\n", popped.index, popped.line);
+    printf("pop: %d\n", tst_pop(&tst, &popped));
+    printf("code: %zu-%zu\n", popped.index, popped.line);
+    printf("pop: %d\n", tst_pop(&tst, &popped));
+    printf("code: %zu-%zu\n", popped.index, popped.line);
+    
+    puts("freeing");
     tst_free(&tst);
+    tknr_free(&tknr);
+    puts("done");
 }

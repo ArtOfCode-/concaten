@@ -19,7 +19,6 @@ enum TSCN_Type { TSCN_TOKEN_POP, TSCN_TOKEN_PUSH, TSCN_LEVEL_PUSH, TSCN_LEVEL_PO
 
 struct TS_ChangeNode {
     struct TS_ChangeNode *prev;
-//    size_t prev_count;
     enum TSCN_Type type;
     union {
         struct Token popped;//type == TSCN_TOKEN_POP
@@ -30,7 +29,6 @@ struct TS_ChangeNode {
 struct TokenStack {
     struct TS_LevelNode *level_head;
     struct Tokenizer tknr;
-    bool tknr_ours; // used if we ever offer in-place initialization
     struct TS_ChangeNode *latest_change;
     bool tracking_changes;
 };
