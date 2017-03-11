@@ -17,18 +17,22 @@ struct TS_LevelNode {
     size_t refcount;
 };
 
-enum TSCN_Type { TSCN_TOKEN_POP, TSCN_TOKEN_PUSH, TSCN_LAYER_PUSH, TSCN_LAYER_POP };
+enum TSCN_Type { TSCN_TOKEN_POP, TSCN_TOKEN_PUSH, TSCN_LEVEL_PUSH, TSCN_LEVEL_POP };
 
 struct TS_ChangeNode {
     struct TS_ChangeNode *prev;
-    size_t prev_count;
+//    size_t prev_count;
     enum TSCN_Type type;
-    struct Token popped; // only set if type == TSNC_TOKEN_POP, otherwise empty
+    union {
+        struct Token popped;//type == TSCN_TOKEN_POP
+        struct TS_TokenNode *popped_head;//type == TSCN_LEVEL_POP
+    } data;
 };
 
 struct TokenStack {
     struct TS_LevelNode *level_head;
     struct Tokenizer tknr;
+    bool tknr_ours;
     struct TS_ChangeNode *latest_change;
     bool tracking_changes;
 };
@@ -37,9 +41,9 @@ struct TokenStack tst_new(const struct Tokenizer);
 void tst_save_state(struct TokenStack *);
 void tst_restore_state(struct TokenStack *);
 bool tst_push(struct TokenStack *, const struct Token);
-struct Token *tst_pop(struct TokenStack *);
-bool tst_push_layer(struct TokenStack *);
-bool tst_pop_layer(struct TokenStack *);
+bool tst_pop(struct TokenStack *, struct Token *);
+bool tst_push_level(struct TokenStack *);
+bool tst_pop_level(struct TokenStack *);
 void tst_free(struct TokenStack *);
 
 #endif //CONCATEN_TOKEN_STACK_H
