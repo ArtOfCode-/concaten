@@ -58,11 +58,6 @@ struct TokenStack tst_new(const struct Tokenizer underlying) {
 }
 
 bool tst_push(struct TokenStack *to, const struct Token pushing) {
-    if (!tst_push_change(to, (struct TS_ChangeNode) {
-            .type = TSCN_TOKEN_PUSH
-    })) {
-        return false;
-    }
     struct TS_LevelNode *level = to->level_head;
     struct TS_TokenNode *old_head = level->token_head;
     level->token_head = malloc(sizeof(struct TS_TokenNode));
@@ -115,12 +110,10 @@ bool tst_peek(const struct TokenStack from, struct Token *ret) {
 }
 
 bool tst_push_level(struct TokenStack *into) {
-    if (!tst_push_change(into, (struct TS_ChangeNode) { .type = TSCN_LEVEL_PUSH })) {
-        return false;
-    }
     struct TS_LevelNode *old_head = into->level_head;
     into->level_head = malloc(sizeof(struct TS_LevelNode));
-    if (!into->level_head) {
+    if (!into->level_head ||
+            !tst_push_change(into, (struct TS_ChangeNode) { .type = TSCN_LEVEL_PUSH })) {
         into->level_head = old_head;
         return false;
     }
@@ -133,8 +126,15 @@ bool tst_push_level(struct TokenStack *into) {
 }
 
 bool tst_pop_level(struct TokenStack *from) {
-    if (!tst_push_change(from, (struct TS_ChangeNode) { .type = TSCN_LEVEL_POP })) {
-        return false;
+    struct TS_LevelNode *level = from->level_head;
+    while (level && !level->token_head) {
+        from->level_head = level->next;
+        tst_level_node_free(level);
+        level = from->level_head;
     }
-    // TODO level pop -- remember to store nodes (incr. refcount)
+    if (!level) return false;
+    if (from->tracking_changes) {
+        ++level->token_head->refcount;
+        
+    }
 }
