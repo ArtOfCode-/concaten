@@ -5,6 +5,8 @@
 
 #include "tokenizer.h"
 
+// TODO Are the refcounts needed?
+
 struct TS_TokenNode {
     struct TS_TokenNode *next;
     struct Token value;

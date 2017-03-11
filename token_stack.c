@@ -134,6 +134,9 @@ bool tst_pop_level(struct TokenStack *from) {
     }
     if (!level) return false;
     if (from->tracking_changes) {
+        if (!tst_push_change(from, (struct TS_ChangeNode) { .type = TSCN_LEVEL_POP })) {
+            return false;
+        }
         ++level->token_head->refcount;
         
     }
