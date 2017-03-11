@@ -6,5 +6,6 @@ void test_prop_map();
 void test_method_map();
 void test_object();
 void test_data_stack();
+void test_token_stack();
 
 #endif //CONCATEN_TESTS_H

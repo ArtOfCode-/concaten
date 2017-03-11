@@ -11,6 +11,8 @@ int main() {
 //    puts("");
 //    test_object();
 //    puts("");
-    test_data_stack();
+//    test_data_stack();
+//    puts("");
+    test_token_stack();
     puts("");
 }
