@@ -1,6 +1,7 @@
 #include "token_stack.h"
 
 void tst_token_node_free(struct TS_TokenNode *freeing) {
+    // TODO Make iterative instead of recursive
     if (freeing) {
         --freeing->refcount;
         if (!freeing->refcount) {
@@ -11,6 +12,7 @@ void tst_token_node_free(struct TS_TokenNode *freeing) {
 }
 
 void tst_level_node_free(struct TS_LevelNode *freeing) {
+    // TODO Make iterative instead of recursive
     if (freeing) {
         --freeing->refcount;
         if (!freeing->refcount) {
@@ -53,8 +55,6 @@ struct TokenStack tst_new(const struct Tokenizer underlying) {
 
 bool tst_push(struct TokenStack *to, const struct Token pushing) {
     struct TS_LevelNode *level = to->level_head;
-    // we could claim then free it, but that really serves no purpose other
-    // than wasting cycles.
     struct TS_TokenNode *old_head = level->token_head;
     level->token_head = malloc(sizeof(struct TS_TokenNode));
     if (!level->token_head ||
