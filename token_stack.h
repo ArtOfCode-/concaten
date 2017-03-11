@@ -5,18 +5,14 @@
 
 #include "tokenizer.h"
 
-// TODO Are the refcounts needed?
-
 struct TS_TokenNode {
     struct TS_TokenNode *next;
     struct Token value;
-    size_t refcount;
 };
 
 struct TS_LevelNode {
     struct TS_LevelNode *next;
     struct TS_TokenNode *token_head;
-    size_t refcount;
 };
 
 enum TSCN_Type { TSCN_TOKEN_POP, TSCN_TOKEN_PUSH, TSCN_LEVEL_PUSH, TSCN_LEVEL_POP };
