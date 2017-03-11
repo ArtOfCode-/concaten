@@ -1,24 +1,28 @@
 #include "token_stack.h"
 
 void tst_token_node_free(struct TS_TokenNode *freeing) {
-    // TODO Make iterative instead of recursive
-    if (freeing) {
+    while (freeing) {
         --freeing->refcount;
         if (!freeing->refcount) {
-            tst_token_node_free(freeing->next);
+            struct TS_TokenNode *next = freeing->next;
             free(freeing);
+            freeing = next;
+        } else {
+            break;
         }
     }
 }
 
 void tst_level_node_free(struct TS_LevelNode *freeing) {
-    // TODO Make iterative instead of recursive
-    if (freeing) {
+    while (freeing) {
         --freeing->refcount;
         if (!freeing->refcount) {
             tst_token_node_free(freeing->token_head);
-            tst_level_node_free(freeing->next);
+            struct TS_LevelNode *next = freeing->next;
             free(freeing);
+            freeing = next;
+        } else {
+            break;
         }
     }
 }
