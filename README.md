@@ -54,7 +54,7 @@ doesn't appear in the git repo READMEs.
 
 * [ ] `token_stack.h`  
   A stack of stacks (so `return` works). The bottom "stack" really pulls from a tokenizer.
-  * [ ] Define interface - 0.3.0  
+  * [x] Define interface - 0.3.0  
     Must include at least `push`, `pop`, `push_group`, `pop_group`, plus ctor from tokenizer
   * [ ] Implement - 0.3.1
   * [ ] Test - 0.3.2
