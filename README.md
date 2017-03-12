@@ -52,19 +52,13 @@ doesn't appear in the git repo READMEs.
 
 #### `token_stack.h` - 0.3
 
-* [x] `token_stack.h`  
-  A stack of stacks (so `return` works). The bottom "stack" really pulls from a tokenizer.
-  * [x] Define interface - 0.3.0  
-    Must include at least `push`, `pop`, `push_group`, `pop_group`, plus ctor from tokenizer
-  * [x] Implement - 0.3.1
-  * [x] Test - 0.3.2
-  * [ ] Test again, because it's late, and you might have missed something while stepping through.
+* [ ] `code_block.h` - 0.4  
+  A simple object which represents Concaten's equivalent of anonymous functions. Can be run, in addition
+    to being modified at runtime, as it's simply an array of tokens with some extra words.
+  * [ ] Come up with the tasks for this one.
 
 ###Upcoming milestones
 
-* [ ] `code_block.h` - 0.4  
-  A simple object which represents Concaten's equivalent of anonymous functions. Can be run, in addition
-    to being modified at runtime, as it's simply an array of token with some extra words.
 * [ ] `ctn_runnable.h` - 0.3  
   A combination object so I can either define things in Concaten, through code blocks, or in C, through
     functions with a certain signature, and call them without worrying about which is which. This layer
