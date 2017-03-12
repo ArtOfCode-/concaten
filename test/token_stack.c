@@ -12,7 +12,7 @@ size_t strlen(const char *f) {
 }
 
 struct Token gen_token(size_t layer_num) {
-    static size_t num = 0;
+    static size_t num = 1;
     char *mem = malloc(12);
     sprintf(mem, "layer_%zu", layer_num);
     return (struct Token) {
@@ -26,11 +26,42 @@ struct Token gen_token(size_t layer_num) {
     };
 }
 
+static size_t total = 0;
+static size_t successes = 0;
+
+void push_assert(struct TokenStack *tst, struct Token pushing, bool expected) {
+    ++total;
+    if (tst_push(tst, pushing) == expected) ++successes;
+}
+
+void pop_assert(struct TokenStack *tst, size_t index, size_t line) {
+    ++total;
+    struct Token popped;
+    tst_pop(tst, &popped);
+    if (popped.index == index && popped.line == line) ++successes;
+}
+
+void push_level_assert(struct TokenStack *tst, bool expected) {
+    ++total;
+    if (tst_push_level(tst) == expected) ++successes;
+}
+
+void pop_level_assert(struct TokenStack *tst, bool expected) {
+    ++total;
+    if (tst_pop_level(tst) == expected) ++successes;
+}
+
+void restore_assert(struct TokenStack *tst, bool expected) {
+    ++total;
+    if (tst_restore_state(tst) == expected) ++successes;
+}
+
 void test_token_stack() {
     struct Tokenizer tknr = tknr_from_string("1 2 3 4 5", "mem");
     struct TokenStack tst = tst_new(tknr);
     struct Token popped;
     
+    // TODO Rewrite tests to use asserts, print values at end
     printf("push: %d\n", tst_push(&tst, gen_token(1)));
     printf("push: %d\n", tst_push(&tst, gen_token(1)));
     printf("push: %d\n", tst_push(&tst, gen_token(1)));
@@ -54,39 +85,58 @@ void test_token_stack() {
     tst_push_level(&tst);
     printf("push: %d\n", tst_push(&tst, gen_token(6)));
 
-#define do_pop \
-    res = tst_pop(&tst, &popped); \
-    printf("pop: %d - %zu-%zu %s %s\n", res, popped.index, popped.line, popped.origin, popped.raw);
-    
     int res;
-    do_pop
-    do_pop
-    do_pop
-    do_pop
-    do_pop
+    res = tst_pop(&tst, &popped);
+    printf("pop: %d - %zu-%zu %s %s\n", res, popped.index, popped.line, popped.origin, popped.raw);
+    res = tst_pop(&tst, &popped);
+    printf("pop: %d - %zu-%zu %s %s\n", res, popped.index, popped.line, popped.origin, popped.raw);
+    res = tst_pop(&tst, &popped);
+    printf("pop: %d - %zu-%zu %s %s\n", res, popped.index, popped.line, popped.origin, popped.raw);
+    res = tst_pop(&tst, &popped);
+    printf("pop: %d - %zu-%zu %s %s\n", res, popped.index, popped.line, popped.origin, popped.raw);
+    res = tst_pop(&tst, &popped);
+    printf("pop: %d - %zu-%zu %s %s\n", res, popped.index, popped.line, popped.origin, popped.raw);
     
     printf("restoring state...");
     tst_restore_state(&tst);
     puts("done");
     
-    do_pop
-    do_pop
-    do_pop
-    do_pop
-    do_pop
-    do_pop
-    do_pop
-    do_pop
-    do_pop
-    do_pop
-    do_pop
-    do_pop
-    do_pop
-    do_pop
-    do_pop
-    do_pop
-    do_pop
-    do_pop
+    res = tst_pop(&tst, &popped);
+    printf("pop: %d - %zu-%zu %s %s\n", res, popped.index, popped.line, popped.origin, popped.raw);
+    res = tst_pop(&tst, &popped);
+    printf("pop: %d - %zu-%zu %s %s\n", res, popped.index, popped.line, popped.origin, popped.raw);
+    res = tst_pop(&tst, &popped);
+    printf("pop: %d - %zu-%zu %s %s\n", res, popped.index, popped.line, popped.origin, popped.raw);
+    res = tst_pop(&tst, &popped);
+    printf("pop: %d - %zu-%zu %s %s\n", res, popped.index, popped.line, popped.origin, popped.raw);
+    res = tst_pop(&tst, &popped);
+    printf("pop: %d - %zu-%zu %s %s\n", res, popped.index, popped.line, popped.origin, popped.raw);
+    res = tst_pop(&tst, &popped);
+    printf("pop: %d - %zu-%zu %s %s\n", res, popped.index, popped.line, popped.origin, popped.raw);
+    res = tst_pop(&tst, &popped);
+    printf("pop: %d - %zu-%zu %s %s\n", res, popped.index, popped.line, popped.origin, popped.raw);
+    res = tst_pop(&tst, &popped);
+    printf("pop: %d - %zu-%zu %s %s\n", res, popped.index, popped.line, popped.origin, popped.raw);
+    res = tst_pop(&tst, &popped);
+    printf("pop: %d - %zu-%zu %s %s\n", res, popped.index, popped.line, popped.origin, popped.raw);
+    res = tst_pop(&tst, &popped);
+    printf("pop: %d - %zu-%zu %s %s\n", res, popped.index, popped.line, popped.origin, popped.raw);
+    res = tst_pop(&tst, &popped);
+    printf("pop: %d - %zu-%zu %s %s\n", res, popped.index, popped.line, popped.origin, popped.raw);
+    res = tst_pop(&tst, &popped);
+    printf("pop: %d - %zu-%zu %s %s\n", res, popped.index, popped.line, popped.origin, popped.raw);
+    res = tst_pop(&tst, &popped);
+    printf("pop: %d - %zu-%zu %s %s\n", res, popped.index, popped.line, popped.origin, popped.raw);
+    res = tst_pop(&tst, &popped);
+    printf("pop: %d - %zu-%zu %s %s\n", res, popped.index, popped.line, popped.origin, popped.raw);
+    res = tst_pop(&tst, &popped);
+    printf("pop: %d - %zu-%zu %s %s\n", res, popped.index, popped.line, popped.origin, popped.raw);
+    res = tst_pop(&tst, &popped);
+    printf("pop: %d - %zu-%zu %s %s\n", res, popped.index, popped.line, popped.origin, popped.raw);
+    res = tst_pop(&tst, &popped);
+    printf("pop: %d - %zu-%zu %s %s\n", res, popped.index, popped.line, popped.origin, popped.raw);
+    res = tst_pop(&tst, &popped);
+    printf("pop: %d - %zu-%zu %s %s\n", res, popped.index, popped.line, popped.origin, popped.raw);
     
     puts("freeing");
     tst_free(&tst);
