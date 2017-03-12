@@ -13,25 +13,30 @@ void tst_level_node_free(struct TS_LevelNode *this) {
 }
 
 bool tst_push_change(struct TokenStack *this, const struct TS_ChangeNode change) {
-    if (!this->tracking_changes) return true;
-    struct TS_ChangeNode *new_latest = malloc(sizeof(struct TS_ChangeNode));
-    *new_latest = change;
-    new_latest->prev = this->latest_change;
-    this->latest_change = new_latest;
+    if (!this->tracking_changes) {
+        return true;
+    }
+    struct TS_ChangeNode *pushing = malloc(sizeof(struct TS_ChangeNode));
+    if (!pushing) {
+        return false;
+    }
+    *pushing = (struct TS_ChangeNode) {
+            .type = change.type,
+            .data = change.data,
+            .prev = this->latest_change
+    };
+    this->latest_change = pushing;
     return true;
 }
 
 struct TokenStack tst_new(const struct Tokenizer this) {
     struct TokenStack ret = {
-            .level_head = malloc(sizeof(struct TS_LevelNode)),
+            .level_head = NULL,
             .tknr = this,
             .tracking_changes = false,
-            .latest_change = NULL
+            .latest_change = NULL,
     };
-    *ret.level_head = (struct TS_LevelNode) {
-            .token_head = NULL,
-            .next = NULL
-    };
+    tst_push_level(&ret);
     return ret;
 }
 
@@ -72,7 +77,9 @@ bool tst_pop(struct TokenStack *this, struct Token *ret) {
             return false;
         }
     }
-    if (!tst_push_change(this, (struct TS_ChangeNode) { .type = TSCN_TOKEN_POP })) {
+    if (!tst_push_change(this, (struct TS_ChangeNode) {
+            .type = TSCN_TOKEN_POP, .data.popped = ret_val
+    })) {
         return false;
     }
     if (ret) *ret = ret_val;
@@ -143,12 +150,14 @@ void tst_restore_state(struct TokenStack *this) {
                 break;
             case TSCN_LEVEL_POP:
                 tst_push_level(this);
+                this->level_head->token_head = todo->data.popped_head;
                 break;
         }
         struct TS_ChangeNode *next = todo->prev;
         free(todo);
         todo = next;
     }
+    this->latest_change = NULL;
 }
 
 void tst_free(struct TokenStack *this) {
@@ -165,7 +174,9 @@ void tst_free(struct TokenStack *this) {
         } else if (change->type == TSCN_TOKEN_POP) {
             tkn_free(&change->data.popped);
         }
+        struct TS_ChangeNode *prev = change->prev;
         free(change);
+        change = prev;
     }
     this->latest_change = NULL;
     struct TS_LevelNode *level = this->level_head;
