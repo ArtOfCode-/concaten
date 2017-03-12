@@ -135,6 +135,7 @@ void tst_save_state(struct TokenStack *this) {
 }
 
 bool tst_restore_state(struct TokenStack *this) {
+    if (!this->tracking_changes) return false;
     this->tracking_changes = false;
     struct TS_ChangeNode *todo = this->latest_change;
     while (todo) {
