@@ -40,7 +40,7 @@ bool tst_peek(const struct TokenStack, struct Token *);
 bool tst_push_level(struct TokenStack *);
 bool tst_pop_level(struct TokenStack *);
 void tst_save_state(struct TokenStack *);
-void tst_restore_state(struct TokenStack *);
+bool tst_restore_state(struct TokenStack *);
 void tst_free(struct TokenStack *);
 
 #endif //CONCATEN_TOKEN_STACK_H

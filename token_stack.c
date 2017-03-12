@@ -134,22 +134,22 @@ void tst_save_state(struct TokenStack *this) {
     this->tracking_changes = true;
 }
 
-void tst_restore_state(struct TokenStack *this) {
+bool tst_restore_state(struct TokenStack *this) {
     this->tracking_changes = false;
     struct TS_ChangeNode *todo = this->latest_change;
     while (todo) {
         switch (todo->type) {
             case TSCN_TOKEN_PUSH:
-                tst_pop(this, NULL);
+                if (!tst_pop(this, NULL)) return false;
                 break;
             case TSCN_TOKEN_POP:
-                tst_push(this, todo->data.popped);
+                if (!tst_push(this, todo->data.popped)) return false;
                 break;
             case TSCN_LEVEL_PUSH:
-                tst_pop_level(this);
+                if (!tst_pop_level(this)) return false;
                 break;
             case TSCN_LEVEL_POP:
-                tst_push_level(this);
+                if (!tst_push_level(this)) return false;
                 this->level_head->token_head = todo->data.popped_head;
                 break;
         }
@@ -158,6 +158,7 @@ void tst_restore_state(struct TokenStack *this) {
         todo = next;
     }
     this->latest_change = NULL;
+    return true;
 }
 
 void tst_free(struct TokenStack *this) {
