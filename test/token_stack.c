@@ -16,7 +16,7 @@ struct Token gen_token(size_t num, size_t layer_num) {
     sprintf(mem, "layer_%zu", layer_num);
     return (struct Token) {
             .line = layer_num,
-            .index = num++,
+            .index = num,
             .origin = mem,
             .origin_len = strlen(mem) + 1,
             .raw = "gen_token-res",
@@ -73,7 +73,7 @@ void test_token_stack() {
     struct Tokenizer tknr = tknr_from_string("1 2 3 4 5", "mem");
     struct TokenStack tst = tst_new(tknr);
     
-    // TODO Rewrite tests to use asserts, print values at end
+    // TODO Test pop_level
     push_assert(&tst, gen_token(1, 1), true);
     push_assert(&tst, gen_token(2, 1), true);
     push_assert(&tst, gen_token(3, 1), true);
