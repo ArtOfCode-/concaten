@@ -70,7 +70,7 @@ char *tkn_type_name(int t) {
         case TKN_IDENTIFIER:
             return "identifier";
         default:
-            abort();
+            return NULL;
     }
 }
 
