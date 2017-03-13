@@ -28,13 +28,13 @@ struct Token gen_token(size_t num, size_t layer_num) {
 static size_t total = 0;
 static size_t successes = 0;
 
-void push_assert(struct TokenStack *tst, struct Token pushing, bool expected) {
+void a_token_push(struct TokenStack *tst, struct Token pushing, bool expected) {
     ++total;
     if (tst_push(tst, pushing) == expected) ++successes;
     else printf("unexpected result when pushing (%d)\n", !expected);
 }
 
-void pop_assert(struct TokenStack *tst, bool expected, size_t index, size_t line) {
+void a_pop(struct TokenStack *tst, bool expected, size_t index, size_t line) {
     ++total;
     struct Token popped;
     if (!tst_pop(tst, &popped)) {
@@ -47,26 +47,29 @@ void pop_assert(struct TokenStack *tst, bool expected, size_t index, size_t line
         popped.index, popped.line, index, line);
 }
 
-void push_level_assert(struct TokenStack *tst, bool expected) {
+void a_level_push(struct TokenStack *tst, bool expected) {
     ++total;
     if (tst_push_level(tst) == expected) ++successes;
     else printf("unexpected result when pushing level (%d)", !expected);
 }
 
-void pop_level_assert(struct TokenStack *tst, bool expected) {
+void a_level_pop(struct TokenStack *tst, bool expected) {
     ++total;
     if (tst_pop_level(tst) == expected) ++successes;
     else printf("unexpected result when popping level (%d)\n", !expected);
 }
 
-void restore_assert(struct TokenStack *tst, bool expected) {
+void a_restore(struct TokenStack *tst, bool expected) {
     ++total;
     if (tst_restore_state(tst) == expected) ++successes;
     else printf("unexpected result when restoring (%d)\n", !expected);
 }
 
-void save_assert(struct TokenStack *tst, bool expected) {
-    
+void a_save(struct TokenStack *tst) {
+    ++total;
+    tst_save_state(tst);
+    if (tst->tracking_changes) ++successes;
+    else puts("unexpected result when saving state (0)");
 }
 
 void test_token_stack() {
@@ -74,68 +77,78 @@ void test_token_stack() {
     struct TokenStack tst = tst_new(tknr);
     
     // TODO Test pop_level
-    push_assert(&tst, gen_token(1, 1), true);
-    push_assert(&tst, gen_token(2, 1), true);
-    push_assert(&tst, gen_token(3, 1), true);
-    push_level_assert(&tst, true);
-    push_assert(&tst, gen_token(4, 2), true);
-    tst_push_level(&tst);
-    push_level_assert(&tst, true);
-    push_assert(&tst, gen_token(5, 4), true);
-    push_assert(&tst, gen_token(6, 4), true);
-    push_assert(&tst, gen_token(7, 4), true);
-    push_assert(&tst, gen_token(8, 4), true);
-    push_level_assert(&tst, true);
-    push_assert(&tst, gen_token(9, 5), true);
-    push_assert(&tst, gen_token(10, 5), true);
-    tst_save_state(&tst);
-    push_assert(&tst, gen_token(11, 5), true);
-    push_level_assert(&tst, true);
-    push_assert(&tst, gen_token(12, 6), true);
-    push_assert(&tst, gen_token(13, 6), true);
-    pop_assert(&tst, true, 13, 6);
-    pop_assert(&tst, true, 12, 6);
-    pop_assert(&tst, true, 11, 5);
-    push_assert(&tst, gen_token(14, 7), true);
-    push_assert(&tst, gen_token(15, 7), true);
-    push_assert(&tst, gen_token(16, 7), true);
-    pop_assert(&tst, true, 16, 7);
-    pop_assert(&tst, true, 15, 7);
-    pop_assert(&tst, true, 14, 7);
-    pop_assert(&tst, true, 10, 5);
-    pop_assert(&tst, true, 9, 5);
-    restore_assert(&tst, true);
-    pop_assert(&tst, true, 10, 5);
-    pop_assert(&tst, true, 9, 5);
-    pop_assert(&tst, true, 8, 4);
-    pop_assert(&tst, true, 7, 4);
-    push_assert(&tst, gen_token(14, 8), true);
-    push_assert(&tst, gen_token(15, 8), true);
-    push_assert(&tst, gen_token(16, 8), true);
-    pop_assert(&tst, true, 16, 8);
-    pop_assert(&tst, true, 15, 8);
-    pop_assert(&tst, true, 14, 8);
-    pop_assert(&tst, true, 6, 4);
-    pop_assert(&tst, true, 5, 4);
-    pop_assert(&tst, true, 4, 2);
-    tst_save_state(&tst);
-    pop_assert(&tst, true, 3, 1);
-    pop_assert(&tst, true, 2, 1);
-    pop_assert(&tst, true, 1, 1);
-    pop_assert(&tst, true, 0, 1);
-    pop_assert(&tst, true, 2, 1);
-    pop_assert(&tst, true, 4, 1);
-    restore_assert(&tst, true);
-    pop_assert(&tst, true, 3, 1);
-    pop_assert(&tst, true, 2, 1);
-    pop_assert(&tst, true, 1, 1);
-    pop_assert(&tst, true, 0, 1);
-    pop_assert(&tst, true, 2, 1);
-    pop_assert(&tst, true, 4, 1);
-    pop_assert(&tst, true, 6, 1);
-    pop_assert(&tst, true, 8, 1);
-    pop_assert(&tst, false, 0, 0);
-    pop_assert(&tst, false, 0, 0);
+    a_token_push(&tst, gen_token(1, 1), true);
+    a_token_push(&tst, gen_token(2, 1), true);
+    a_token_push(&tst, gen_token(3, 1), true);
+    a_level_push(&tst, true);
+    a_token_push(&tst, gen_token(4, 2), true);
+    a_level_push(&tst, true);
+    a_level_push(&tst, true);
+    a_token_push(&tst, gen_token(5, 4), true);
+    a_token_push(&tst, gen_token(6, 4), true);
+    a_token_push(&tst, gen_token(7, 4), true);
+    a_token_push(&tst, gen_token(8, 4), true);
+    a_level_push(&tst, true);
+    a_token_push(&tst, gen_token(9, 5), true);
+    a_token_push(&tst, gen_token(10, 5), true);
+    a_save(&tst);
+    a_token_push(&tst, gen_token(11, 5), true);
+    a_level_push(&tst, true);
+    a_token_push(&tst, gen_token(12, 6), true);
+    a_token_push(&tst, gen_token(13, 6), true);
+    a_pop(&tst, true, 13, 6);
+    a_pop(&tst, true, 12, 6);
+    a_pop(&tst, true, 11, 5);
+    a_token_push(&tst, gen_token(14, 7), true);
+    a_token_push(&tst, gen_token(15, 7), true);
+    a_token_push(&tst, gen_token(16, 7), true);
+    a_pop(&tst, true, 16, 7);
+    a_pop(&tst, true, 15, 7);
+    a_pop(&tst, true, 14, 7);
+    a_pop(&tst, true, 10, 5);
+    a_pop(&tst, true, 9, 5);
+    a_restore(&tst, true);
+    a_pop(&tst, true, 10, 5);
+    a_pop(&tst, true, 9, 5);
+    a_pop(&tst, true, 8, 4);
+    a_pop(&tst, true, 7, 4);
+    a_level_push(&tst, true);
+    a_token_push(&tst, gen_token(20, 9), true);
+    a_token_push(&tst, gen_token(21, 9), true);
+    a_token_push(&tst, gen_token(22, 9), true);
+    a_level_pop(&tst, true);
+    a_token_push(&tst, gen_token(14, 8), true);
+    a_token_push(&tst, gen_token(15, 8), true);
+    a_token_push(&tst, gen_token(16, 8), true);
+    a_pop(&tst, true, 16, 8);
+    a_pop(&tst, true, 15, 8);
+    a_pop(&tst, true, 14, 8);
+    a_pop(&tst, true, 6, 4);
+    a_pop(&tst, true, 5, 4);
+    a_pop(&tst, true, 4, 2);
+    a_save(&tst);
+    a_pop(&tst, true, 3, 1);
+    a_pop(&tst, true, 2, 1);
+    a_pop(&tst, true, 1, 1);
+    a_pop(&tst, true, 0, 1);
+    a_pop(&tst, true, 2, 1);
+    a_pop(&tst, true, 4, 1);
+    a_restore(&tst, true);
+    a_pop(&tst, true, 3, 1);
+    a_pop(&tst, true, 2, 1);
+    a_pop(&tst, true, 1, 1);
+    a_pop(&tst, true, 0, 1);
+    a_pop(&tst, true, 2, 1);
+    a_save(&tst);
+    a_pop(&tst, true, 4, 1);
+    a_pop(&tst, true, 6, 1);
+    a_pop(&tst, true, 8, 1);
+    a_pop(&tst, false, 0, 0);
+    a_pop(&tst, false, 0, 0);
+    a_restore(&tst, true);
+    a_pop(&tst, true, 4, 1);
+    a_pop(&tst, true, 6, 1);
+    a_pop(&tst, true, 8, 1);
     
     tst_free(&tst);
     tknr_free(&tknr);
