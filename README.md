@@ -40,9 +40,10 @@ consider, and need to add in or change.
 
 **A note about versions**: My format is `major.milestone.task`, where each is the number for the
 most recently finished. For example, version `1.1.0` just completed the first task of milestone 2 of
-verison 1 -- probably something about expanding the standard library. Major version `0` is pre-completion;
-some of the parts may be done, but not all of it. Major version `1` is the first completed version of
-the language; from there, I'll iterate based on feedback and input from the users.
+verison 1; version `1.0.4` might mean that I'm actually now working on v1.1, but haven't completed
+any tasks in it yet. Major version `0` is pre-completion; some of the parts may be done, but not
+all of it. Major version `1` is the first completed version of the language; from there, I'll
+iterate based on feedback and input from the users, and implement niceties.
 
 You may sometimes see the version as `x.x.x-[name]`. This indicates that it's not the version from the
 master branch, but some other branch. You'll only see this in the results of `concaten --version`; it
@@ -50,20 +51,20 @@ doesn't appear in the git repo READMEs.
 
 ###Current milestone
 
-#### `token_stack.h` - 0.3
+#### `code_block.h` - 0.4
 
-* [x] `token_stack.h`  
-  A stack of stacks (so `return` works). The bottom "stack" really pulls from a tokenizer.
-  * [x] Define interface - 0.3.0  
-    Must include at least `push`, `pop`, `push_group`, `pop_group`, plus ctor from tokenizer
-  * [x] Implement - 0.3.1
-  * [x] Test - 0.3.2
-  * [x] Test again, because it's late, and you might have missed something while stepping through.
-  * [ ] Test `tst_pop_level` (forgot to before, dangit)
+* [ ] `code_block.h` - 0.4  
+  A simple object which represents Concaten's equivalent of anonymous functions. Can be run, in addition
+    to being modified at runtime, as it's simply an array of tokens with some extra words.
+  * [ ] Define interface. Needs to be creatable from a sequence of tokens, though it really doesn't
+    need any methods (it's not being run directly; instead, its tokens will be dropped on top of the
+    token stack) but it's worth thinking through which will be useful.
+  * [ ] Implement those methods.
+  * [ ] Test them.
 
 ###Upcoming milestones
 
-* [ ] `ctn_runnable.h` - 0.3  
+* [ ] `ctn_runnable.h` - 0.5  
   A combination object so I can either define things in Concaten, through code blocks, or in C, through
     functions with a certain signature, and call them without worrying about which is which. This layer
     of abstraction will make it much easier to implement user-defined words.
