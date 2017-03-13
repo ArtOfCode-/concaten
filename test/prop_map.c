@@ -1,7 +1,5 @@
 #include "../tests.h"
 
-#include <stdio.h>
-
 #include "../prop_map.h"
 #include "../object.h"
 

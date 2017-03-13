@@ -1,6 +1,8 @@
 #ifndef CONCATEN_TESTS_H
 #define CONCATEN_TESTS_H
 
+#include <stdio.h>
+
 void test_tokenizer();
 void test_prop_map();
 void test_method_map();

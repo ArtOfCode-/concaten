@@ -1,7 +1,5 @@
 #include "../tests.h"
 
-#include <stdio.h>
-
 #include "../method_map.h"
 
 void intermediate_test(const struct MethodMap mm) {
