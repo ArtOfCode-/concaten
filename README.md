@@ -105,7 +105,9 @@ You may sometimes see the version as `x.x.x-[name]`. This indicates that it's
   * [ ] Benchmarking between Concaten and equivalent-level languages  
     Probably Python or Ruby. I want at most 3x time taken, and for that value
       to be as low as possible.
-  * [ ] Beta testing?
+  * Beta testing?
+* [ ] Command-line options - 0.9  
+  Definitely at least `-e`; take inspiration from Ruby and Python.
 * [ ] Documentation - 1.0  
   Including demo code, a detailed up-to-date list of every default global word
     (like `if`) and what they do, as well as a brief overview of how Concaten
@@ -128,7 +130,19 @@ You may sometimes see the version as `x.x.x-[name]`. This indicates that it's
   * GUI (ditto)
 * [ ] Multithreading/thread safety - 2.0  
   This is going to require something close to a complete rewrite, to make sure
-    everything is as thread-safe as it can get.
+    everything is as thread-safe as it can get. Note that this is intentionally
+    a bullet list, not checkboxes, since it's ideas at this stage.
+  * Make everything thread-safe (mutexes on read/write; allow parallel reads
+    but not parallel writes)
+    * `set`s lock a mutex for the entire time; `get`s lock and then immediately
+      unlock them? (to sync, make sure that gets don't occur in the middle of
+      a set)
+      * Maybe disable this until first thread created, then enable it? (for the
+        sake of performance in single-threaded applications)
+    * Each thread gets its own stacks/scopes (copied, but independent); passing
+      data has to be done very, very intentionally. (This also obviates the need
+      for synchronization on the stacks, which would get expensive)
+    * Force synchronization between reads/writes of console, files; GUI updates?
   * [Task](https://msdn.microsoft.com/en-us/library/dd537609.aspx)s?
   * Asynchronous versions of the Networking and File I/O APIs.
   * Events? (technically possible already, but easier with multithreading)
