@@ -71,14 +71,17 @@ You may sometimes see the version as `x.x.x-[name]`. This indicates that it's
 * [ ] `code_block.h` - 0.4  
   A simple object which represents Concaten's equivalent of anonymous
     functions. Can be run, in addition to being modified at runtime, as it's
-    simply an array of tokens with some extra words.
+    simply an array of tokens with some extra words (`call`, for example).
   * [ ] Define interface.  
-    Needs to be creatable from a sequence of tokens, though it really doesn't
-      need any methods (it's not being run directly; instead, its tokens will
-      be dropped on top of the token stack) but it's worth thinking through
-      which will be useful.
+    Needs to be creatable from a sequence of tokens, (or tokenizer?) though it
+      really doesn't need any methods (it's not being run directly; instead,
+      its tokens will be dropped on top of the token stack) but it's worth
+      thinking through which additions will be useful.
   * [ ] Implement those methods.
-  * [ ] Test them.
+  * [ ] Test them.  
+    They may be somewhat difficult to test satisfactorily, since they'll
+      most likely be really, really simple. As long as they do what they
+      say on the tin, though, it doesn't matter.
 
 ###Upcoming milestones
 
