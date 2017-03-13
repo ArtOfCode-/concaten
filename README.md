@@ -5,7 +5,8 @@ garbage-collected, interpreted programming language. In order, that means that:
 
 1. **concatenative** - Each "word" (Concaten's version of a function) is
   applied to the results of the one that appears before it in the source code.
-  There are a few exceptions, though; notably, `{` and `->`.
+  There are a few exceptions, though; notably, `{` and `->`. The full spec
+  explains how those words work; it'll be available as part of v1.0.
 2. **stack-based** - Results, rather than being passed directly to methods or
   stored in variables, go onto an intermediary data stack, on which they can
   stay indefinitely. Note that this may occur in other languages like C, as
@@ -35,18 +36,18 @@ garbage-collected, interpreted programming language. In order, that means that:
   which means that destructors have meaning. As long as cyclical references
   are avoided, at least.
 6. **interpreted** - Rather than being converted to machine language or
-  assembly, then executed directly by the CPU, Concaten code is executed as-is
-  by an intermediary program. Depending on the OS and specific circumstances,
-  this might be abstracted away such that the user doesn't see it happening
-  directly (e.g. through file extension assocations); under the hood, it
-  always is.
+  assembly, then executed directly by the CPU or OS, Concaten code is executed
+  as-is by an intermediary program. Depending on the OS and specific
+  circumstances, this might be abstracted away such that the user doesn't see
+  it happening directly (e.g. through Windows' file extension assocations);
+  under the hood, it always is.
 0. **programming langauge** - Hopefully, if you're reading this,
   self-explanatory.
 
 For an example of how the language will probably look, see `test.ctn`.
   However, keep in mind that this is subject to change; though the language is
   specced out, actual usage might reveal things that I didn't consider, and
-  need to add in or change.
+  therefore need to add in, remove, or change.
 
 ---
 
@@ -109,6 +110,8 @@ You may sometimes see the version as `x.x.x-[name]`. This indicates that it's
     Probably Python or Ruby. I want at most 3x time taken, and for that value
       to be as low as possible.
   * Beta testing?
+    Hand out the interpreter as it is to as many people as possible, get them
+      to play with the language and try to break it.
 * [ ] Command-line options - 0.9  
   Definitely at least `-e`; take inspiration from Ruby and Python.
 * [ ] Documentation - 1.0  
@@ -124,7 +127,7 @@ You may sometimes see the version as `x.x.x-[name]`. This indicates that it's
     for me~~ extensions to Concaten, and in part to set up the framework for
     the next milestone(s).
 * [ ] Decide which extension libraries to implement, scatter the rest over 2.0
-  and 3.0 as appropriate.
+  and 3.0 as appropriate. These will form the next 1.x updates.
   * Networking
   * File I/O
   * String manipulation
