@@ -31,11 +31,6 @@ struct DataStack dst_new() {
     };
 }
 
-// whenever the LL's head changes, the old one's refcount decreases, and the new one's
-// increases, and also whenever a node is created that points to any other node, the
-// other's increases, and when a node is permanently destroyed (i.e. refcount hits 0),
-// the node it points to has its refcount go down by one.
-
 bool dst_push(struct DataStack *dst, struct Object *pushing) {
     struct DST_Node *val = malloc(sizeof(*val));
     if (!val) {
@@ -46,7 +41,7 @@ bool dst_push(struct DataStack *dst, struct Object *pushing) {
             .next = dst->head,
             .value = pushing
     };
-    // head would be claimed by `val`, then released by stack, so refcount stays the same
+    // head would be claimed then immediately released
     dst->head = val;
     return true;
 }

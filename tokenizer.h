@@ -5,18 +5,18 @@
 #include <stdbool.h>
 #include <stdio.h>
 
-#ifndef TKNR_FILE_BUF_SIZE
-# define TKNR_FILE_BUF_SIZE 256
+#ifndef BUF_SIZE
+# define BUF_SIZE 256
 #endif
-#if TKNR_FILE_BUF_SIZE <= 0
-# error TKNR_FILE_BUF_SIZE cannot be <= 0
+#if BUF_SIZE <= 0
+# error BUF_SIZE cannot be <= 0
 #endif
 
 struct FileSource {
     FILE *fptr;
-    unsigned char next_chars[TKNR_FILE_BUF_SIZE];
+    unsigned char buf[BUF_SIZE];
     size_t next_chars_pos;
-    size_t eof; // if we're at EOF, this marks where in next_chars it is
+    size_t eof; // if we're at EOF, this marks where in buf it is
 };
 struct StringSource {
     char *begin;

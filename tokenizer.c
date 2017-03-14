@@ -7,7 +7,7 @@
 #include "stringbuilder.h"
 
 #define ERROR(code) do{\
-    printf("Tokenizer error %d unhandled at " __FILE__ ":%d", code, __LINE__);\
+    printf("Tokenizer error %d unhandled at "__FILE__":%d", code, __LINE__);\
     exit(code % 100);\
     }while(0)
 
@@ -143,9 +143,9 @@ struct Tokenizer tknr_from_filepath(const char *path) {
     struct Tokenizer ret = (struct Tokenizer) {
             .origin = NULL,
             .source.file = (struct FileSource) {
-                    .eof = TKNR_FILE_BUF_SIZE,
+                    .eof = BUF_SIZE,
                     .fptr = NULL,
-                    .next_chars = {0},
+                    .buf = {0},
                     .next_chars_pos = 0
             },
             .is_from_file = true,
@@ -184,8 +184,8 @@ struct Tokenizer tknr_from_filepath(const char *path) {
     ret.origin = path_c;
     
     struct FileSource *fs = &ret.source.file;
-    size_t count = fread(fs->next_chars, sizeof(char), TKNR_FILE_BUF_SIZE, fs->fptr);
-    if (count != TKNR_FILE_BUF_SIZE) {
+    size_t count = fread(fs->buf, sizeof(char), BUF_SIZE, fs->fptr);
+    if (count != BUF_SIZE) {
         if (feof(fs->fptr)) {
             fs->eof = count;
         } else {
@@ -196,7 +196,7 @@ struct Tokenizer tknr_from_filepath(const char *path) {
             return ret;
         }
     }
-    ret.next_char = fs->next_chars[0];
+    ret.next_char = fs->buf[0];
     fs->next_chars_pos = 1;
     
     ret.line = 1;
@@ -228,9 +228,9 @@ int get_next_char_file(struct Tokenizer *from) {
     struct FileSource *fs = &from->source.file;
     if (tknr_end(from)) {
         ERROR(FILE_READ_EOF_FAIL);
-    } else if (fs->next_chars_pos == TKNR_FILE_BUF_SIZE) {
-        size_t count = fread(fs->next_chars, sizeof(char), TKNR_FILE_BUF_SIZE, fs->fptr);
-        if (count != TKNR_FILE_BUF_SIZE) {
+    } else if (fs->next_chars_pos == BUF_SIZE) {
+        size_t count = fread(fs->buf, sizeof(char), BUF_SIZE, fs->fptr);
+        if (count != BUF_SIZE) {
             if (feof(fs->fptr)) {
                 fs->eof = count;
             } else {
@@ -239,7 +239,7 @@ int get_next_char_file(struct Tokenizer *from) {
         }
         fs->next_chars_pos = 0;
     }
-    from->next_char = fs->next_chars[fs->next_chars_pos++];
+    from->next_char = fs->buf[fs->next_chars_pos++];
     return 0;
 }
 
@@ -267,8 +267,9 @@ char read_char(struct Tokenizer *reading) {
     }
     if (err) {
         reading->error = err;
-        // note that it's possible that '\0' is the next character. That's why the functions
-        // that use this one not only check the return value of this but tknr_err(Tokenizer)
+        // note that it's possible that '\0' is the next character. That's why
+        // the functions that use this one not only check the return value of
+        // this but tknr_err(Tokenizer)
         return 0;
     }
     if (ret == '\n') {
@@ -325,8 +326,9 @@ bool in_ranges(char c, char *begins, char *ends, size_t count) {
     return false;
 }
 
-bool add_while_in_ranges(struct Tokenizer *from, struct StringBuilder *raw, char *next_char,
-                         char *begins, char *ends, size_t num_ranges) {
+bool add_while_in_ranges(struct Tokenizer *from, struct StringBuilder *raw,
+                         char *next_char, char *begins, char *ends,
+                         size_t num_ranges) {
     *next_char = peek_char(from);
     while (in_ranges(*next_char, begins, ends, num_ranges)) {
         sb_append(raw, read_char(from));
@@ -338,14 +340,15 @@ bool add_while_in_ranges(struct Tokenizer *from, struct StringBuilder *raw, char
     return true;
 }
 
-bool add_while_in_range(struct Tokenizer *from, struct StringBuilder *raw, char *next_char,
-                        char begin, char end) {
+bool add_while_in_range(struct Tokenizer *from, struct StringBuilder *raw,
+                        char *next_char, char begin, char end) {
     return add_while_in_ranges(from, raw, next_char, &begin, &end, 1);
 }
 
 #define STARTING_RAW_MEM 16
 
-bool get_string(struct Tokenizer *from, char *next_char, struct Token partial, struct Token *out) {
+bool get_string(struct Tokenizer *from, char *next_char,
+                struct Token partial, struct Token *out) {
     struct StringBuilder raw = sb_new();
     if (!sb_init(&raw, STARTING_RAW_MEM)) {
         from->error = NT_NEW_SB_FAIL;
@@ -395,7 +398,8 @@ error:;
     return false;
 }
 
-bool get_number(struct Tokenizer *from, char *next_char, struct Token partial, struct Token *out) {
+bool get_number(struct Tokenizer *from, char *next_char, struct Token partial,
+                struct Token *out) {
     struct StringBuilder raw = sb_new();
     if (!sb_init(&raw, STARTING_RAW_MEM)) {
         from->error = NT_NEW_SB_FAIL;
@@ -480,7 +484,8 @@ bool is_flag(char c) {
            c == 'm' || c == 's';
 }
 
-bool get_regex(struct Tokenizer *from, struct StringBuilder raw, struct Token ret, struct Token *out) {
+bool get_regex(struct Tokenizer *from, struct StringBuilder raw,
+               struct Token ret, struct Token *out) {
     sb_append(&raw, read_char(from));
     char next_char = peek_char(from);
     while (true) {
@@ -549,7 +554,7 @@ bool tknr_next(struct Tokenizer *from, struct Token *out) {
             return false;
         }
         // at the very beginning, it's OK not to have separation
-        // (files don't have to start with code)
+        // (files can start with code)
         if (!from->just_started) {
             from->error = SYN_NO_SEPARATION_FAIL;
             return false;

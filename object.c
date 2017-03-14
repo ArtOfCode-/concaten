@@ -3,7 +3,8 @@
 #include "object.h"
 #include "tokenizer.h"
 
-struct Object ctno_literal(const void *data, const size_t data_size, struct MethodMap *methods) {
+struct Object ctno_literal(const void *data, const size_t data_size,
+                           struct MethodMap *methods) {
     void *new_data = malloc(data_size);
     if (!new_data) {
         return (struct Object) { .error = 1 };
@@ -66,7 +67,8 @@ bool check_for_cycles(struct Object *checking, struct Object *in) {
     return false;
 }
 
-bool ctno_set_prop(struct Object *to, const char *key, struct Object *adding) {
+bool ctno_set_prop(struct Object *to, const char *key,
+                   struct Object *adding) {
     if (!to || !adding || !key) return false;
     if (to->is_literal) return false;
     struct Object *old = pm_get(to->data.properties, key);

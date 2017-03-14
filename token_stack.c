@@ -12,7 +12,8 @@ void tst_level_node_free(struct TS_LevelNode *this) {
     }
 }
 
-bool tst_push_change(struct TokenStack *this, const struct TS_ChangeNode change) {
+bool tst_push_change(struct TokenStack *this,
+                     const struct TS_ChangeNode change) {
     if (!this->tracking_changes) {
         return true;
     }
@@ -98,7 +99,9 @@ bool tst_peek(const struct TokenStack this, struct Token *ret) {
 bool tst_push_level(struct TokenStack *this) {
     struct TS_LevelNode *pushing = malloc(sizeof(struct TS_LevelNode));
     if (!pushing ||
-            !tst_push_change(this, (struct TS_ChangeNode) { .type = TSCN_LEVEL_PUSH })) {
+            !tst_push_change(this, (struct TS_ChangeNode) {
+                    .type = TSCN_LEVEL_PUSH
+            })) {
         free(pushing);
         return false;
     }
