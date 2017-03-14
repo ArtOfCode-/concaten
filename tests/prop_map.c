@@ -21,6 +21,7 @@ void full_print(const struct PropMap pm){
 }
 
 void test_prop_map() {
+    // TODO Convert to success counter
     struct PropMap pm = pm_new(8);
     full_print(pm);
     int num = 1;

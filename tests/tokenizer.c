@@ -92,7 +92,8 @@ void test_tokenizer() {
     struct TestSpec tests[] = {
             stest_e("", 1112),
             stest_e("\"ends early", 1502), stest_e("r/ends early", 1502),
-            stest_bd("0b012"), stest_bd("0x1fg"), stest_bd("0o178"), stest_bd("1f"),
+            stest_bd("0b012"), stest_bd("0x1fg"),
+            stest_bd("0o178"), stest_bd("1f"),
             (struct TestSpec) {
                     .source = "success: \"string\" 42 0x1Fe94\n"
                             "0b11001 0o127635 1.2e3 # Hello!\n"
@@ -117,29 +118,28 @@ void test_tokenizer() {
             }
     };
     size_t total = sizeof(tests) / sizeof(struct TestSpec);
-    size_t fails = 0;
+    size_t successes = 0;
     for (size_t i = 0; i < total; ++i) {
         struct TestSpec current = tests[i];
-        printf("Test case %zu from %s:\n", i + 1, current.is_from_file ? "file" : "string");
-        puts(tests[i].source);
-        puts("---");
         struct TestResult res = test(tests[i]);
-        if (res.result != FT_SUCCESS) {
-            ++fails;
-            printf("Failure in %lu usec. Details:\n", res.usec);
-            if (res.result & FT_MORE_TOKENS) printf(" Too few tokens parsed. (%zu, not %zu)\n",
-                                                    res.count, current.token_count);
-            if (res.result & FT_LESS_TOKENS) printf(" Too many tokens parsed. (%zu, not %zu)\n",
-                                                    res.count, current.token_count);
-            if (res.result & FT_WRONG_ERR) printf(" Unexpected error code received. (%d, not %d)\n",
-                                                  res.code, current.code);
-            if (res.result & FT_WRONG_TYPE) printf(" Unexpected token type received. (%s, not %s)\n",
-                                                   tkn_type_name(res.last_token_type),
-                                                   tkn_type_name(current.types[res.count - 1]));
+        if (res.result == FT_SUCCESS) {
+            ++successes;
         } else {
-            printf("Success in %lu usec\n", res.usec);
+            printf("Test case %zu failed:", i);
+            if (res.result & FT_MORE_TOKENS)
+                printf("  Too few tokens parsed. (%zu, not %zu)\n",
+                       res.count, current.token_count);
+            if (res.result & FT_LESS_TOKENS)
+                printf("  Too many tokens parsed. (%zu, not %zu)\n",
+                       res.count, current.token_count);
+            if (res.result & FT_WRONG_ERR)
+                printf("  Unexpected error code received. (%d, not %d)\n",
+                       res.code, current.code);
+            if (res.result & FT_WRONG_TYPE)
+                printf("  Unexpected token type received. (%s, not %s)\n",
+                       tkn_type_name(res.last_token_type),
+                       tkn_type_name(current.types[res.count - 1]));
         }
-        puts("---");
     }
-    printf("%zu/%zu failed.\n", fails, total);
+    printf("%zu/%zu successes.\n", successes, total);
 }

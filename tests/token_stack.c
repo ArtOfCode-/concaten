@@ -28,10 +28,10 @@ struct Token gen_token(size_t num, size_t layer_num) {
 static size_t total = 0;
 static size_t successes = 0;
 
-void a_token_push(struct TokenStack *tst, struct Token pushing, bool expected) {
+void a_token_push(struct TokenStack *tst, struct Token pushing, bool res) {
     ++total;
-    if (tst_push(tst, pushing) == expected) ++successes;
-    else printf("unexpected result when pushing (%d)\n", !expected);
+    if (tst_push(tst, pushing) == res) ++successes;
+    else printf("unexpected result when pushing (%d)\n", !res);
 }
 
 void a_pop(struct TokenStack *tst, bool expected, size_t index, size_t line) {
@@ -153,5 +153,5 @@ void test_token_stack() {
     tst_free(&tst);
     tknr_free(&tknr);
     
-    printf("%zu/%zu successes", successes, total);
+    printf("%zu/%zu successes\n", successes, total);
 }

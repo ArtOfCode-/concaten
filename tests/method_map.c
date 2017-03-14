@@ -22,17 +22,19 @@ void intermediate_test(const struct MethodMap mm) {
 
 #define str2(n) #n
 #define str(n) str2(n)
-#define test_f(num) void f ## num (int i, char *s) { printf("f" str(num) ": %d; %s\n", i, s); }
+#define test_f(num) \
+    void f##num(int i, char *s) { printf("f" str(num) ": %d; %s\n", i, s); }
 
 test_f(0)  test_f(1)  test_f(2)  test_f(3)  test_f(4)
 test_f(5)  test_f(6)  test_f(7)  test_f(8)  test_f(9)
 test_f(10) test_f(11) test_f(12) test_f(13) test_f(14)
 test_f(15) test_f(16) test_f(17) test_f(18) test_f(19)
 
-#define __mm_set(a,b,c) do{printf("setting %s: %d\n",b,mm_set(a,b,c));}while(0);
-#define __mm_remove(a,b) do{printf("removing %s: %d\n",b,mm_remove(a,b));}while(0);
+#define __mm_set(a,b,c) printf("set %s: %d\n",b,mm_set(a,b,c));
+#define __mm_remove(a,b) printf("remove %s: %d\n",b,mm_remove(a,b));
 
 void test_method_map() {
+    // TODO convert to success counter
     // very low number of buckets initially so it has to rehash
     // ...eventually. I hate the pigeonhole principle.
     struct MethodMap mm = mm_new(2);

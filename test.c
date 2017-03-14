@@ -3,16 +3,17 @@
 #include <stdio.h>
 
 int main() {
-//    test_tokenizer();
-//    puts("");
-//    test_prop_map();
-//    puts("");
-//    test_method_map();
-//    puts("");
-//    test_object();
-//    puts("");
-//    test_data_stack();
-//    puts("");
+    puts("Testing Tokenizer:");
+    test_tokenizer();
+    puts("Testing PropMap:");
+    test_prop_map();
+    puts("Testing MethodMap:");
+    test_method_map();
+    puts("Testing Object:");
+    test_object();
+    puts("Testing DataStack:");
+    test_data_stack();
+    puts("Testing TokenStack:");
     test_token_stack();
-    puts("");
+    puts("Done with all tests");
 }
