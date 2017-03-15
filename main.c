@@ -1,5 +1,10 @@
 #include <stdio.h>
 
+// some general TODOs, for lack of a better place to put them:
+// TODO Convert all ctors to `bool wht_new(init_args, struct Whatever *ret);
+// TODO Convert all `bool` error indicators to ints/enums (values in headers)
+// TODO Collect all error codes into single header, provide single to_str
+
 int main() {
     // This is not going to be filled out until v0.7 -- for the code that's
     // actually getting exectued, see test.c, its `int main()`, and the files
