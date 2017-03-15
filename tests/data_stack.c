@@ -2,15 +2,13 @@
 
 #include "../data_stack.h"
 
-#define str2(x) # x
-#define str(x) str2(x)
 #define LINE str(__LINE__) ": "
-#define assert_pop_eq(num, what) dst##num##_got = dst_pop(&dst##num); \
-    ++total; if (dst##num##_got == &what) ++successes; \
-    else printf(LINE str(num) " got bad result")
-#define assert_no_pop(num) dst##num##_got = dst_pop(&dst##num); \
-    ++total; if(!dst##num##_got) ++successes; \
-    else printf(LINE str(num) " got result")
+#define assert_pop_eq(num, what) \
+    dst##num##_got = dst_pop(&dst##num); \
+    tassert(dst##num##_got == &what, LINE str(num) " got bad result")
+#define assert_no_pop(num) \
+    dst##num##_got = dst_pop(&dst##num); \
+    tassert(!dst##num##_got, LINE str(num) " got bad result")
 
 void test_data_stack() {
     struct DataStack dst1 = dst_new();
