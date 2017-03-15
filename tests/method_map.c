@@ -20,8 +20,6 @@ void intermediate_test(const struct MethodMap mm) {
     }
 }
 
-#define str2(n) #n
-#define str(n) str2(n)
 #define test_f(num) \
     void f##num(int i, char *s) { printf("f" str(num) ": %d; %s\n", i, s); }
 
