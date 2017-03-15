@@ -1,7 +1,5 @@
 #include "tests.h"
 
-#include <stdio.h>
-
 int main() {
     puts("Testing Tokenizer:");
     test_tokenizer();
