@@ -9,7 +9,7 @@ struct CodeBlock {
     size_t cap;
 };
 
-struct CodeBlock cb_new(size_t init_cap);
+bool cb_new(size_t, struct CodeBlock *);
 struct CodeBlock cb_copy(const struct CodeBlock);
 void cb_append(struct CodeBlock *, struct Token);
 // no cb_push_to(CodeBlock, TokenStack) b/c that's in Runnable
