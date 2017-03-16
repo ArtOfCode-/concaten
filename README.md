@@ -87,16 +87,19 @@ Major version `0` is pre-completion; some of the parts may be
 * [ ] Refactor to interface consistent across all bits and pieces - 0.5  
   The code is getting a little out of hand. I have some things I want to do to
     clean it up.
-  * Consistent error handling across all functions
-    * Convert all ctors to `bool wht_new(init_args, Whatever *out)`
+  * [ ] Consistent error handling across all functions
+    * [ ] Convert all ctors to `bool wht_new(init_args, Whatever *out)`
       * No more `int error;` only used in ctor to indicate something died
       * *Not* `Whatever **`; we set the value at the ptr, not the value of one
-    * Convert all `bool` error indicators to error codes in headers
+    * [ ] Convert all `bool` error indicators to error codes in headers
       * Don't store error in an object, return it. (*cough* Tokenizer *cough*)
-    * Collect all error codes in `errors.h`, ensure no duplicates/overlap
+    * [ ] Collect all error codes in `errors.h`, ensure no duplicates/overlap
       * Also, a `const char *to_str(error_code)` to provide error messages
-  * TLC for `tknr_next` -- it's currently a jumbled mess. Some careful thought
-    will be good for it, to simplify it as much as possible.
+  * [ ] TLC for `tknr_next` -- it's currently a jumbled mess. Some careful
+    thought will be good for it, to simplify it as much as possible. FSA may
+    be useful, as well as taking a peek at FORTH and Factor's tokenizers.
+  * [ ] Write a code style guide. Start by getting down the ideas, see what
+    patterns emerge, categorize based on that.
 * [ ] `ctn_runnable.h` - 0.6  
   A combination object so I can either define things in Concaten, through
     code blocks, or in C, through functions with a certain signature, and
