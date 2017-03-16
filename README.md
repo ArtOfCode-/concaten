@@ -87,6 +87,11 @@ Major version `0` is pre-completion; some of the parts may be
 * [ ] Refactor to interface consistent across all bits and pieces - 0.5  
   The code is getting a little out of hand. I have some things I want to do to
     clean it up.
+  * [ ] Tests should be "success counters": Count total tests, count number of
+    successes (or, equivalently, fails) and report that.
+    * This is in preparation for setting up Travis CI.
+    * For now, just report numbers. Later, I'll set up a system that collects
+      the failures and reports them as a group.
   * [ ] Consistent error handling across all functions
     * [ ] Convert all ctors to `bool wht_new(init_args, Whatever *out)`
       * No more `int error;` only used in ctor to indicate something died
@@ -127,11 +132,14 @@ Major version `0` is pre-completion; some of the parts may be
     Hand out the interpreter as it is to as many people as possible, get them
       to play with the language and try to break it.
 * [ ] Command-line options - 0.10  
-  Definitely at least `-e`; take inspiration from Ruby and Python.
+  Definitely at least `-e`; take inspiration from Ruby and Python.  
+  These should mostly be minor variations on the existing main method.
 * [ ] Documentation - 1.0  
   Including demo code, a detailed up-to-date list of every default global word
     (like `if`) and what they do, as well as a brief overview of how Concaten
-    works and how to install/run it.
+    works, how to install it, and what the command-line arguments are.  
+  In theory, mostly done (because of the spec), but in practice, it probably
+    should be rewritten.
 * [ ] Debug mode - 1.1  
   Allows breakpoints (w/ `breakpoint`?) and stops execution when exception is
     thrown outside of a `try`.
