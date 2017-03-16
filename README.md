@@ -105,7 +105,7 @@ Major version `0` is pre-completion; some of the parts may be
     be useful, as well as taking a peek at FORTH and Factor's tokenizers.
   * [ ] Write a code style guide. Start by getting down the ideas, see what
     patterns emerge, categorize based on that.
-* [ ] `ctn_runnable.h` - 0.6  
+* [ ] `runnable.h` - 0.6  
   A combination object so I can either define things in Concaten, through
     code blocks, or in C, through functions with a certain signature, and
     call them without worrying about which is which. This layer of abstraction
@@ -193,7 +193,7 @@ Major version `0` is pre-completion; some of the parts may be
   Can read from both a string in memory and a file on the disk directly. The
     former will make `eval` easier to code, and the latter makes the
     interpreter a little easier to write.
-- [x] `ctn_object.h` - 0.1      
+- [x] `object.h` - 0.1      
   The building block of the language. Even lambdas are manipulatable objects.
     Can store any type of data, because Concaten is dynamically typed, after
     all.
