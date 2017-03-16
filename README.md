@@ -89,17 +89,17 @@ Major version `0` is pre-completion; some of the parts may be
     clean it up.
   * [ ] Tests should be "success counters": Count total tests, count number of
     successes (or, equivalently, fails) and report that.
-    * This is in preparation for setting up Travis CI.
-    * For now, just report numbers. Later, I'll set up a system that collects
-      the failures and reports them as a group.
+    * Collect successes/fails in main test method; if there are any failures,
+      HCF and exit with error code representing failed module.
   * [ ] Consistent error handling across all functions
-    * [ ] Convert all ctors to `bool wht_new(init_args, Whatever *out)`
-      * No more `int error;` only used in ctor to indicate something died
-      * *Not* `Whatever **`; we set the value at the ptr, not the value of one
-    * [ ] Convert all `bool` error indicators to error codes in headers
-      * Don't store error in an object, return it. (*cough* Tokenizer *cough*)
-    * [ ] Collect all error codes in `errors.h`, ensure no duplicates/overlap
-      * Also, a `const char *to_str(error_code)` to provide error messages
+    * [ ] All methods must return an integral type error code (precise type
+      is TBD, but will probably be `unsigned long`). If they can't fail, then
+      they'll always return success.  
+      If you need to return data (e.g. map getters) use an out parameter.
+    * [ ] Convert all `bool` error indicators to error codes in headers  
+      Don't store error in an object, return it. (*cough* Tokenizer *cough*)
+    * [ ] Collect all error codes in `errors.h`, ensure no duplicates/overlap  
+      Also, a `const char *to_str(error_code)` to provide error messages
   * [ ] TLC for `tknr_next` -- it's currently a jumbled mess. Some careful
     thought will be good for it, to simplify it as much as possible. FSA may
     be useful, as well as taking a peek at FORTH and Factor's tokenizers.
