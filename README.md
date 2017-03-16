@@ -71,7 +71,7 @@ Major version `0` is pre-completion; some of the parts may be
   A simple object which represents Concaten's equivalent of anonymous
     functions. Can be run, in addition to being modified at runtime, as it's
     simply an array of tokens with some extra words (`call`, for example).
-  * [ ] Define interface.  
+  * [x] Define interface.  
     Needs to be creatable from a sequence of tokens, (or tokenizer?) though it
       really doesn't need any methods (it's not being run directly; instead,
       its tokens will be dropped on top of the token stack) but it's worth

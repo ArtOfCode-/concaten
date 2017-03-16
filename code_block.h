@@ -10,10 +10,15 @@ struct CodeBlock {
 };
 
 bool cb_new(size_t, struct CodeBlock *);
-struct CodeBlock cb_copy(const struct CodeBlock);
+bool cb_copy(const struct CodeBlock, struct CodeBlock *);
 void cb_append(struct CodeBlock *, struct Token);
 // no cb_push_to(CodeBlock, TokenStack) b/c that's in Runnable
 // TODO all the array functions, too
+bool cb_insert(struct CodeBlock *, size_t, struct Token);
+bool cb_remove(struct CodeBlock *, size_t);
+bool cb_prepend(struct CodeBlock *, struct Token);
+bool cb_get(const struct CodeBlock, struct Token *);
+bool cb_set(struct CodeBlock *, struct Token *);
 void cb_free(struct CodeBlock *);
 
 #endif //CONCATEN_CODE_BLOCK_H
