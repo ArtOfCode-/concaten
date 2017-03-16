@@ -11,7 +11,7 @@ struct CodeBlock {
 
 bool cb_new(size_t, struct CodeBlock *);
 bool cb_copy(const struct CodeBlock, struct CodeBlock *);
-void cb_append(struct CodeBlock *, struct Token);
+bool cb_append(struct CodeBlock *, const struct Token);
 // no cb_push_to(CodeBlock, TokenStack) b/c that's in Runnable
 // TODO all the array functions, too
 bool cb_insert(struct CodeBlock *, size_t, struct Token);
