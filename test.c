@@ -13,5 +13,7 @@ int main() {
     test_data_stack();
     puts("Testing TokenStack:");
     test_token_stack();
+    puts("Testing CodeBlock:");
+    test_code_block();
     puts("Done with all tests");
 }
