@@ -96,18 +96,18 @@ void test_tokenizer() {
             stest_bd("0o178"), stest_bd("1f"),
             (struct TestSpec) {
                     .source = "success: \"string\" 42 0x1Fe94\n"
-                            "0b11001 0o127635 1.2e3 # Hello!\n"
-                            ":foobar foobar2\n"
+                            "0b11001 -0o127635 1.2e3 # Hello!\n"
+                            ":foobar -> - foobar2\n"
                             "r/asdf boofar/xgi",
                     .is_from_file = false,
                     .code = 0,
                     .types = (enum TokenType[]) {
                             TKN_WORD, TKN_STRING, TKN_INTEGER, TKN_INTEGER,
                             TKN_INTEGER, TKN_INTEGER, TKN_REAL,
-                            TKN_IDENTIFIER, TKN_WORD,
+                            TKN_IDENTIFIER, TKN_WORD, TKN_WORD, TKN_WORD,
                             TKN_REGEX
                     },
-                    .token_count = 10
+                    .token_count = 12
             },
             (struct TestSpec) {
                     .source = "test.ctn",

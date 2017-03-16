@@ -399,11 +399,14 @@ error:;
 }
 
 bool get_number(struct Tokenizer *from, char *next_char, struct Token partial,
-                struct Token *out) {
+                bool neg, struct Token *out) {
     struct StringBuilder raw = sb_new();
     if (!sb_init(&raw, STARTING_RAW_MEM)) {
         from->error = NT_NEW_SB_FAIL;
         goto error;
+    }
+    if (neg) {
+        sb_append(&raw, '-');
     }
     partial.type = TKN_INTEGER;
     enum {
@@ -582,7 +585,7 @@ bool tknr_next(struct Tokenizer *from, struct Token *out) {
     if (next_char == '"') { // single-line string
         return get_string(from, &next_char, ret, out);
     } else if ('0' <= next_char && next_char <= '9') {
-        return get_number(from, &next_char, ret, out);
+        return get_number(from, &next_char, ret, false, out);
     }
     if (!sb_init(&raw, STARTING_RAW_MEM)) {
         from->error = NT_NEW_SB_FAIL;
@@ -590,6 +593,12 @@ bool tknr_next(struct Tokenizer *from, struct Token *out) {
     }
     if (next_char == ':') {
         ret.type = TKN_IDENTIFIER;
+    } else if (next_char == '-') {
+        sb_append(&raw, read_char(from));
+        next_char = peek_char(from);
+        if ('0' <= next_char && next_char <= '9') {
+            return get_number(from, &next_char, ret, true, out);
+        }
     } else if (next_char == 'r') {
         sb_append(&raw, read_char(from));
         next_char = peek_char(from);
