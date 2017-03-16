@@ -69,7 +69,7 @@ bool cb_prepend(struct CodeBlock *to, struct Token what) {
 
 bool cb_get(const struct CodeBlock from, size_t idx, struct Token *into) {
     if (idx >= from.count) return false;
-    *into = from.tokens[idx];
+    if (into) *into = from.tokens[idx];
     return true;
 }
 
