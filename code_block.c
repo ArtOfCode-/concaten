@@ -44,6 +44,7 @@ bool cb_append(struct CodeBlock *to, const struct Token adding) {
 }
 
 bool cb_insert(struct CodeBlock *into, size_t pos, struct Token what) {
+    if (pos >= into->count) return false;
     if (into->count == into->cap && !cb_expand(into)) {
         return false;
     }
@@ -56,6 +57,7 @@ bool cb_insert(struct CodeBlock *into, size_t pos, struct Token what) {
 }
 
 bool cb_remove(struct CodeBlock *from, size_t pos) {
+    if (pos >= from->count) return false;
     for (size_t i = pos; i < from->count; ++i) {
         from->tokens[i] = from->tokens[i + 1];
     }
