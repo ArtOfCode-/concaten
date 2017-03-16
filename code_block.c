@@ -11,3 +11,8 @@ bool cb_new(size_t init_cap, struct CodeBlock *ret) {
     };
     return true;
 }
+
+bool cb_copy(const struct CodeBlock from, struct CodeBlock *into) {
+    struct Token *mem = malloc(from.cap * sizeof(struct Token));
+    
+}
