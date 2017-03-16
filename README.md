@@ -65,46 +65,34 @@ Major version `0` is pre-completion; some of the parts may be
 
 ###Current milestone
 
-#### `code_block.h` - 0.4
-
-* [ ] `code_block.h` - 0.4  
-  A simple object which represents Concaten's equivalent of anonymous
-    functions. Can be run, in addition to being modified at runtime, as it's
-    simply an array of tokens with some extra words (`call`, for example).
-  * [x] Define interface.  
-    Needs to be creatable from a sequence of tokens, (or tokenizer?) though it
-      really doesn't need any methods (it's not being run directly; instead,
-      its tokens will be dropped on top of the token stack) but it's worth
-      thinking through which additions will be useful.
-  * [ ] Implement those methods.
-  * [ ] Test them.  
-    They may be somewhat difficult to test satisfactorily, since they'll
-      most likely be really, really simple. As long as they do what they
-      say on the tin, though, it doesn't matter.
-
-###Upcoming milestones
+#### Intermediary refactor - 0.5
 
 * [ ] Refactor to interface consistent across all bits and pieces - 0.5  
   The code is getting a little out of hand. I have some things I want to do to
     clean it up.
-  * [ ] Tests should be "success counters": Count total tests, count number of
-    successes (or, equivalently, fails) and report that.
+  * [ ] Change tests to success counters - 0.5.0  
+    Count total tests, count number of successes (or, equivalently, fails)
+      and report that.
     * Collect successes/fails in main test method; if there are any failures,
       HCF and exit with error code representing failed module.
-  * [ ] Consistent error handling across all functions
-    * [ ] All methods must return an integral type error code (precise type
-      is TBD, but will probably be `unsigned long`). If they can't fail, then
-      they'll always return success.  
+  * [ ] Consistent error handling across all functions - 0.5.1  
+    * [ ] Make methods return an `unsigned long` error code. If they can't
+      fail, then they'll always return success.  
       If you need to return data (e.g. map getters) use an out parameter.
-    * [ ] Convert all `bool` error indicators to error codes in headers  
+    * [ ] Convert `bool` error indicators to error codes  
       Don't store error in an object, return it. (*cough* Tokenizer *cough*)
     * [ ] Collect all error codes in `errors.h`, ensure no duplicates/overlap  
       Also, a `const char *to_str(error_code)` to provide error messages
-  * [ ] TLC for `tknr_next` -- it's currently a jumbled mess. Some careful
-    thought will be good for it, to simplify it as much as possible. FSA may
-    be useful, as well as taking a peek at FORTH and Factor's tokenizers.
-  * [ ] Write a code style guide. Start by getting down the ideas, see what
-    patterns emerge, categorize based on that.
+  * [ ] TLC for `tknr_next`.  
+    It's currently a jumbled mess. Some careful thought will be good for it,
+      to simplify it as much as possible. FSA may be useful, as well as taking
+      a peek at FORTH and Factor's tokenizers.
+  * [ ] Write a code style guide.  
+    Start by getting down the ideas, see what patterns emerge, categorize
+      based on that.
+
+###Upcoming milestones
+
 * [ ] `runnable.h` - 0.6  
   A combination object so I can either define things in Concaten, through
     code blocks, or in C, through functions with a certain signature, and
@@ -186,17 +174,23 @@ Major version `0` is pre-completion; some of the parts may be
 
 ###Previous milestones
 
-- [x] `tokenizer.h` - 0.0  
+* [x] `tokenizer.h` - 0.0  
   Converts a stream of characters into a stream of tokens. That way, the
     interpreter doesn't need to even think about things like comments or
     whitespace -- it just takes the tokens and runs with them.  
   Can read from both a string in memory and a file on the disk directly. The
     former will make `eval` easier to code, and the latter makes the
     interpreter a little easier to write.
-- [x] `object.h` - 0.1      
+* [x] `object.h` - 0.1      
   The building block of the language. Even lambdas are manipulatable objects.
     Can store any type of data, because Concaten is dynamically typed, after
     all.
-- [x] `data_stack.h` - 0.2  
+* [x] `data_stack.h` - 0.2  
   The central data stack. Contains intermediary results; words pull their
     arguments from it and push their results to it.
+* [x] `token_stack.h` - 0.3  
+  Where tokens get pulled from during program execution.
+* [x] `code_block.h` - 0.4  
+  A simple object which represents Concaten's equivalent of anonymous
+    functions. Can be run, in addition to being modified at runtime, as it's
+    simply an array of tokens with some extra words (`call`, for example).
