@@ -3,8 +3,6 @@
 #include "../prop_map.h"
 #include "../object.h"
 
-// TODO update this to use Object instead of ints
-
 void full_print(const struct PropMap pm){
     printf("items: %zu\n", pm.item_count);
     printf("bk_gr_pref: %zu\n", pm.bk_gr_pref);

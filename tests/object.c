@@ -12,7 +12,6 @@ void assert_eq(const char *restrict a, const char *restrict b, const char *restr
 }
 
 void test_object() {
-    // TODO convert to success counter
     long val = 12;
     struct Object t1 = ctno_literal(&val, sizeof(long), TID_long, NULL);
     const char *name = "Foobar";

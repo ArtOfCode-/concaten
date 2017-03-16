@@ -64,7 +64,6 @@ void test_token_stack() {
     struct Tokenizer tknr = tknr_from_string("1 2 3 4 5", "mem");
     struct TokenStack tst = tst_new(tknr);
     
-    // TODO Test pop_level
     a_token_push(&tst, gen_token(1, 1), true);
     a_token_push(&tst, gen_token(2, 1), true);
     a_token_push(&tst, gen_token(3, 1), true);
