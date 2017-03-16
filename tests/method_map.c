@@ -2,24 +2,6 @@
 
 #include "../method_map.h"
 
-void intermediate_test(const struct MethodMap mm) {
-    char *names[] = {
-            "first", "second", "third", "fourth", "fifth",
-            "eleventh", "twelfth", "bar", "woof", "sixteenth",
-            "nineteenth", "twentieth", "foo", "eighteenth"
-    };
-    size_t amt = sizeof(names) / sizeof(char *);
-    for (size_t i = 0; i < amt; ++i) {
-        MM_FUNC_TYPE res = mm_get(mm, names[i]);
-        printf("Result for %-2zu (%-10s) = ", i, names[i]);
-        if (res) {
-            res((int) i, names[i]);
-        } else {
-            puts("N/A");
-        }
-    }
-}
-
 #define test_f(num) \
     void f##num(int i, char *s) { printf("f" str(num) ": %d; %s\n", i, s); }
 
@@ -28,53 +10,73 @@ test_f(5)  test_f(6)  test_f(7)  test_f(8)  test_f(9)
 test_f(10) test_f(11) test_f(12) test_f(13) test_f(14)
 test_f(15) test_f(16) test_f(17) test_f(18) test_f(19)
 
-#define __mm_set(a,b,c) printf("set %s: %d\n",b,mm_set(a,b,c));
-#define __mm_remove(a,b) printf("remove %s: %d\n",b,mm_remove(a,b));
+#define a_set(key, value) \
+    tassert(mm_set(&mm, key, value), str(__LINE__) " assignment failed")
+#define a_is_key(key) \
+    tassert(mm_is_key(mm, key), key " isn't a key!")
+#define a_not_key(key) \
+    tassert(!mm_is_key(mm, key), key " is a key!")
+#define a_is_val(val) \
+    tassert(mm_is_value(mm, val), str(val) " isn't a value!")
+#define a_not_val(val) \
+    tassert(!mm_is_value(mm, val), str(val) " is a value!")
+#define a_get_val(key, expect) \
+    tassert(mm_get(mm, key) == expect, "unexpected value for " key)
+#define a_remove(key) \
+    tassert(mm_remove(&mm, key), "failed to remove")
+
+//"first", "second", "third", "fourth", "fifth",
+//"eleventh", "twelfth", "bar", "woof", "sixteenth",
+//"nineteenth", "twentieth", "foo", "eighteenth"
 
 void test_method_map() {
-    // TODO convert to success counter
+    size_t successes = 0, total = 0;
     // very low number of buckets initially so it has to rehash
     // ...eventually. I hate the pigeonhole principle.
     struct MethodMap mm = mm_new(2);
-    __mm_set(&mm, "first", f0);
-    __mm_set(&mm, "second", f1);
-    __mm_set(&mm, "third", f2);
-    __mm_set(&mm, "fourth", f3);
-    __mm_set(&mm, "fifth", f4);
-    printf("fifth %s key\n", mm_is_key(mm, "fifth") ? "is" : "isn't");
-    printf("bar %s key\n", mm_is_key(mm, "bar") ? "is" : "isn't");
-    printf("tenth %s key\n", mm_is_key(mm, "tenth") ? "is" : "isn't");
-    __mm_set(&mm, "sixth", f5);
-    __mm_set(&mm, "seventh", f6);
-    __mm_set(&mm, "eighth", f7);
-    __mm_set(&mm, "ninth", f8);
-    __mm_set(&mm, "tenth", f9);
-    printf("f1 %s value\n", mm_is_value(mm, f1) ? "is" : "isn't");
-    printf("f12 %s value\n", mm_is_value(mm, f12) ? "is" : "isn't");
-    intermediate_test(mm);
-    __mm_set(&mm, "eleventh", f10);
-    __mm_set(&mm, "twelfth", f11);
-    __mm_set(&mm, "thirteenth", f12);
-    __mm_set(&mm, "fourteenth", f13);
-    __mm_set(&mm, "fifteenth", f14);
-    printf("fifth %s key\n", mm_is_key(mm, "fifth") ? "is" : "isn't");
-    printf("bar %s key\n", mm_is_key(mm, "bar") ? "is" : "isn't");
-    printf("tenth %s key\n", mm_is_key(mm, "tenth") ? "is" : "isn't");
-    __mm_set(&mm, "sixteenth", f15);
-    __mm_set(&mm, "seventeenth", f16);
-    __mm_set(&mm, "eighteenth", f17);
-    __mm_set(&mm, "nineteenth", f18);
-    __mm_set(&mm, "twentieth", f19);
-    printf("f1 %s value\n", mm_is_value(mm, f1) ? "is" : "isn't");
-    printf("f12 %s value\n", mm_is_value(mm, f12) ? "is" : "isn't");
-    
-    intermediate_test(mm);
-    __mm_remove(&mm, "eleventh");
-    __mm_remove(&mm, "sixteenth");
-    intermediate_test(mm);
-    __mm_remove(&mm, "fifth");
-    __mm_remove(&mm, "first");
-    __mm_remove(&mm, "woof");
-    intermediate_test(mm);
+    a_set("first", f0);
+    a_set("second", f1);
+    a_set("third", f2);
+    a_set("fourth", f3);
+    a_set("fifth", f4);
+    a_is_key("fifth");
+    a_not_key("bar");
+    a_not_key("tenth");
+    a_set("sixth", f5);
+    a_set("seventh", f6);
+    a_set("eighth", f7);
+    a_is_key("eighth");
+    a_get_val("eighth", f7);
+    a_remove("eighth");
+    a_not_key("eighth");
+    a_get_val("eighth", NULL);
+    a_set("ninth", f8);
+    a_set("tenth", f9);
+    a_is_val(f1);
+    a_not_val(f12);
+    a_get_val("third", f2);
+    a_get_val("eleventh", NULL);
+    a_not_key("eleventh");
+    a_set("eleventh", f10);
+    a_set("twelfth", f11);
+    a_set("thirteenth", f12);
+    a_get_val("thirteenth", f12);
+    a_remove("thirteenth");
+    a_set("fourteenth", f13);
+    a_set("fifteenth", f14);
+    a_not_key("thirteenth");
+    a_get_val("thirteenth", NULL);
+    a_is_key("fifth");
+    a_not_key("bar");
+    a_is_key("tenth");
+    a_set("sixteenth", f15);
+    a_set("seventeenth", f16);
+    a_set("eighteenth", f17);
+    a_set("nineteenth", f18);
+    a_set("twentieth", f19);
+    a_is_val(f1);
+    a_is_val(f13);
     mm_free(&mm);
+    
+    printf("%zu/%zu successes\n", successes, total);
 }
