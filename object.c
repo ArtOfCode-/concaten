@@ -4,7 +4,7 @@
 #include "tokenizer.h"
 
 struct Object ctno_literal(const void *data, const size_t data_size,
-                           enum lit_type_id id, struct MethodMap *meths) {
+                           enum TypeId id, struct MethodMap *meths) {
     void *new_data = malloc(data_size);
     if (!new_data) {
         return (struct Object) { .error = 1 };
@@ -39,7 +39,6 @@ struct Object ctno_copy(struct Object copying) {
     struct Object ret = (struct Object) {
             .error = 0,
             .is_literal = copying.is_literal,
-            // intentionally not copied
             .methods = mm_claim(copying.methods),
             .refcount = 0
     };
