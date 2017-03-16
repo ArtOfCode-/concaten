@@ -24,8 +24,8 @@ void test_prop_map() {
     // TODO Convert to success counter
     struct PropMap pm = pm_new(8);
     full_print(pm);
-    int num = 1;
-    struct Object val = ctno_from(num, NULL);
+    long num = 1;
+    struct Object val = ctno_literal(&num, sizeof(long), TID_long, NULL);
     pm_set(&pm, "foobar", &val);
     pm_set(&pm, "asdf", &val);
     pm_set(&pm, "z", &val);
@@ -54,4 +54,5 @@ void test_prop_map() {
     printf("get z: %p\n", pm_get(pm, "z"));
     printf("is_key z: %d\n", pm_is_key(pm, "z"));
     pm_free(&pm);
+    ctno_free(&val);
 }

@@ -12,12 +12,12 @@
 
 void test_data_stack() {
     struct DataStack dst1 = dst_new();
-    int val = 12;
+    long val = 12;
     size_t successes = 0, total = 0;
-    struct Object foo = ctno_from(val, NULL); ++val;
-    struct Object bar = ctno_from(val, NULL); ++val;
-    struct Object baz = ctno_from(val, NULL); ++val;
-    struct Object wuf = ctno_from(val, NULL); ++val;
+    struct Object foo = ctno_literal(&val, sizeof(long), TID_long, NULL); ++val;
+    struct Object bar = ctno_literal(&val, sizeof(long), TID_long, NULL); ++val;
+    struct Object baz = ctno_literal(&val, sizeof(long), TID_long, NULL); ++val;
+    struct Object wuf = ctno_literal(&val, sizeof(long), TID_long, NULL); ++val;
     dst_push(&dst1, &foo);
     dst_push(&dst1, &bar);
     dst_push(&dst1, &baz);

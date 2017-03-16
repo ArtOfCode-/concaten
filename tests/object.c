@@ -13,27 +13,27 @@ void assert_eq(const char *restrict a, const char *restrict b, const char *restr
 
 void test_object() {
     // TODO convert to success counter
-    int val = 12;
-    struct Object t1 = ctno_from(val, NULL);
+    long val = 12;
+    struct Object t1 = ctno_literal(&val, sizeof(long), TID_long, NULL);
     const char *name = "Foobar";
-    struct Object t2 = ctno_literal(name, 7, NULL);
+    struct Object t2 = ctno_literal(name, 7, TID_char, NULL);
     struct Object t3 = ctno_dynamic(pm_new(8), NULL);
     ctno_set_prop(&t3, "1", &t1);
     ctno_set_prop(&t3, "2", &t2);
-    tassert(*ctno_to(t1, int) == val, "t1->int bad value");
+    tassert(*ctno_to(t1, long) == val, "t1->long bad value");
     assert_eq(ctno_to(t2, char), name, "t2->char*");
     struct Object t1g1 = *ctno_get_prop(t3, "1");
     struct Object t2g1 = *ctno_get_prop(t3, "2");
-    tassert(*ctno_to(t1g1, int) == val, "t1g1->int bad value");
+    tassert(*ctno_to(t1g1, long) == val, "t1g1->long bad value");
     assert_eq(ctno_to(t2g1, char), name, "t2g1->char*");
     ctno_free(&t1);
     ctno_free(&t2);
     // they should still exist, because t3 has a reference to them!
-    tassert(*ctno_to(t1, int) == val, "t1->int 2 bad value");
+    tassert(*ctno_to(t1, long) == val, "t1->long 2 bad value");
     assert_eq(ctno_to(t2, char), name, "t2->char* 2");
     struct Object t1g2 = *ctno_get_prop(t3, "1");
     struct Object t2g2 = *ctno_get_prop(t3, "2");
-    tassert(*ctno_to(t1g2, int) == val, "t1g2->int bad value");
+    tassert(*ctno_to(t1g2, long) == val, "t1g2->long bad value");
     assert_eq(ctno_to(t2g2, char), name, "t2g2->char*");
     tassert(!ctno_set_prop(&t3, "self", &t3), "direct cycles allowed");
     struct Object t4 = ctno_dynamic(pm_new(8), NULL);

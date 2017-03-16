@@ -4,17 +4,20 @@
 #include "tokenizer.h"
 
 struct Object ctno_literal(const void *data, const size_t data_size,
-                           struct MethodMap *methods) {
+                           enum lit_type_id id, struct MethodMap *meths) {
     void *new_data = malloc(data_size);
     if (!new_data) {
         return (struct Object) { .error = 1 };
     }
     memcpy(new_data, data, data_size);
     return (struct Object) {
-            .data.literal.size = data_size,
-            .data.literal.value = new_data,
+            .data.literal = (struct LiteralData) {
+                    .size = data_size,
+                    .type_id = id,
+                    .value = new_data
+            },
             .is_literal = true,
-            .methods = methods,
+            .methods = meths,
             .error = 0,
             .refcount = 1
     };
