@@ -3,8 +3,8 @@
 #include <stdio.h>
 
 int main() {
-//    test_tokenizer();
-//    puts("");
+    test_tokenizer();
+    puts("");
 //    test_prop_map();
 //    puts("");
 //    test_method_map();
@@ -13,6 +13,6 @@ int main() {
 //    puts("");
 //    test_data_stack();
 //    puts("");
-    test_token_stack();
-    puts("");
+//    test_token_stack();
+//    puts("");
 }
