@@ -4,7 +4,8 @@
 #include "prop_map.h"
 #include "method_map.h"
 
-enum lit_type_id {
+// C has no RTTI, so we do this s**t
+enum TypeId {
     TID_long,
     TID_double,
     TID_char, // AKA string (stores series of chars :P)
@@ -22,7 +23,7 @@ enum lit_type_id {
 struct LiteralData {
     size_t size;
     void *value;
-    enum lit_type_id type_id;
+    enum TypeId type_id;
 };
 
 struct Object {
@@ -40,7 +41,7 @@ struct Object {
     int error;
 };
 
-struct Object ctno_literal(const void *, size_t, enum lit_type_id id,
+struct Object ctno_literal(const void *, size_t, enum TypeId id,
                            struct MethodMap *);
 struct Object ctno_dynamic(const struct PropMap, struct MethodMap *);
 struct Object ctno_copy(const struct Object);
