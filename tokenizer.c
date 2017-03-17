@@ -114,23 +114,16 @@ ERROR get_next_char_string(struct Tokenizer *from) {
     return  SUCCESS;
 }
 
-ERROR read_char(struct Tokenizer *reading, char *out) {
+ERROR read_char(struct Tokenizer *reading, char *into) {
     if (reading->error) {
         ERROR(reading->error);
     }
     char ret = reading->next_char;
-    ERROR err = 0;
+    ERROR err;
     if (reading->is_from_file) {
         err = get_next_char_file(reading);
     } else {
         err = get_next_char_string(reading);
-    }
-    if (err) {
-        reading->error = err;
-        // note that it's possible that '\0' is the next character. That's why
-        // the functions that use this one not only check the return value of
-        // this but tknr_err(Tokenizer)
-        return 0;
     }
     if (ret == '\n') {
         reading->index = 0;
@@ -138,7 +131,8 @@ ERROR read_char(struct Tokenizer *reading, char *out) {
     } else {
         ++reading->index;
     }
-    return ret;
+    if (into) *into = ret;
+    return err;
 }
 
 struct Tokenizer tknr_from_string(const char *mem, const char *origin) {
@@ -190,7 +184,7 @@ struct Tokenizer tknr_from_string(const char *mem, const char *origin) {
     strcpy(origin_c, origin);
     ret.origin = origin_c;
     
-    read_char(&ret);
+    read_char(&ret, NULL);
     ret.line = 1;
     ret.index = 0;
     
@@ -298,7 +292,7 @@ bool skip_ws(struct Tokenizer *from) {
     bool skipped = false;
     while (is_ws(peek_char(from)) && !tknr_end(from)) {
         skipped = true;
-        read_char(from);
+        read_char(from, NULL);
     }
     return skipped;
 }
@@ -308,9 +302,9 @@ bool skip_slc(struct Tokenizer *from) {
         return false;
     }
     while (peek_char(from) != '\n' && !tknr_end(from)) {
-        read_char(from);
+        read_char(from, NULL);
     }
-    read_char(from); // take the newline
+    read_char(from, NULL); // take the newline
     return true;
 }
 
@@ -332,7 +326,8 @@ bool add_while_in_ranges(struct Tokenizer *from, struct StringBuilder *raw,
                          size_t num_ranges) {
     *next_char = peek_char(from);
     while (in_ranges(*next_char, begins, ends, num_ranges)) {
-        sb_append(raw, read_char(from));
+        sb_append(raw, peek_char(from));
+        read_char(from, NULL);
         *next_char = peek_char(from);
         if (!(*next_char) && from->error) {
             return false;
@@ -356,18 +351,21 @@ bool get_string(struct Tokenizer *from, char *next_char,
         return false;
     }
     while (1) {
-        sb_append(&raw, read_char(from));
+        sb_append(&raw, peek_char(from));
+        read_char(from, NULL);
         if (tknr_end(from)) {
             from->error = SYN_UNEXPECTED_END_FAIL;
             goto error;
         }
         *next_char = peek_char(from);
         if (*next_char == '\\') {
-            sb_append(&raw, read_char(from));
+            sb_append(&raw, peek_char(from));
+            read_char(from, NULL);
             if (from->error) {
                 goto error;
             }
-            sb_append(&raw, read_char(from));
+            sb_append(&raw, peek_char(from));
+            read_char(from, NULL);
             if (from->error) {
                 goto error;
             }
@@ -378,7 +376,8 @@ bool get_string(struct Tokenizer *from, char *next_char,
         }
         if (*next_char == '"') {
             // add the quote
-            sb_append(&raw, read_char(from));
+            sb_append(&raw, peek_char(from));
+            read_char(from, NULL);
             break;
         }
     }
@@ -414,7 +413,8 @@ bool get_number(struct Tokenizer *from, char *next_char, struct Token partial,
         B2, B8, B10, B16
     } base = B10;
     if (*next_char == '0') {
-        sb_append(&raw, read_char(from));
+        sb_append(&raw, peek_char(from));
+        read_char(from, NULL);
         *next_char = peek_char(from);
         if (*next_char == 'x') {
             base = B16;
@@ -423,7 +423,8 @@ bool get_number(struct Tokenizer *from, char *next_char, struct Token partial,
         } else if (*next_char == 'b') {
             base = B2;
         }
-        sb_append(&raw, read_char(from));
+        sb_append(&raw, peek_char(from));
+        read_char(from, NULL);
     }
     bool decimal = false;
     if (base == B16) {
@@ -446,7 +447,8 @@ bool get_number(struct Tokenizer *from, char *next_char, struct Token partial,
         // un punto
         if (*next_char == '.') {
             decimal = true;
-            sb_append(&raw, read_char(from));
+            sb_append(&raw, peek_char(from));
+            read_char(from, NULL);
             if (!add_while_in_range(from, &raw, next_char, '0', '9')) {
                 goto error;
             }
@@ -454,7 +456,8 @@ bool get_number(struct Tokenizer *from, char *next_char, struct Token partial,
         // exponents
         if (*next_char == 'e') {
             decimal = true;
-            sb_append(&raw, read_char(from));
+            sb_append(&raw, peek_char(from));
+            read_char(from, NULL);
             if (!add_while_in_range(from, &raw, next_char, '0', '9')) {
                 goto error;
             }
@@ -490,18 +493,21 @@ bool is_flag(char c) {
 
 bool get_regex(struct Tokenizer *from, struct StringBuilder raw,
                struct Token ret, struct Token *out) {
-    sb_append(&raw, read_char(from));
+    sb_append(&raw, peek_char(from));
+    read_char(from, NULL);
     char next_char = peek_char(from);
     while (true) {
         if (next_char == '\\') {
-            sb_append(&raw, read_char(from));
+            sb_append(&raw, peek_char(from));
+            read_char(from, NULL);
             if (from->error) {
                 goto error;
             } else if (tknr_end(from)) {
                 from->error = SYN_UNEXPECTED_END_FAIL;
                 goto error;
             }
-            sb_append(&raw, read_char(from));
+            sb_append(&raw, peek_char(from));
+            read_char(from, NULL);
             if (from->error) {
                 goto error;
             } else if (tknr_end(from)) {
@@ -510,10 +516,12 @@ bool get_regex(struct Tokenizer *from, struct StringBuilder raw,
             }
         }
         if (next_char == '/') {
-            sb_append(&raw, read_char(from));
+            sb_append(&raw, peek_char(from));
+            read_char(from, NULL);
             break;
         }
-        sb_append(&raw, read_char(from));
+        sb_append(&raw, peek_char(from));
+        read_char(from, NULL);
         if (from->error) {
             goto error;
         } else if (tknr_end(from)) {
@@ -524,7 +532,8 @@ bool get_regex(struct Tokenizer *from, struct StringBuilder raw,
     }
     next_char = peek_char(from);
     while (is_flag(next_char)) {
-        sb_append(&raw, read_char(from));
+        sb_append(&raw, peek_char(from));
+        read_char(from, NULL);
         next_char = peek_char(from);
     }
     if (!is_ws(next_char) && !tknr_end(from)) {
@@ -595,20 +604,23 @@ bool tknr_next(struct Tokenizer *from, struct Token *out) {
     if (next_char == ':') {
         ret.type = TKN_IDENTIFIER;
     } else if (next_char == '-') {
-        sb_append(&raw, read_char(from));
+        sb_append(&raw, peek_char(from));
+        read_char(from, NULL);
         next_char = peek_char(from);
         if ('0' <= next_char && next_char <= '9') {
             return get_number(from, &next_char, ret, true, out);
         }
     } else if (next_char == 'r') {
-        sb_append(&raw, read_char(from));
+        sb_append(&raw, peek_char(from));
+        read_char(from, NULL);
         next_char = peek_char(from);
         if (next_char == '/') {
             return get_regex(from, raw, ret, out);
         }
     }
     while (!is_ws(next_char) && !tknr_end(from)) {
-        sb_append(&raw, read_char(from));
+        sb_append(&raw, peek_char(from));
+        read_char(from, NULL);
         next_char = peek_char(from);
     }
     if (ret.type == TKN_UNKNOWN) ret.type = TKN_WORD;
@@ -632,8 +644,4 @@ bool tknr_end(struct Tokenizer *t) {
     } else {
         return t->source.string.end == t->source.string.cur_pos;
     }
-}
-
-int tknr_err(struct Tokenizer *t) {
-    return t->error;
 }
