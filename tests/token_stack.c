@@ -2,14 +2,7 @@
 
 #include "../token_stack.h"
 
-size_t strlen(const char *f) {
-    size_t ret = 0;
-    while (*f) {
-        ++ret;
-        ++f;
-    }
-    return ret;
-}
+#include <string.h>
 
 struct Token gen_token(size_t num, size_t layer_num) {
     char *mem = malloc(12);
