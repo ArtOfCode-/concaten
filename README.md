@@ -73,7 +73,8 @@ Major version `0` is pre-completion; some of the parts may be
   * [ ] Change tests to success counters - 0.5.0  
     Count total tests, count number of successes (or, equivalently, fails)
       and report that.
-    * Collect successes/fails in main test method; if there are any failures,
+    * [x] Change to count successes + only display totals
+    * [ ] Collect successes/fails in main test method; if there are failures,
       HCF and exit with error code representing failed module.
   * [ ] Consistent error handling across all functions - 0.5.1  
     * [ ] Make methods return an `unsigned long` error code. If they can't

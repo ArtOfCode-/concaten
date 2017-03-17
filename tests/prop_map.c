@@ -3,54 +3,51 @@
 #include "../prop_map.h"
 #include "../object.h"
 
-void full_print(const struct PropMap pm){
-    printf("items: %zu\n", pm.item_count);
-    printf("bk_gr_pref: %zu\n", pm.bk_gr_pref);
-    printf("buckets: %zu\n", pm.bucket_count);
-    for (size_t i = 0; i < pm.bucket_count; ++i) {
-        struct PM_Bucket bk = pm.buckets[i];
-        printf("  bucket %zu: %zu items\n", i, bk.count);
-        for (size_t j = 0; j < bk.count; ++j) {
-            struct PM_KeyValPair kvp = bk.items[j];
-            printf("    #%zu: '%s' -> %p\n", j, kvp.key, kvp.val);
-        }
-    }
-    puts("");
-}
+#define a_set(key, val) \
+    tassert(pm_set(&pm, key, val), "failed to set")
+
 
 void test_prop_map() {
-    // TODO Convert to success counter
+    size_t successes = 0, total = 0;
     struct PropMap pm = pm_new(8);
-    full_print(pm);
+    tassert(pm.item_count == 0, "why are there items wtf");
     long num = 1;
     struct Object val = ctno_literal(&num, sizeof(long), TID_long, NULL);
-    pm_set(&pm, "foobar", &val);
-    pm_set(&pm, "asdf", &val);
-    pm_set(&pm, "z", &val);
-    pm_set(&pm, "crum", &val);
-    full_print(pm);
-    pm_set(&pm, "00000000", &val);
-    printf("%p\n", pm_get(pm, "00000000"));
-    printf("%p\n", pm_get(pm, "z"));
-    full_print(pm);
-    pm_set(&pm, "0000000012345678", &val);
-    pm_set(&pm, "12345678", &val);
-    pm_set(&pm, "abc4567887654321", &val);
-    pm_set(&pm, "ab345678", &val);
-    pm_set(&pm, "foobaric12345678", &val);
-    pm_set(&pm, "a2345678", &val);
-    pm_set(&pm, "ich bin euer sch", &val);
-    full_print(pm);
-    pm_set(&pm, "I am a nice guy!", &val);
-    pm_set(&pm, "a2345678", &val);
-    pm_set(&pm, "ac345678", &val);
-    pm_set(&pm, "ad345678", &val);
-    full_print(pm);
-    printf("get z: %p\n", pm_get(pm, "z"));
-    printf("is_key z: %d\n", pm_is_key(pm, "z"));
-    pm_remove(&pm, "z");
-    printf("get z: %p\n", pm_get(pm, "z"));
-    printf("is_key z: %d\n", pm_is_key(pm, "z"));
+    struct Object *ret;
+    a_set("foobar", &val);
+    tassert(pm_get(pm, "foobar") == &val, "failed to get expected value");
+    a_set("asdf", &val);
+    a_set("z", &val);
+    a_set("crum", &val);
+    tassert(pm.item_count == 4, "wrong item count");
+    tassert(pm_is_key(pm, "foobar"), "failed to find existing key");
+    tassert(pm_is_value(pm, &val), "how the hell, it's been added 4 times");
+    tassert((ret = pm_get(pm, "z")), "failed to get existing item");
+    tassert(ret == &val, "got wrong value");
+    tassert(!pm_get(pm, "a"), "got by nonexistent key");
+    tassert(!pm_is_key(pm, "a"), "found nonexistent key");
+    a_set("00000000", &val);
+    tassert(pm_get(pm, "00000000") == &val, "got wrong value");
+    a_set("0000000012345678", &val);
+    a_set("12345678", &val);
+    a_set("abc4567887654321", &val);
+    a_set("ab345678", &val);
+    a_set("foobaric12345678", &val);
+    a_set("a2345678", &val);
+    a_set("ich bin euer sch", &val);
+    a_set("I am a nice guy!", &val);
+    a_set("a2345678", &val);
+    a_set("ac345678", &val);
+    a_set("ad345678", &val);
+    tassert(pm_is_value(pm, &val), "failed to find existing value");
+    tassert((ret = pm_get(pm, "z")), "failed to get existing item");
+    tassert(ret == &val, "got wrong value");
+    tassert(pm_remove(&pm, "z"), "failed to remove");
+    tassert(!pm_get(pm, "z"), "got by removed key");
+    tassert(!pm_is_key(pm, "z"), "found removed key");
+    tassert(pm_is_value(pm, &val), "lost value after removal");
     pm_free(&pm);
     ctno_free(&val);
+    
+    printf("%zu/%zu successes\n", successes, total);
 }
