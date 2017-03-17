@@ -1,7 +1,8 @@
 ##Concaten v0.5.0
 
-Concaten is a concatenative, stack-based, strongly but optionally strictly typed, hyperdynamic,
-garbage-collected, interpreted programming language. In order, that means that:
+Concaten is a concatenative, stack-based, strongly but optionally strictly
+typed, hyperdynamic, garbage-collected, interpreted programming language. In
+order, that means that:
 
 1. **concatenative** - Each "word" (Concaten's version of a function) is
   applied to the results of the one that appears before it in the source code.
@@ -76,13 +77,13 @@ Major version `0` is pre-completion; some of the parts may be
     * [x] Change to count successes + only display totals
     * [x] Collect successes/fails in main test method; if there are failures,
       HCF and exit with error code representing failed module.
-  * [ ] Consistent error handling across all functions - 0.5.1  
+  * [ ] Consistent error handling across all functions - 0.5.1
     * [ ] Make methods return an `unsigned long` error code. If they can't
       fail, then they'll always return success.  
-      If you need to return data (e.g. map getters) use an out parameter.
+      If you need to return data (e.g. ctors, getters) use an out parameter.
     * [ ] Convert `bool` error indicators to error codes  
       Don't store error in an object, return it. (*cough* Tokenizer *cough*)
-    * [ ] Collect all error codes in `errors.h`, ensure no duplicates/overlap  
+    * [ ] Collect all error codes in `errors.h`, ensure no dupes/overlap  
       Also, a `const char *to_str(error_code)` to provide error messages
   * [ ] TLC for `tknr_next`.  
     It's currently a jumbled mess. Some careful thought will be good for it,
@@ -90,6 +91,7 @@ Major version `0` is pre-completion; some of the parts may be
       a peek at FORTH and Factor's tokenizers.
     * [ ] We don't need to take `char *next_char`. That's a holdover.
     * [ ] Use `unsigned char` instead of `char`.
+    * Would it be clearer to use `skip_char` instead of `read_char`?
   * [ ] For every type:
     * If it's used by a single other type, hide it in that type's `.c`
     * If it's used by more than one other type, give it its own `.h`. and `.c`
@@ -153,19 +155,19 @@ Major version `0` is pre-completion; some of the parts may be
   * GUI (ditto)
 * [ ] Multithreading/thread safety - 2.0  
   This is going to require something close to a complete rewrite, to make sure
-    everything is as thread-safe as it can get. Note that this is intentionally
+    everything is as thread-safe as it can get. Note that this is deliberately
     a bullet list, not checkboxes, since it's ideas at this stage.
   * Make everything thread-safe (mutexes on read/write; allow parallel reads
     but not parallel writes)
-    * `set`s lock a mutex for the entire time; `get`s lock and then immediately
+    * `set`s lock a mutex for the entire time; `get`s lock and immediately
       unlock them? (to sync, make sure that gets don't occur in the middle of
       a set)
-      * Maybe disable this until first thread created, then enable it? (for the
-        sake of performance in single-threaded applications)
-    * Each thread gets its own stacks/scopes (copied, but independent); passing
-      data has to be done very, very intentionally. (This also obviates the need
+      * Maybe disable this until first thread created, then enable it? (for
+        performance in single-threaded applications)
+    * Each thread gets its own copied, but independent, stacks/scopes; passing
+      data has to be done very intentionally. (This also removes the need
       for synchronization on the stacks, which would get expensive)
-    * Force synchronization between reads/writes of console, files; GUI updates?
+    * Force sync between reads/writes of console/files; GUI updates?
   * [Task](https://msdn.microsoft.com/en-us/library/dd537609.aspx)s?
   * Asynchronous versions of the Networking and File I/O APIs.
   * Events? (technically possible already, but easier with multithreading)
