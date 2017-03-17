@@ -6,40 +6,41 @@
 #include "tokenizer.h"
 #include "stringbuilder.h"
 
-#define ERROR(code) do{\
-    printf("Tokenizer error %d unhandled at "__FILE__":%d", code, __LINE__);\
-    exit(code % 100);\
-    }while(0)
+#define ERROR(code) do{ \
+    printf("Tokenizer error " ERROR_FMT " unhandled at "__FILE__":%d", \
+        code, __LINE__); \
+    exit(code % 100); \
+}while(0)
 
-//define TOKENIZER_OPS_FAIL            1000
-// define CTOR_FAIL                     1100
-//  define CTOR_STR_FAIL                 1110
-#    define CTOR_STR_MALLOC_FAIL          1111
-#    define CTOR_STR_BAD_STRLEN_FAIL      1112
-#    define CTOR_STR_NULL_ARG_FAIL        1113
-//  define CTOR_FILE_FAIL                1120
-#    define CTOR_FILE_MALLOC_FAIL         1121
-#    define CTOR_FILE_BAD_STRLEN_FAIL     1122
-#    define CTOR_FILE_NULL_ARG_FAIL       1123
-#    define CTOR_FILE_FOPEN_FAIL          1124
-// define READ_CHAR_FAIL                1200
-#   define FILE_READ_FAIL                1210
-#    define FILE_READ_EOF_FAIL            1211
-//  define STRING_READ_FAIL              1220
-#    define STRING_READ_EOS_FAIL          1221
-// define NEXT_TOKEN_FAIL               1300
-#   define NT_MALLOC_FAIL                1301
-#   define NT_NEW_SB_FAIL                1302
-#   define NT_SB_FREE_COPY_FAIL          1303
-//define TOKENIZER_SYNTAX_FAIL         1500
-#  define SYN_NO_SEPARATION_FAIL        1501
-#  define SYN_UNEXPECTED_END_FAIL       1502
-// define SYN_STR_FAIL                  1510
-#   define SYN_STR_MULTILINE_FAIL        1511
-// define SYN_NUM_FAIL                  1520
-#   define SYN_NUM_ILLEGAL_DIGIT_FAIL    1521
-// define SYN_RGX_FAIL                  1530
-#   define SYN_RGX_BAD_FLAG_FAIL         1531
+//const ERROR TOKENIZER_OPS_FAIL       = 1000;
+//const ERROR CTOR_FAIL                 = 1100;
+//const ERROR CTOR_STR_FAIL              = 1110;
+const ERROR CTOR_STR_MALLOC_FAIL        = 1111;
+const ERROR CTOR_STR_BAD_STRLEN_FAIL    = 1112;
+const ERROR CTOR_STR_NULL_ARG_FAIL      = 1113;
+//const ERROR CTOR_FILE_FAIL             = 1120;
+const ERROR CTOR_FILE_MALLOC_FAIL       = 1121;
+const ERROR CTOR_FILE_BAD_STRLEN_FAIL   = 1122;
+const ERROR CTOR_FILE_NULL_ARG_FAIL     = 1123;
+const ERROR CTOR_FILE_FOPEN_FAIL        = 1124;
+//const ERROR READ_CHAR_FAIL            = 1200;
+const ERROR FILE_READ_FAIL             = 1210;
+const ERROR FILE_READ_EOF_FAIL          = 1211;
+//const ERROR STRING_READ_FAIL           = 1220;
+const ERROR STRING_READ_EOS_FAIL        = 1221;
+//const ERROR NEXT_TOKEN_FAIL           = 1300;
+const ERROR NT_MALLOC_FAIL             = 1301;
+const ERROR NT_NEW_SB_FAIL             = 1302;
+const ERROR NT_SB_FREE_COPY_FAIL       = 1303;
+//const ERROR TOKENIZER_SYNTAX_FAIL    = 1500;
+const ERROR SYN_NO_SEPARATION_FAIL    = 1501;
+const ERROR SYN_UNEXPECTED_END_FAIL   = 1502;
+//const ERROR SYN_STR_FAIL              = 1510;
+const ERROR SYN_STR_MULTILINE_FAIL     = 1511;
+//const ERROR SYN_NUM_FAIL              = 1520;
+const ERROR SYN_NUM_ILLEGAL_DIGIT_FAIL = 1521;
+//const ERROR SYN_RGX_FAIL              = 1530;
+const ERROR SYN_RGX_BAD_FLAG_FAIL      = 1531;
 
 struct Token tkn_empty(size_t line, size_t index) {
     return (struct Token) {
@@ -224,7 +225,7 @@ void tknr_free(struct Tokenizer *freeing) {
     }
 }
 
-int get_next_char_file(struct Tokenizer *from) {
+ERROR get_next_char_file(struct Tokenizer *from) {
     struct FileSource *fs = &from->source.file;
     if (tknr_end(from)) {
         ERROR(FILE_READ_EOF_FAIL);
@@ -240,7 +241,7 @@ int get_next_char_file(struct Tokenizer *from) {
         fs->next_chars_pos = 0;
     }
     from->next_char = fs->buf[fs->next_chars_pos++];
-    return 0;
+    return SUCCESS;
 }
 
 int get_next_char_string(struct Tokenizer *from) {
@@ -352,7 +353,7 @@ bool get_string(struct Tokenizer *from, char *next_char,
     struct StringBuilder raw = sb_new();
     if (!sb_init(&raw, STARTING_RAW_MEM)) {
         from->error = NT_NEW_SB_FAIL;
-        return NULL;
+        return false;
     }
     while (1) {
         sb_append(&raw, read_char(from));
