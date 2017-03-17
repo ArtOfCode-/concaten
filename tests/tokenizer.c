@@ -1,8 +1,7 @@
 #include "../tests.h"
 
-#include <string.h>
-#include <stdlib.h>
 #include <sys/time.h>
+#include <stdlib.h>
 
 #include "../tokenizer.h"
 
@@ -88,7 +87,7 @@ struct TestResult test(const struct TestSpec ts) {
     .token_count = 0, \
     .is_from_file = false \
 }
-void test_tokenizer() {
+struct ModuleTestResult test_tokenizer() {
     struct TestSpec tests[] = {
             stest_e("", 1112),
             stest_e("\"ends early", 1502), stest_e("r/ends early", 1502),
@@ -141,5 +140,5 @@ void test_tokenizer() {
                        tkn_type_name(current.types[res.count - 1]));
         }
     }
-    printf("%zu/%zu successes.\n", successes, total);
+    return (struct ModuleTestResult) { .successes = successes, .total = total };
 }

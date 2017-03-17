@@ -12,7 +12,7 @@
     .type = TKN_WORD \
 })
 
-void test_code_block() {
+struct ModuleTestResult test_code_block() {
     size_t successes = 0, total = 0, idx = 0;
     struct CodeBlock test;
     struct Token res;
@@ -69,5 +69,5 @@ void test_code_block() {
     tassert(res.line == 62 && res.index == 9, "got incorrect value");
     cb_free(&test);
     
-    printf("%zu/%zu successes\n", successes, total);
+    return (struct ModuleTestResult) { .successes = successes, .total = total };
 }

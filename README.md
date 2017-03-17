@@ -1,4 +1,4 @@
-##Concaten v0.4.2
+##Concaten v0.5.0
 
 Concaten is a concatenative, stack-based, strongly but optionally strictly typed, hyperdynamic,
 garbage-collected, interpreted programming language. In order, that means that:
@@ -70,11 +70,11 @@ Major version `0` is pre-completion; some of the parts may be
 * [ ] Refactor to interface consistent across all bits and pieces - 0.5  
   The code is getting a little out of hand. I have some things I want to do to
     clean it up.
-  * [ ] Change tests to success counters - 0.5.0  
+  * [x] Change tests to success counters - 0.5.0  
     Count total tests, count number of successes (or, equivalently, fails)
       and report that.
     * [x] Change to count successes + only display totals
-    * [ ] Collect successes/fails in main test method; if there are failures,
+    * [x] Collect successes/fails in main test method; if there are failures,
       HCF and exit with error code representing failed module.
   * [ ] Consistent error handling across all functions - 0.5.1  
     * [ ] Make methods return an `unsigned long` error code. If they can't

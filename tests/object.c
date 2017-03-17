@@ -11,7 +11,7 @@ void assert_eq(const char *restrict a, const char *restrict b, const char *restr
     tassert(strcmp(a, b) == 0, "%s wrong value", from);
 }
 
-void test_object() {
+struct ModuleTestResult test_object() {
     long val = 12;
     struct Object t1 = ctno_literal(&val, sizeof(long), TID_long, NULL);
     const char *name = "Foobar";
@@ -42,5 +42,5 @@ void test_object() {
     ctno_free(&t3);
     // and _now_ they should be gone.
     
-    printf("%zu/%zu successes\n", successes, total);
+    return (struct ModuleTestResult) { .successes = successes, .total = total };
 }
