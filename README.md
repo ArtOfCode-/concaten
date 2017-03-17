@@ -88,6 +88,9 @@ Major version `0` is pre-completion; some of the parts may be
     It's currently a jumbled mess. Some careful thought will be good for it,
       to simplify it as much as possible. FSA may be useful, as well as taking
       a peek at FORTH and Factor's tokenizers.
+  * [ ] For every type:
+    * If it's used by a single other type, hide it in that type's `.c`
+    * If it's used by more than one other type, give it its own `.h`. and `.c`
   * [ ] Write a code style guide.  
     Start by getting down the ideas, see what patterns emerge, categorize
       based on that.
