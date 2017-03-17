@@ -1,19 +1,26 @@
 #include "tests.h"
 
+#define do_test(module_name) do { \
+    ++idx; \
+    printf("Testing " str(module_name) "...\n"); \
+    struct ModuleTestResult tr = test_##module_name(); \
+    if (tr.successes != tr.total) { \
+        size_t fails = tr.total - tr.successes; \
+        printf("%zu failure%s.\n", fails, fails == 1 ? "" : "s"); \
+        return idx * 100 + fails; \
+    } else { \
+        printf("%zu successes.\n", tr.total); \
+    } \
+} while(0)
+
 int main() {
-    puts("Testing Tokenizer:");
-    test_tokenizer();
-    puts("Testing PropMap:");
-    test_prop_map();
-    puts("Testing MethodMap:");
-    test_method_map();
-    puts("Testing Object:");
-    test_object();
-    puts("Testing DataStack:");
-    test_data_stack();
-    puts("Testing TokenStack:");
-    test_token_stack();
-    puts("Testing CodeBlock:");
-    test_code_block();
+    size_t idx = 0;
+    do_test(tokenizer);
+    do_test(prop_map);
+    do_test(method_map);
+    do_test(object);
+    do_test(data_stack);
+    do_test(token_stack);
+    do_test(code_block);
     puts("Done with all tests");
 }

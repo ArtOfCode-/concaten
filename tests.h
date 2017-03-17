@@ -15,12 +15,16 @@
     } \
 } while(0)
 
-void test_tokenizer();
-void test_prop_map();
-void test_method_map();
-void test_object();
-void test_data_stack();
-void test_token_stack();
-void test_code_block();
+struct ModuleTestResult {
+    size_t successes, total;
+};
+
+struct ModuleTestResult test_tokenizer();
+struct ModuleTestResult test_prop_map();
+struct ModuleTestResult test_method_map();
+struct ModuleTestResult test_object();
+struct ModuleTestResult test_data_stack();
+struct ModuleTestResult test_token_stack();
+struct ModuleTestResult test_code_block();
 
 #endif //CONCATEN_TESTS_H
