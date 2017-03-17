@@ -7,7 +7,7 @@
     if (tr.successes != tr.total) { \
         size_t fails = tr.total - tr.successes; \
         printf("\n%zu failure%s.\n", fails, fails == 1 ? "" : "s"); \
-        return idx * 100 + fails; \
+        return idx; \
     } else { \
         printf(" %2zu successes.\n", tr.total); \
     } \

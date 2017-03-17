@@ -12,21 +12,21 @@ enum FailType {
     FT_MORE_TOKENS = FT_LESS_TOKENS << 1,
     FT_WRONG_TYPE = FT_MORE_TOKENS << 1
 };
-struct TestSpec {
+struct Spec {
     int code;
     size_t token_count;
     const char *source;
     bool is_from_file;
     enum TokenType *types;
 };
-struct TestResult {
+struct Res {
     enum FailType result;
     enum TokenType last_token_type;
     int code;
     long usec;
     size_t count;
 };
-struct TestResult test(const struct TestSpec ts) {
+struct Res test(const struct Spec ts) {
     int err = 0;
     struct timeval start, stop;
     struct Token next = tkn_empty(0, 0);
@@ -62,7 +62,7 @@ struct TestResult test(const struct TestSpec ts) {
         tknr_free(&t);
     }
     if (ts.code != err) res |= FT_WRONG_ERR;
-    struct TestResult ret = (struct TestResult) {
+    struct Res ret = (struct Res) {
             .result = res,
             .usec = stop.tv_usec - start.tv_usec,
             .code = t.error,
@@ -73,14 +73,14 @@ struct TestResult test(const struct TestSpec ts) {
     return ret;
 }
 
-#define stest_e(_source, _code) (struct TestSpec) { \
+#define stest_e(_source, _code) (struct Spec) { \
     .source = _source, \
     .code = _code, \
     .types = (enum TokenType[]){ }, \
     .token_count = 0, \
     .is_from_file = false \
 }
-#define stest_bd(_source) (struct TestSpec) { \
+#define stest_bd(_source) (struct Spec) { \
     .source = _source, \
     .code = 1521, \
     .types = NULL, \
@@ -88,12 +88,12 @@ struct TestResult test(const struct TestSpec ts) {
     .is_from_file = false \
 }
 struct TestResult test_tokenizer() {
-    struct TestSpec tests[] = {
+    struct Spec tests[] = {
             stest_e("", 1112),
             stest_e("\"ends early", 1502), stest_e("r/ends early", 1502),
             stest_bd("0b012"), stest_bd("0x1fg"),
             stest_bd("0o178"), stest_bd("1f"),
-            (struct TestSpec) {
+            (struct Spec) {
                     .source = "success: \"string\" 42 0x1Fe94\n"
                             "0b11001 -0o127635 1.2e3 # Hello!\n"
                             ":foobar -> - foobar2\n"
@@ -108,7 +108,7 @@ struct TestResult test_tokenizer() {
                     },
                     .token_count = 12
             },
-            (struct TestSpec) {
+            (struct Spec) {
                     .source = "test.ctn",
                     .is_from_file = true,
                     .code = 0,
@@ -116,11 +116,11 @@ struct TestResult test_tokenizer() {
                     .token_count = 72
             }
     };
-    size_t total = sizeof(tests) / sizeof(struct TestSpec);
+    size_t total = sizeof(tests) / sizeof(struct Spec);
     size_t successes = 0;
     for (size_t i = 0; i < total; ++i) {
-        struct TestSpec current = tests[i];
-        struct TestResult res = test(tests[i]);
+        struct Spec current = tests[i];
+        struct Res res = test(tests[i]);
         if (res.result == FT_SUCCESS) {
             ++successes;
         } else {
