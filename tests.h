@@ -9,22 +9,21 @@
     ++total; \
     if (cond) { ++successes; } \
     else { \
-        printf(__FILE__ ":" str(__LINE__) " test failed: "); \
+        printf("\n" __FILE__ ":" str(__LINE__) ": "); \
         printf(__VA_ARGS__); \
-        puts(""); \
     } \
 } while(0)
 
-struct ModuleTestResult {
+struct TestResult {
     size_t successes, total;
 };
 
-struct ModuleTestResult test_tokenizer();
-struct ModuleTestResult test_prop_map();
-struct ModuleTestResult test_method_map();
-struct ModuleTestResult test_object();
-struct ModuleTestResult test_data_stack();
-struct ModuleTestResult test_token_stack();
-struct ModuleTestResult test_code_block();
+struct TestResult test_tokenizer();
+struct TestResult test_prop_map();
+struct TestResult test_method_map();
+struct TestResult test_object();
+struct TestResult test_data_stack();
+struct TestResult test_token_stack();
+struct TestResult test_code_block();
 
 #endif //CONCATEN_TESTS_H

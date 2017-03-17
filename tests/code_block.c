@@ -12,7 +12,7 @@
     .type = TKN_WORD \
 })
 
-struct ModuleTestResult test_code_block() {
+struct TestResult test_code_block() {
     size_t successes = 0, total = 0, idx = 0;
     struct CodeBlock test;
     struct Token res;
@@ -69,5 +69,5 @@ struct ModuleTestResult test_code_block() {
     tassert(res.line == 62 && res.index == 9, "got incorrect value");
     cb_free(&test);
     
-    return (struct ModuleTestResult) { .successes = successes, .total = total };
+    return (struct TestResult) { .successes = successes, .total = total };
 }

@@ -29,7 +29,7 @@ test_f(15) test_f(16) test_f(17) test_f(18) test_f(19)
 //"eleventh", "twelfth", "bar", "woof", "sixteenth",
 //"nineteenth", "twentieth", "foo", "eighteenth"
 
-struct ModuleTestResult test_method_map() {
+struct TestResult test_method_map() {
     size_t successes = 0, total = 0;
     // very low number of buckets initially so it has to rehash
     // ...eventually. I hate the pigeonhole principle.
@@ -78,5 +78,5 @@ struct ModuleTestResult test_method_map() {
     a_is_val(f13);
     mm_free(&mm);
     
-    return (struct ModuleTestResult) { .successes = successes, .total = total };
+    return (struct TestResult) { .successes = successes, .total = total };
 }

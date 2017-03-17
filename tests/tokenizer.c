@@ -87,7 +87,7 @@ struct TestResult test(const struct TestSpec ts) {
     .token_count = 0, \
     .is_from_file = false \
 }
-struct ModuleTestResult test_tokenizer() {
+struct TestResult test_tokenizer() {
     struct TestSpec tests[] = {
             stest_e("", 1112),
             stest_e("\"ends early", 1502), stest_e("r/ends early", 1502),
@@ -140,5 +140,5 @@ struct ModuleTestResult test_tokenizer() {
                        tkn_type_name(current.types[res.count - 1]));
         }
     }
-    return (struct ModuleTestResult) { .successes = successes, .total = total };
+    return (struct TestResult) { .successes = successes, .total = total };
 }

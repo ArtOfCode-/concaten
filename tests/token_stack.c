@@ -60,7 +60,7 @@ void a_restore(struct TokenStack *tst, bool expected) {
             "unexpected result when restoring (%d)\n", !expected);
 }
 
-struct ModuleTestResult test_token_stack() {
+struct TestResult test_token_stack() {
     struct Tokenizer tknr = tknr_from_string("1 2 3 4 5", "mem");
     struct TokenStack tst = tst_new(tknr);
     
@@ -140,5 +140,5 @@ struct ModuleTestResult test_token_stack() {
     tst_free(&tst);
     tknr_free(&tknr);
     
-    return (struct ModuleTestResult) { .successes = successes, .total = total };
+    return (struct TestResult) { .successes = successes, .total = total };
 }

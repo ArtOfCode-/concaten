@@ -91,6 +91,7 @@ Major version `0` is pre-completion; some of the parts may be
   * [ ] Write a code style guide.  
     Start by getting down the ideas, see what patterns emerge, categorize
       based on that.
+    * [ ] Go through the code to make sure everything abides by it.
 
 ###Upcoming milestones
 

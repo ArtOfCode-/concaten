@@ -10,7 +10,7 @@
     dst##num##_got = dst_pop(&dst##num); \
     tassert(!dst##num##_got, LINE str(num) " got bad result")
 
-struct ModuleTestResult test_data_stack() {
+struct TestResult test_data_stack() {
     struct DataStack dst1 = dst_new();
     long val = 12;
     size_t successes = 0, total = 0;
@@ -44,5 +44,5 @@ struct ModuleTestResult test_data_stack() {
     assert_pop_eq(1, foo);
     assert_no_pop(1);
     
-    return (struct ModuleTestResult) { .successes = successes, .total = total };
+    return (struct TestResult) { .successes = successes, .total = total };
 }

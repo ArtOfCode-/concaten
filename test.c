@@ -2,14 +2,14 @@
 
 #define do_test(module_name) do { \
     ++idx; \
-    printf("Testing " str(module_name) "...\n"); \
-    struct ModuleTestResult tr = test_##module_name(); \
+    printf("Testing %-15s", str(module_name)"..."); \
+    struct TestResult tr = test_##module_name(); \
     if (tr.successes != tr.total) { \
         size_t fails = tr.total - tr.successes; \
-        printf("%zu failure%s.\n", fails, fails == 1 ? "" : "s"); \
+        printf("\n%zu failure%s.\n", fails, fails == 1 ? "" : "s"); \
         return idx * 100 + fails; \
     } else { \
-        printf("%zu successes.\n", tr.total); \
+        printf(" %2zu successes.\n", tr.total); \
     } \
 } while(0)
 

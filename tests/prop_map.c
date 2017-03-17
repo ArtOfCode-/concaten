@@ -7,7 +7,7 @@
     tassert(pm_set(&pm, key, val), "failed to set")
 
 
-struct ModuleTestResult test_prop_map() {
+struct TestResult test_prop_map() {
     size_t successes = 0, total = 0;
     struct PropMap pm = pm_new(8);
     tassert(pm.item_count == 0, "why are there items wtf");
@@ -49,5 +49,5 @@ struct ModuleTestResult test_prop_map() {
     pm_free(&pm);
     ctno_free(&val);
     
-    return (struct ModuleTestResult) { .successes = successes, .total = total };
+    return (struct TestResult) { .successes = successes, .total = total };
 }
