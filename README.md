@@ -88,7 +88,8 @@ Major version `0` is pre-completion; some of the parts may be
     It's currently a jumbled mess. Some careful thought will be good for it,
       to simplify it as much as possible. FSA may be useful, as well as taking
       a peek at FORTH and Factor's tokenizers.
-    * We don't need to take `char *next_char`. That's a holdover.
+    * [ ] We don't need to take `char *next_char`. That's a holdover.
+    * [ ] Use `unsigned char` instead of `char`.
   * [ ] For every type:
     * If it's used by a single other type, hide it in that type's `.c`
     * If it's used by more than one other type, give it its own `.h`. and `.c`
