@@ -77,14 +77,23 @@ Major version `0` is pre-completion; some of the parts may be
     * [x] Change to count successes + only display totals
     * [x] Collect successes/fails in main test method; if there are failures,
       HCF and exit with error code representing failed module.
-  * [ ] Consistent error handling across all functions - 0.5.1
-    * [ ] Make methods return an `unsigned long` error code. If they can't
+  * [ ] Consistent error handling across all functions - 0.5.1  
+    For each of the files listed below:
+    1. Make methods return an `unsigned long` error code. If they can't
       fail, then they'll always return success.  
       If you need to return data (e.g. ctors, getters) use an out parameter.
-    * [ ] Convert `bool` error indicators to error codes  
+    2. Convert `bool` error indicators to error codes  
       Don't store error in an object, return it. (*cough* Tokenizer *cough*)
-    * [ ] Collect all error codes in `errors.h`, ensure no dupes/overlap  
+    3. Collect all error codes in `errors.h`, ensure no dupes/overlap  
       Also, a `const char *to_str(error_code)` to provide error messages
+    * [ ] `code_block.h`
+    * [ ] `data_stack.h`
+    * [ ] `method_map.h`
+    * [ ] `object.h`
+    * [ ] `prop_map.h`
+    * [ ] `stringbuilder.h`
+    * [ ] `token_stack.h`
+    * [x] `tokenizer.h`
   * [ ] TLC for `tknr_next`.  
     It's currently a jumbled mess. Some careful thought will be good for it,
       to simplify it as much as possible. FSA may be useful, as well as taking
@@ -92,9 +101,7 @@ Major version `0` is pre-completion; some of the parts may be
     * [ ] We don't need to take `char *next_char`. That's a holdover.
     * [ ] Use `unsigned char` instead of `char`.
     * Would it be clearer to use `skip_char` instead of `read_char`?
-  * [ ] For every type:
-    * If it's used by a single other type, hide it in that type's `.c`
-    * If it's used by more than one other type, give it its own `.h`. and `.c`
+  * [ ] Give every type its own `.h` and `.c`.
   * [ ] Write a code style guide.  
     Start by getting down the ideas, see what patterns emerge, categorize
       based on that.

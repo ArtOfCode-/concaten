@@ -6,7 +6,7 @@
     struct TestResult tr = test_##module_name(); \
     if (tr.successes != tr.total) { \
         size_t fails = tr.total - tr.successes; \
-        printf("\n%zu failure%s.\n", fails, fails == 1 ? "" : "s"); \
+        printf("\n%zu/%zu failed.\n", fails, tr.total); \
         return idx; \
     } else { \
         printf(" %2zu successes.\n", tr.total); \

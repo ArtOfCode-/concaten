@@ -37,6 +37,7 @@
 //extern const ERROR TOKENIZER_SYNTAX_FAIL;
   extern const ERROR  SYN_NO_SEPARATION_FAIL;
   extern const ERROR  SYN_UNEXPECTED_END_FAIL;
+  extern const ERROR  SYN_STREAM_ENDED_FAIL;
 //extern const ERROR  SYN_STR_FAIL;
   extern const ERROR   SYN_STR_MULTILINE_FAIL;
 //extern const ERROR  SYN_NUM_FAIL;
@@ -65,7 +66,6 @@ struct Tokenizer {
     char *origin;
     size_t origin_len;
     size_t line, index;
-    ERROR error;
     
     bool just_started;
 };
@@ -83,15 +83,14 @@ struct Token {
     enum TokenType type;
 };
 
-struct Token tkn_empty(size_t line, size_t index);
-char *tkn_type_name(int);
+
+char *tkn_type_name(enum TokenType);
 void tkn_free(struct Token *);
 // object_t tkn_value(Token) // defined in object.h
 
-struct Tokenizer tknr_from_string(const char *, const char *origin);
-struct Tokenizer tknr_from_filepath(const char *path);
-bool tknr_next(struct Tokenizer *, struct Token *);
-char *tknr_err_to_string(int);
+ERROR tknr_from_string(const char *, const char *origin, struct Tokenizer *);
+ERROR tknr_from_filepath(const char *path, struct Tokenizer *);
+ERROR tknr_next(struct Tokenizer *, struct Token *);
 bool tknr_end(struct Tokenizer *);
 void tknr_free(struct Tokenizer *);
 

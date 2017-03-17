@@ -13,7 +13,7 @@ enum FailType {
     FT_WRONG_TYPE = FT_MORE_TOKENS << 1
 };
 struct Spec {
-    int code;
+    ERROR code;
     size_t token_count;
     const char *source;
     bool is_from_file;
@@ -22,28 +22,35 @@ struct Spec {
 struct Res {
     enum FailType result;
     enum TokenType last_token_type;
-    int code;
+    ERROR code;
     long usec;
     size_t count;
 };
 struct Res test(const struct Spec ts) {
-    int err = 0;
+    ERROR err = 0;
     struct timeval start, stop;
-    struct Token next = tkn_empty(0, 0);
+    struct Token next = (struct Token) {
+            .type = TKN_UNKNOWN,
+            .index = 0,
+            .line = 0,
+            .origin = NULL,
+            .raw = NULL,
+            .origin_len = 0,
+            .raw_len = 0,
+    };
     size_t count = 0;
     enum FailType res = FT_SUCCESS;
     struct Tokenizer t;
     gettimeofday(&start, NULL);
     if (ts.is_from_file) {
-        t = tknr_from_filepath(ts.source);
+        err = tknr_from_filepath(ts.source, &t);
     } else {
-        t = tknr_from_string(ts.source, "<test>");
+        err = tknr_from_string(ts.source, "<test>", &t);
     }
-    err = t.error;
     if (err) {
         goto end;
     }
-    while (tknr_next(&t, &next)) {
+    while ((err = tknr_next(&t, &next)) == SUCCESS) {
         ++count;
         if (count > ts.token_count) {
             break;
@@ -52,7 +59,7 @@ struct Res test(const struct Spec ts) {
             break;
         }
     }
-    err = t.error;
+    if (tknr_end(&t) && err == SYN_STREAM_ENDED_FAIL) err = SUCCESS;
     end:;
     gettimeofday(&stop, NULL);
     if (count > ts.token_count) res |= FT_LESS_TOKENS;
@@ -65,7 +72,7 @@ struct Res test(const struct Spec ts) {
     struct Res ret = (struct Res) {
             .result = res,
             .usec = stop.tv_usec - start.tv_usec,
-            .code = t.error,
+            .code = err,
             .last_token_type = next.type,
             .count = count
     };
@@ -76,30 +83,35 @@ struct Res test(const struct Spec ts) {
 #define stest_e(_source, _code) (struct Spec) { \
     .source = _source, \
     .code = _code, \
-    .types = (enum TokenType[]){ }, \
+    .types = NULL, \
     .token_count = 0, \
     .is_from_file = false \
 }
 #define stest_bd(_source) (struct Spec) { \
     .source = _source, \
-    .code = 1521, \
+    .code = SYN_NUM_ILLEGAL_DIGIT_FAIL, \
     .types = NULL, \
     .token_count = 0, \
     .is_from_file = false \
 }
 struct TestResult test_tokenizer() {
+    // TODO Convert to use `tassert`
     struct Spec tests[] = {
-            stest_e("", 1112),
-            stest_e("\"ends early", 1502), stest_e("r/ends early", 1502),
-            stest_bd("0b012"), stest_bd("0x1fg"),
-            stest_bd("0o178"), stest_bd("1f"),
+            stest_e("", CTOR_STR_BAD_STRLEN_FAIL),
+            stest_e("\"ends early", SYN_UNEXPECTED_END_FAIL),
+            stest_e("r/ends early", SYN_UNEXPECTED_END_FAIL),
+            stest_bd("0b012"),
+            stest_bd("-0x1fg"),
+            stest_bd("0o178"),
+            // TODO test bad regex flag
+            stest_bd("1f"),
             (struct Spec) {
                     .source = "success: \"string\" 42 0x1Fe94\n"
                             "0b11001 -0o127635 1.2e3 # Hello!\n"
                             ":foobar -> - foobar2\n"
                             "r/asdf boofar/xgi",
                     .is_from_file = false,
-                    .code = 0,
+                    .code = SUCCESS,
                     .types = (enum TokenType[]) {
                             TKN_WORD, TKN_STRING, TKN_INTEGER, TKN_INTEGER,
                             TKN_INTEGER, TKN_INTEGER, TKN_REAL,
@@ -111,7 +123,7 @@ struct TestResult test_tokenizer() {
             (struct Spec) {
                     .source = "test.ctn",
                     .is_from_file = true,
-                    .code = 0,
+                    .code = SUCCESS,
                     .types = NULL,
                     .token_count = 72
             }
@@ -124,18 +136,18 @@ struct TestResult test_tokenizer() {
         if (res.result == FT_SUCCESS) {
             ++successes;
         } else {
-            printf("Test case %zu failed:", i);
+            printf("\nTest case %zu failed:", i);
             if (res.result & FT_MORE_TOKENS)
-                printf("  Too few tokens parsed. (%zu, not %zu)\n",
+                printf("\n  Too few tokens parsed. (%zu, not %zu)",
                        res.count, current.token_count);
             if (res.result & FT_LESS_TOKENS)
-                printf("  Too many tokens parsed. (%zu, not %zu)\n",
+                printf("\n  Too many tokens parsed. (%zu, not %zu)",
                        res.count, current.token_count);
             if (res.result & FT_WRONG_ERR)
-                printf("  Unexpected error code received. (%d, not %d)\n",
+                printf("\n  Unexpected error code received. ("EFMT", not "EFMT")",
                        res.code, current.code);
             if (res.result & FT_WRONG_TYPE)
-                printf("  Unexpected token type received. (%s, not %s)\n",
+                printf("\n  Unexpected token type received. (%s, not %s)",
                        tkn_type_name(res.last_token_type),
                        tkn_type_name(current.types[res.count - 1]));
         }

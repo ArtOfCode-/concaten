@@ -74,7 +74,7 @@ bool tst_pop(struct TokenStack *this, struct Token *ret) {
         free(level->token_head);
         level->token_head = next;
     } else {
-        if (!tknr_next(&this->tknr, &ret_val)) {
+        if (tknr_next(&this->tknr, &ret_val) != SUCCESS) {
             return false;
         }
     }

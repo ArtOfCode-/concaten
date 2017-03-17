@@ -2,7 +2,7 @@
 #define CONCATEN_ERROR_H
 
 typedef unsigned long ERROR;
-#define ERROR_FMT "%lu"
+#define EFMT "%lu"
 
 static const ERROR SUCCESS = 0;
 
