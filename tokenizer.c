@@ -82,7 +82,64 @@ void tkn_free(struct Token *t) {
     t->origin = NULL;
 }
 
-char read_char(struct Tokenizer *);
+
+
+ERROR get_next_char_file(struct Tokenizer *from) {
+    struct FileSource *fs = &from->source.file;
+    if (tknr_end(from)) {
+        return FILE_READ_EOF_FAIL;
+    } else if (fs->next_chars_pos == BUF_SIZE) {
+        size_t count = fread(fs->buf, sizeof(char), BUF_SIZE, fs->fptr);
+        if (count != BUF_SIZE) {
+            if (feof(fs->fptr)) {
+                fs->eof = count;
+            } else {
+                return FILE_READ_FAIL;
+            }
+        }
+        fs->next_chars_pos = 0;
+    }
+    from->next_char = fs->buf[fs->next_chars_pos++];
+    return SUCCESS;
+}
+
+ERROR get_next_char_string(struct Tokenizer *from) {
+    struct StringSource *ss = &from->source.string;
+    if (tknr_end(from)) {
+        return STRING_READ_EOS_FAIL;
+    } else {
+        from->next_char = *ss->cur_pos;
+        ++ss->cur_pos;
+    }
+    return  SUCCESS;
+}
+
+ERROR read_char(struct Tokenizer *reading, char *out) {
+    if (reading->error) {
+        ERROR(reading->error);
+    }
+    char ret = reading->next_char;
+    ERROR err = 0;
+    if (reading->is_from_file) {
+        err = get_next_char_file(reading);
+    } else {
+        err = get_next_char_string(reading);
+    }
+    if (err) {
+        reading->error = err;
+        // note that it's possible that '\0' is the next character. That's why
+        // the functions that use this one not only check the return value of
+        // this but tknr_err(Tokenizer)
+        return 0;
+    }
+    if (ret == '\n') {
+        reading->index = 0;
+        ++reading->line;
+    } else {
+        ++reading->index;
+    }
+    return ret;
+}
 
 struct Tokenizer tknr_from_string(const char *mem, const char *origin) {
     struct Tokenizer ret = (struct Tokenizer) {
@@ -223,63 +280,6 @@ void tknr_free(struct Tokenizer *freeing) {
         freeing->source.string.end = NULL;
         freeing->source.string.cur_pos = NULL;
     }
-}
-
-ERROR get_next_char_file(struct Tokenizer *from) {
-    struct FileSource *fs = &from->source.file;
-    if (tknr_end(from)) {
-        ERROR(FILE_READ_EOF_FAIL);
-    } else if (fs->next_chars_pos == BUF_SIZE) {
-        size_t count = fread(fs->buf, sizeof(char), BUF_SIZE, fs->fptr);
-        if (count != BUF_SIZE) {
-            if (feof(fs->fptr)) {
-                fs->eof = count;
-            } else {
-                return FILE_READ_FAIL;
-            }
-        }
-        fs->next_chars_pos = 0;
-    }
-    from->next_char = fs->buf[fs->next_chars_pos++];
-    return SUCCESS;
-}
-
-int get_next_char_string(struct Tokenizer *from) {
-    struct StringSource *ss = &from->source.string;
-    if (tknr_end(from)) {
-        ERROR(STRING_READ_EOS_FAIL);
-    } else {
-        from->next_char = *ss->cur_pos;
-        ++ss->cur_pos;
-    }
-    return 0;
-}
-
-char read_char(struct Tokenizer *reading) {
-    if (reading->error) {
-        ERROR(reading->error);
-    }
-    char ret = reading->next_char;
-    int err = 0;
-    if (reading->is_from_file) {
-        err = get_next_char_file(reading);
-    } else {
-        err = get_next_char_string(reading);
-    }
-    if (err) {
-        reading->error = err;
-        // note that it's possible that '\0' is the next character. That's why
-        // the functions that use this one not only check the return value of
-        // this but tknr_err(Tokenizer)
-        return 0;
-    }
-    if (ret == '\n') {
-        reading->index = 0;
-        ++reading->line;
-    } else {
-        ++reading->index;
-    }
-    return ret;
 }
 
 char peek_char(struct Tokenizer *peeking) {
