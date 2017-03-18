@@ -94,19 +94,20 @@ Major version `0` is pre-completion; some of the parts may be
     * [ ] `stringbuilder.h`
     * [ ] `token_stack.h`
     * [x] `tokenizer.h`
-  * [ ] TLC for `tknr_next`.  
+  * [ ] TLC for `tknr_next` - 0.5.2  
     It's currently a jumbled mess. Some careful thought will be good for it,
       to simplify it as much as possible. FSA may be useful, as well as taking
       a peek at FORTH and Factor's tokenizers.
     * [ ] We don't need to take `char *next_char`. That's a holdover.
     * [ ] Use `unsigned char` instead of `char`.
     * Would it be clearer to use `skip_char` instead of `read_char`?
-  * [ ] Give every type its own `.h` and `.c`.
-  * [ ] Write a code style guide.  
+  * [ ] Give every type its own `.h` and `.c` - 0.5.3
+  * [ ] Write a code style guide 0.5.4  
     Start by getting down the ideas, see what patterns emerge, categorize
       based on that.
     * [ ] Go through the code to make sure everything abides by it.
-  * [ ] Everything in the `TODO` comments.
+  * [ ] Everything in the `TODO` comments - 0.5.5
+  * [ ] Make sure everything still works - 0.5.6
 
 ###Upcoming milestones
 
