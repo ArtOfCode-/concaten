@@ -86,7 +86,7 @@ Major version `0` is pre-completion; some of the parts may be
       Don't store error in an object, return it. (*cough* Tokenizer *cough*)
     3. Collect all error codes in `errors.h`, ensure no dupes/overlap  
       Also, a `const char *to_str(error_code)` to provide error messages
-    * [ ] `code_block.h`
+    * [x] `code_block.h`
     * [ ] `data_stack.h`
     * [ ] `method_map.h`
     * [ ] `object.h`
@@ -106,7 +106,9 @@ Major version `0` is pre-completion; some of the parts may be
     Start by getting down the ideas, see what patterns emerge, categorize
       based on that.
     * [ ] Go through the code to make sure everything abides by it.
-  * [ ] Everything in the `TODO` comments - 0.5.5
+  * [ ] Everything in the `TODO` comments - 0.5.5  
+    ...as long as it's possible to do now; i.e. doesn't require work that's
+      slated for completion in a later milestone.
   * [ ] Make sure everything still works - 0.5.6
 
 ###Upcoming milestones
