@@ -1,17 +1,11 @@
 #include "../tests.h"
 
-#include <sys/time.h>
 #include <stdlib.h>
 
 #include "../tokenizer.h"
 
-enum FailType {
-    FT_SUCCESS = 0,
-    FT_WRONG_ERR = 1,
-    FT_LESS_TOKENS = FT_WRONG_ERR << 1,
-    FT_MORE_TOKENS = FT_LESS_TOKENS << 1,
-    FT_WRONG_TYPE = FT_MORE_TOKENS << 1
-};
+static size_t successes = 0, total = 0;
+
 struct Spec {
     ERROR code;
     size_t token_count;
@@ -19,16 +13,9 @@ struct Spec {
     bool is_from_file;
     enum TokenType *types;
 };
-struct Res {
-    enum FailType result;
-    enum TokenType last_token_type;
-    ERROR code;
-    long usec;
-    size_t count;
-};
-struct Res test(const struct Spec ts) {
+void test(const struct Spec ts, size_t i) {
     ERROR err = 0;
-    struct timeval start, stop;
+    // we have to initialize it in case the first get fails
     struct Token next = (struct Token) {
             .type = TKN_UNKNOWN,
             .index = 0,
@@ -38,10 +25,8 @@ struct Res test(const struct Spec ts) {
             .origin_len = 0,
             .raw_len = 0,
     };
-    size_t count = 0;
-    enum FailType res = FT_SUCCESS;
+    size_t cnt = 0;
     struct Tokenizer t;
-    gettimeofday(&start, NULL);
     if (ts.is_from_file) {
         err = tknr_from_filepath(ts.source, &t);
     } else {
@@ -51,33 +36,29 @@ struct Res test(const struct Spec ts) {
         goto end;
     }
     while ((err = tknr_next(&t, &next)) == SUCCESS) {
-        ++count;
-        if (count > ts.token_count) {
+        ++cnt;
+        if (cnt > ts.token_count) {
             break;
         }
-        if (ts.types && (next.type != ts.types[count - 1])) {
+        if (ts.types && (next.type != ts.types[cnt - 1])) {
             break;
         }
+        tkn_free(&next);
     }
-    if (tknr_end(&t) && err == SYN_STREAM_ENDED_FAIL) err = SUCCESS;
-    end:;
-    gettimeofday(&stop, NULL);
-    if (count > ts.token_count) res |= FT_LESS_TOKENS;
-    if (count < ts.token_count) res |= FT_MORE_TOKENS;
+    if (err == SYN_EOI_FAIL && tknr_end(&t)) err = SUCCESS;
+end:;
+    tassert(cnt >= ts.token_count, "%zu: Too few tokens (got %zu)",
+            i, cnt);
+    tassert(cnt <= ts.token_count, "%zu: Too many tokens (got %zu)",
+            i, cnt);
     if (ts.types && !tknr_end(&t)) {
-        if (next.type != ts.types[count - 1]) res |= FT_WRONG_TYPE;
+        tassert(next.type == ts.types[cnt - 1], "%zu: Wrong type (%s not %s)",
+                i, tkn_type_name(next.type), tkn_type_name(ts.types[cnt-1]));
         tknr_free(&t);
     }
-    if (ts.code != err) res |= FT_WRONG_ERR;
-    struct Res ret = (struct Res) {
-            .result = res,
-            .usec = stop.tv_usec - start.tv_usec,
-            .code = err,
-            .last_token_type = next.type,
-            .count = count
-    };
+    tassert(ts.code == err, "%zu: Incorrect code (" EFMT ", not " EFMT ")",
+            i, err, ts.code);
     tkn_free(&next);
-    return ret;
 }
 
 #define stest_e(_source, _code) (struct Spec) { \
@@ -95,7 +76,6 @@ struct Res test(const struct Spec ts) {
     .is_from_file = false \
 }
 struct TestResult test_tokenizer() {
-    // TODO Convert to use `tassert`
     struct Spec tests[] = {
             stest_e("", CTOR_STR_BAD_STRLEN_FAIL),
             stest_e("\"ends early", SYN_UNEXPECTED_END_FAIL),
@@ -103,7 +83,13 @@ struct TestResult test_tokenizer() {
             stest_bd("0b012"),
             stest_bd("-0x1fg"),
             stest_bd("0o178"),
-            // TODO test bad regex flag
+            (struct Spec) {
+                    .source = "r/ege/xkcd",
+                    .code = SYN_RGX_BAD_FLAG_FAIL,
+                    .is_from_file = false,
+                    .token_count = 0,
+                    .types = NULL
+            },
             stest_bd("1f"),
             (struct Spec) {
                     .source = "success: \"string\" 42 0x1Fe94\n"
@@ -128,29 +114,9 @@ struct TestResult test_tokenizer() {
                     .token_count = 72
             }
     };
-    size_t total = sizeof(tests) / sizeof(struct Spec);
-    size_t successes = 0;
-    for (size_t i = 0; i < total; ++i) {
-        struct Spec current = tests[i];
-        struct Res res = test(tests[i]);
-        if (res.result == FT_SUCCESS) {
-            ++successes;
-        } else {
-            printf("\nTest case %zu failed:", i);
-            if (res.result & FT_MORE_TOKENS)
-                printf("\n  Too few tokens parsed. (%zu, not %zu)",
-                       res.count, current.token_count);
-            if (res.result & FT_LESS_TOKENS)
-                printf("\n  Too many tokens parsed. (%zu, not %zu)",
-                       res.count, current.token_count);
-            if (res.result & FT_WRONG_ERR)
-                printf("\n  Unexpected error code received. ("EFMT", not "EFMT")",
-                       res.code, current.code);
-            if (res.result & FT_WRONG_TYPE)
-                printf("\n  Unexpected token type received. (%s, not %s)",
-                       tkn_type_name(res.last_token_type),
-                       tkn_type_name(current.types[res.count - 1]));
-        }
+    size_t test_num = sizeof(tests) / sizeof(tests[0]);
+    for (size_t i = 0; i < test_num; ++i) {
+        test(tests[i], i);
     }
     return (struct TestResult) { .successes = successes, .total = total };
 }

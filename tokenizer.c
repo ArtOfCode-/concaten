@@ -29,7 +29,7 @@ const ERROR NT_SB_FREE_COPY_FAIL       =   1303;
 // const ERROR TOKENIZER_SYNTAX_FAIL   = 1500;
 const ERROR SYN_NO_SEPARATION_FAIL     =  1501;
 const ERROR SYN_UNEXPECTED_END_FAIL    =  1502;
-const ERROR SYN_STREAM_ENDED_FAIL      =  1503;
+const ERROR SYN_EOI_FAIL               =  1503;
 // const ERROR SYN_STR_FAIL            =  1510;
 const ERROR SYN_STR_MULTILINE_FAIL     =   1511;
 // const ERROR SYN_NUM_FAIL            =  1520;
@@ -534,7 +534,7 @@ handle_error:;
 
 ERROR tknr_next(struct Tokenizer *from, struct Token *out) {
     if (tknr_end(from)) {
-        return SYN_STREAM_ENDED_FAIL;
+        return SYN_EOI_FAIL;
     }
     if (!skip_between(from)) {
         // at the very beginning, it's OK not to have separation
@@ -547,7 +547,7 @@ ERROR tknr_next(struct Tokenizer *from, struct Token *out) {
         from->just_started = false;
     }
     if (tknr_end(from)) {
-        return SYN_STREAM_ENDED_FAIL;
+        return SYN_EOI_FAIL;
     }
     
     ERROR err;

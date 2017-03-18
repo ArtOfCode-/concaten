@@ -37,7 +37,7 @@
 //extern const ERROR TOKENIZER_SYNTAX_FAIL;
   extern const ERROR  SYN_NO_SEPARATION_FAIL;
   extern const ERROR  SYN_UNEXPECTED_END_FAIL;
-  extern const ERROR  SYN_STREAM_ENDED_FAIL;
+  extern const ERROR  SYN_EOI_FAIL;
 //extern const ERROR  SYN_STR_FAIL;
   extern const ERROR   SYN_STR_MULTILINE_FAIL;
 //extern const ERROR  SYN_NUM_FAIL;
