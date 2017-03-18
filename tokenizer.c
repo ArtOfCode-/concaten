@@ -93,7 +93,7 @@ ERROR get_next_char_file(struct Tokenizer *from) {
         fs->next_chars_pos = 0;
     }
     from->next_char = fs->buf[fs->next_chars_pos++];
-    return SUCCESS;
+    return NO_ERROR;
 }
 
 ERROR get_next_char_string(struct Tokenizer *from) {
@@ -104,7 +104,7 @@ ERROR get_next_char_string(struct Tokenizer *from) {
         from->next_char = *ss->cur_pos;
         ++ss->cur_pos;
     }
-    return  SUCCESS;
+    return  NO_ERROR;
 }
 
 ERROR read_char(struct Tokenizer *reading, char *into) {
@@ -170,12 +170,12 @@ ERROR tknr_from_string(const char *mem, const char *origin,
     ret.origin = origin_c;
     
     ERROR err = read_char(&ret, NULL);
-    if (err != SUCCESS) return err;
+    if (err != NO_ERROR) return err;
     ret.line = 1;
     ret.index = 0;
     
     *into = ret;
-    return SUCCESS;
+    return NO_ERROR;
 }
 
 ERROR tknr_from_filepath(const char *path, struct Tokenizer *into) {
@@ -236,7 +236,7 @@ ERROR tknr_from_filepath(const char *path, struct Tokenizer *into) {
     ret.index = 0;
     
     *into = ret;
-    return SUCCESS;
+    return NO_ERROR;
 }
 
 void tknr_free(struct Tokenizer *freeing) {
@@ -271,7 +271,7 @@ bool skip_ws(struct Tokenizer *from) {
     bool skipped = false;
     while (is_ws(peek_char(from)) && !tknr_end(from)) {
         skipped = true;
-        if (read_char(from, NULL) != SUCCESS) return false;
+        if (read_char(from, NULL) != NO_ERROR) return false;
     }
     return skipped;
 }
@@ -281,10 +281,10 @@ bool skip_slc(struct Tokenizer *from) {
         return false;
     }
     while (peek_char(from) != '\n' && !tknr_end(from)) {
-        if (read_char(from, NULL) != SUCCESS) return false;
+        if (read_char(from, NULL) != NO_ERROR) return false;
     }
     // skip the newline, too
-    if (read_char(from, NULL) != SUCCESS) return false;
+    if (read_char(from, NULL) != NO_ERROR) return false;
     return true;
 }
 
@@ -310,11 +310,11 @@ ERROR add_while_in_ranges(struct Tokenizer *from, struct StringBuilder *raw,
         sb_append(raw, peek_char(from));
         err = read_char(from, NULL);
         *next_char = peek_char(from);
-        if (err != SUCCESS) {
+        if (err != NO_ERROR) {
             return err;
         }
     }
-    return SUCCESS;
+    return NO_ERROR;
 }
 
 ERROR add_while_in_range(struct Tokenizer *from, struct StringBuilder *raw,
@@ -343,11 +343,11 @@ ERROR get_string(struct Tokenizer *from, char *next_char,
         if (*next_char == '\\') {
             sb_append(&raw, peek_char(from));
             err = read_char(from, NULL);
-              if (err != SUCCESS) goto error;
+              if (err != NO_ERROR) goto error;
             // we don't do escaping at this level
             sb_append(&raw, peek_char(from));
             err = read_char(from, NULL);
-              if (err != SUCCESS) goto error;
+              if (err != NO_ERROR) goto error;
         }
         if (*next_char == '\n') {
             err = SYN_STR_MULTILINE_FAIL;
@@ -357,7 +357,7 @@ ERROR get_string(struct Tokenizer *from, char *next_char,
             // add the quote
             sb_append(&raw, peek_char(from));
             err = read_char(from, NULL);
-            if (err != SUCCESS) goto error;
+            if (err != NO_ERROR) goto error;
             break;
         }
     }
@@ -371,7 +371,7 @@ ERROR get_string(struct Tokenizer *from, char *next_char,
     partial.raw_len = raw_cstr_len;
     partial.type = TKN_STRING;
     *out = partial;
-    return SUCCESS;
+    return NO_ERROR;
 error:;
     sb_free(&raw);
     tkn_free(&partial);
@@ -396,7 +396,7 @@ ERROR get_number(struct Tokenizer *from, char *next_char, struct Token partial,
     if (*next_char == '0') {
         sb_append(&raw, peek_char(from));
         err = read_char(from, NULL);
-        if (err != SUCCESS) goto error;
+        if (err != NO_ERROR) goto error;
         *next_char = peek_char(from);
         if (*next_char == 'x') {
             base = B16;
@@ -407,39 +407,39 @@ ERROR get_number(struct Tokenizer *from, char *next_char, struct Token partial,
         }
         sb_append(&raw, peek_char(from));
         err = read_char(from, NULL);
-        if (err != SUCCESS) goto error;
+        if (err != NO_ERROR) goto error;
     }
     bool decimal = false;
     if (base == B16) {
         err = add_while_in_ranges(from, &raw, next_char, "0aA", "9fF", 3);
-        if (err != SUCCESS) goto error;
+        if (err != NO_ERROR) goto error;
     } else if (base == B8) {
         err = add_while_in_range(from, &raw, next_char, '0', '7');
-        if (err != SUCCESS) goto error;
+        if (err != NO_ERROR) goto error;
     } else if (base == B2) {
         err = add_while_in_range(from, &raw, next_char, '0', '1');
-        if (err != SUCCESS) goto error;
+        if (err != NO_ERROR) goto error;
     } else if (base == B10) {
         // add decimal digits
         err = add_while_in_range(from, &raw, next_char, '0', '9');
-        if (err != SUCCESS) goto error;
+        if (err != NO_ERROR) goto error;
         // un punto
         if (*next_char == '.') {
             decimal = true;
             sb_append(&raw, peek_char(from));
             err = read_char(from, NULL);
-            if (err != SUCCESS) goto error;
+            if (err != NO_ERROR) goto error;
             err = add_while_in_range(from, &raw, next_char, '0', '9');
-            if (err != SUCCESS) goto error;
+            if (err != NO_ERROR) goto error;
         }
         // exponents
         if (*next_char == 'e') {
             decimal = true;
             sb_append(&raw, peek_char(from));
             err = read_char(from, NULL);
-            if (err != SUCCESS) goto error;
+            if (err != NO_ERROR) goto error;
             err = add_while_in_range(from, &raw, next_char, '0', '9');
-            if (err != SUCCESS) goto error;
+            if (err != NO_ERROR) goto error;
         }
     }
     if (!is_ws(*next_char) && !tknr_end(from)) {
@@ -454,7 +454,7 @@ ERROR get_number(struct Tokenizer *from, char *next_char, struct Token partial,
     }
     partial.type = decimal ? TKN_REAL : TKN_INTEGER;
     *out = partial;
-    return SUCCESS;
+    return NO_ERROR;
 error:;
     sb_free(&raw);
     tkn_free(&partial);
@@ -472,7 +472,7 @@ ERROR get_regex(struct Tokenizer *from, struct StringBuilder raw,
     ERROR err;
     sb_append(&raw, peek_char(from));
     err = read_char(from, NULL);
-    if (err != SUCCESS) goto handle_error;
+    if (err != NO_ERROR) goto handle_error;
     char next_char = peek_char(from);
     while (true) {
         if (next_char == '\\') {
@@ -525,7 +525,7 @@ ERROR get_regex(struct Tokenizer *from, struct StringBuilder raw,
         goto handle_error;
     }
     *out = ret;
-    return SUCCESS;
+    return NO_ERROR;
 handle_error:;
     sb_free(&raw);
     tkn_free(&ret);
@@ -574,7 +574,7 @@ ERROR tknr_next(struct Tokenizer *from, struct Token *out) {
     } else if (next_char == '-') {
         sb_append(&raw, peek_char(from));
         err = read_char(from, NULL);
-        if (err != SUCCESS) goto error;
+        if (err != NO_ERROR) goto error;
         next_char = peek_char(from);
         if ('0' <= next_char && next_char <= '9') {
             return get_number(from, &next_char, ret, true, out);
@@ -582,7 +582,7 @@ ERROR tknr_next(struct Tokenizer *from, struct Token *out) {
     } else if (next_char == 'r') {
         sb_append(&raw, peek_char(from));
         err = read_char(from, NULL);
-        if (err != SUCCESS) goto error;
+        if (err != NO_ERROR) goto error;
         next_char = peek_char(from);
         if (next_char == '/') {
             return get_regex(from, raw, ret, out);
@@ -591,7 +591,7 @@ ERROR tknr_next(struct Tokenizer *from, struct Token *out) {
     while (!is_ws(next_char) && !tknr_end(from)) {
         sb_append(&raw, peek_char(from));
         err = read_char(from, NULL);
-        if (err != SUCCESS) goto error;
+        if (err != NO_ERROR) goto error;
         next_char = peek_char(from);
     }
     if (ret.type == TKN_UNKNOWN) ret.type = TKN_WORD;
@@ -602,7 +602,7 @@ ERROR tknr_next(struct Tokenizer *from, struct Token *out) {
         goto error;
     }
     *out = ret;
-    return SUCCESS;
+    return NO_ERROR;
 error:;
     sb_free(&raw);
     tkn_free(&ret);

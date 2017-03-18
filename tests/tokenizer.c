@@ -35,7 +35,7 @@ void test(const struct Spec ts, size_t i) {
     if (err) {
         goto end;
     }
-    while ((err = tknr_next(&t, &next)) == SUCCESS) {
+    while ((err = tknr_next(&t, &next)) == NO_ERROR) {
         ++cnt;
         if (cnt > ts.token_count) {
             break;
@@ -45,7 +45,7 @@ void test(const struct Spec ts, size_t i) {
         }
         tkn_free(&next);
     }
-    if (err == NT_INPUT_END_FAIL && tknr_end(&t)) err = SUCCESS;
+    if (err == NT_INPUT_END_FAIL && tknr_end(&t)) err = NO_ERROR;
 end:;
     tassert(cnt >= ts.token_count, "%zu: Too few tokens (got %zu)",
             i, cnt);
@@ -97,7 +97,7 @@ struct TestResult test_tokenizer() {
                             ":foobar -> - foobar2\n"
                             "r/asdf boofar/xgi",
                     .is_from_file = false,
-                    .code = SUCCESS,
+                    .code = NO_ERROR,
                     .types = (enum TokenType[]) {
                             TKN_WORD, TKN_STRING, TKN_INTEGER, TKN_INTEGER,
                             TKN_INTEGER, TKN_INTEGER, TKN_REAL,
@@ -109,7 +109,7 @@ struct TestResult test_tokenizer() {
             (struct Spec) {
                     .source = "test.ctn",
                     .is_from_file = true,
-                    .code = SUCCESS,
+                    .code = NO_ERROR,
                     .types = NULL,
                     .token_count = 72
             }

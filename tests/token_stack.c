@@ -55,7 +55,7 @@ void a_restore(struct TokenStack *tst, bool expected) {
 
 struct TestResult test_token_stack() {
     struct Tokenizer tknr;
-    tassert(tknr_from_string("1 2 3 4 5", "mem", &tknr) == SUCCESS,
+    tassert(tknr_from_string("1 2 3 4 5", "mem", &tknr) == NO_ERROR,
             "Failed to create tokenizer");
     struct TokenStack tst = tst_new(tknr);
     

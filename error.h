@@ -4,7 +4,7 @@
 typedef unsigned long ERROR;
 #define EFMT "%lu"
 
-static const ERROR SUCCESS = 0;
+static const ERROR NO_ERROR = 0;
 
 /*-------------------*
  | Core class errors |
@@ -13,17 +13,18 @@ static const ERROR SUCCESS = 0;
 // CONCATEN_FAIL is for errors that can't be categorized better
 // (also for errors that occur in my code, as opposed to being reported
 // from libraries in use by it)
+// TODO Contract error ranges to minimum sensible w/ enough room
 //extern const ERROR CONCATEN_FAIL; // 0
-//extern const ERROR CODE_BLOCK_FAIL; // 1000
-//extern const ERROR DATA_STACK_FAIL; // 2000
-//extern const ERROR TOKEN_STACK_FAIL; // 3000
-//extern const ERROR SCOPE_STACK_FAIL; // 4000
-//extern const ERROR OBJECT_FAIL; // 5000
-//extern const ERROR PROP_MAP_FAIL; // 5500
-//extern const ERROR METHOD_MAP_FAIL; // 5750
-//extern const ERROR RUNNABLE_FAIL; // 6000
+//extern const ERROR CODE_BLOCK_FAIL; // 1000 - 1499
+//extern const ERROR DATA_STACK_FAIL; // 2000 - 2999
+//extern const ERROR TOKEN_STACK_FAIL; // 3000 - 3999
+//extern const ERROR SCOPE_STACK_FAIL; // 4000 - 4999
+//extern const ERROR OBJECT_FAIL; // 5000 - 5499
+//extern const ERROR PROP_MAP_FAIL; // 5500 - 5749
+//extern const ERROR METHOD_MAP_FAIL; // 5750 - 5999
+//extern const ERROR RUNNABLE_FAIL; // 6000 - 6999
 
-//extern const ERROR TOKENIZER_FAIL;               // 7000
+//extern const ERROR TOKENIZER_FAIL;               // 7000 - 7999
 //extern const ERROR  CTOR_FAIL;                   //  7100
 //extern const ERROR   CTOR_STR_FAIL;              //   7110
   extern const ERROR    CTOR_STR_MALLOC_FAIL;      //    7111
