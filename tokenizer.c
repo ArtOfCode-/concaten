@@ -6,36 +6,36 @@
 #include "tokenizer.h"
 #include "stringbuilder.h"
 
-// const ERROR TOKENIZER_FAIL          = 8000;
-// const ERROR CTOR_FAIL               =  8100;
-// const ERROR CTOR_STR_FAIL           =   8110;
-const ERROR CTOR_STR_MALLOC_FAIL       =    8111;
-const ERROR CTOR_STR_BAD_STRLEN_FAIL   =    8112;
-const ERROR CTOR_STR_NULL_ARG_FAIL     =    8113;
-// const ERROR CTOR_FILE_FAIL          =   8120;
-const ERROR CTOR_FILE_MALLOC_FAIL      =    8121;
-const ERROR CTOR_FILE_BAD_STRLEN_FAIL  =    8122;
-const ERROR CTOR_FILE_NULL_ARG_FAIL    =    8123;
-const ERROR CTOR_FILE_FOPEN_FAIL       =    8124;
-// const ERROR READ_CHAR_FAIL          =  8200;
-const ERROR FILE_READ_FAIL             =   8210;
-const ERROR FILE_READ_EOF_FAIL         =    8211;
-// const ERROR STRING_READ_FAIL        =   8220;
-const ERROR STRING_READ_EOS_FAIL       =    8221;
-// const ERROR NEXT_TOKEN_FAIL         =  8300;
-const ERROR NT_MALLOC_FAIL             =   8301;
-const ERROR NT_NEW_SB_FAIL             =   8302;
-const ERROR NT_SB_FREE_COPY_FAIL       =   8303;
-// const ERROR TOKENIZER_SYNTAX_FAIL   = 8500;
-const ERROR SYN_NO_SEPARATION_FAIL     =  8501;
-const ERROR SYN_UNEXPECTED_END_FAIL    =  8502;
-const ERROR SYN_EOI_FAIL               =  8503;
-// const ERROR SYN_STR_FAIL            =  8510;
-const ERROR SYN_STR_MULTILINE_FAIL     =   8511;
-// const ERROR SYN_NUM_FAIL            =  8520;
-const ERROR SYN_NUM_ILLEGAL_DIGIT_FAIL =   8521;
-// const ERROR SYN_RGX_FAIL            =  8530;
-const ERROR SYN_RGX_BAD_FLAG_FAIL      =   8531;
+//const ERROR TOKENIZER_FAIL             = 7000;
+//const ERROR CTOR_FAIL                  =  7100;
+//const ERROR CTOR_STR_FAIL              =   7110;
+  const ERROR CTOR_STR_MALLOC_FAIL       =    7111;
+  const ERROR CTOR_STR_BAD_STRLEN_FAIL   =    7112;
+  const ERROR CTOR_STR_NULL_ARG_FAIL     =    7113;
+//const ERROR CTOR_FILE_FAIL             =   7120;
+  const ERROR CTOR_FILE_MALLOC_FAIL      =    7121;
+  const ERROR CTOR_FILE_BAD_STRLEN_FAIL  =    7122;
+  const ERROR CTOR_FILE_NULL_ARG_FAIL    =    7123;
+  const ERROR CTOR_FILE_FOPEN_FAIL       =    7124;
+//const ERROR READ_CHAR_FAIL             =  7200;
+  const ERROR FILE_READ_FAIL             =   7210;
+  const ERROR FILE_READ_EOF_FAIL         =    7211;
+//const ERROR STRING_READ_FAIL           =   7220;
+  const ERROR STRING_READ_EOS_FAIL       =    7221;
+//const ERROR NEXT_TOKEN_FAIL            =  7300;
+  const ERROR NT_MALLOC_FAIL             =   7301;
+  const ERROR NT_NEW_SB_FAIL             =   7302;
+  const ERROR NT_SB_FREE_COPY_FAIL       =   7303;
+  const ERROR NT_INPUT_END_FAIL          =   7304;
+//const ERROR TOKENIZER_SYNTAX_FAIL      = 7500;
+  const ERROR SYN_NO_SEPARATION_FAIL     =  7501;
+  const ERROR SYN_UNEXPECTED_END_FAIL    =  7502;
+//const ERROR SYN_STR_FAIL               =  7510;
+  const ERROR SYN_STR_MULTILINE_FAIL     =   7511;
+//const ERROR SYN_NUM_FAIL               =  7520;
+  const ERROR SYN_NUM_ILLEGAL_DIGIT_FAIL =   7521;
+//const ERROR SYN_RGX_FAIL               =  7530;
+  const ERROR SYN_RGX_BAD_FLAG_FAIL      =   7531;
 
 struct Token tkn_empty(size_t line, size_t index) {
     return (struct Token) {
@@ -534,7 +534,7 @@ handle_error:;
 
 ERROR tknr_next(struct Tokenizer *from, struct Token *out) {
     if (tknr_end(from)) {
-        return SYN_EOI_FAIL;
+        return NT_INPUT_END_FAIL;
     }
     if (!skip_between(from)) {
         // at the very beginning, it's OK not to have separation
@@ -547,7 +547,7 @@ ERROR tknr_next(struct Tokenizer *from, struct Token *out) {
         from->just_started = false;
     }
     if (tknr_end(from)) {
-        return SYN_EOI_FAIL;
+        return NT_INPUT_END_FAIL;
     }
     
     ERROR err;

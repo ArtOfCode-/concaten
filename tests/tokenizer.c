@@ -45,7 +45,7 @@ void test(const struct Spec ts, size_t i) {
         }
         tkn_free(&next);
     }
-    if (err == SYN_EOI_FAIL && tknr_end(&t)) err = SUCCESS;
+    if (err == NT_INPUT_END_FAIL && tknr_end(&t)) err = SUCCESS;
 end:;
     tassert(cnt >= ts.token_count, "%zu: Too few tokens (got %zu)",
             i, cnt);

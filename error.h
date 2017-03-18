@@ -11,6 +11,8 @@ static const ERROR SUCCESS = 0;
  +-------------------*/
 
 // CONCATEN_FAIL is for errors that can't be categorized better
+// (also for errors that occur in my code, as opposed to being reported
+// from libraries in use by it)
 //extern const ERROR CONCATEN_FAIL; // 0
 //extern const ERROR CODE_BLOCK_FAIL; // 1000
 //extern const ERROR DATA_STACK_FAIL; // 2000
@@ -41,10 +43,10 @@ static const ERROR SUCCESS = 0;
   extern const ERROR   NT_MALLOC_FAIL;             //   7301
   extern const ERROR   NT_NEW_SB_FAIL;             //   7302
   extern const ERROR   NT_SB_FREE_COPY_FAIL;       //   7303
+  extern const ERROR   NT_INPUT_END_FAIL;          //   7304
 //extern const ERROR TOKENIZER_SYNTAX_FAIL;        // 7500
   extern const ERROR  SYN_NO_SEPARATION_FAIL;      //  7501
   extern const ERROR  SYN_UNEXPECTED_END_FAIL;     //  7502
-  extern const ERROR  SYN_EOI_FAIL;                //  7503
 //extern const ERROR  SYN_STR_FAIL;                //  7510
   extern const ERROR   SYN_STR_MULTILINE_FAIL;     //   7511
 //extern const ERROR  SYN_NUM_FAIL;                //  7520
