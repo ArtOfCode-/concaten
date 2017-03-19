@@ -3,41 +3,46 @@
 #include <stdint.h>
 #include "stringbuilder.h"
 
-struct StringBuilder sb_new() {
-    return (struct StringBuilder) {
-            .cap = 0,
-            .count = 0,
-            .mem = NULL
-    };
-}
-#define DEFAULT_INIT_CAP 16
-bool sb_init(struct StringBuilder *initing, size_t init_cap) {
+//const ERROR STRINGBUILDER_FAIL;   //  7000
+//const ERROR SB_CTOR_FAIL = 7010;
+  const ERROR SB_CTOR_BAD_CAP_FAIL = 7011;
+  const ERROR SB_CTOR_MALLOC_FAIL = 7012;
+//const ERROR SB_APPEND_FAIL = 7020;
+  const ERROR SB_APND_MULT_OVERFLOW_FAIL = 7021;
+  const ERROR SB_APND_MALLOC_FAIL = 7022;
+//const ERROR SB_TO_STRING_FAIL = 7030;
+  const ERROR SB_TS_MALLOC_FAIL = 7031;
+
+// TODO Write tests/stringbuilder.c
+
+ERROR sb_new(size_t init_cap, struct StringBuilder *into) {
     if (init_cap == 0) {
-        init_cap = DEFAULT_INIT_CAP;
+        return SB_CTOR_BAD_CAP_FAIL;
     }
     char *mem = malloc(init_cap);
     if (!mem) {
-        return false;
+        return SB_CTOR_MALLOC_FAIL;
     }
-    initing->mem = mem;
-    initing->mem[0] = 0;
-    initing->cap = init_cap;
-    initing->count = 0;
+    into->mem = mem;
+    into->mem[0] = 0;
+    into->cap = init_cap;
+    into->count = 0;
     return true;
 }
 
 bool mult_overflows(size_t a, size_t b) {
     return b > SIZE_MAX / a;
 }
+
 #define LOAD_FACTOR 2
-bool sb_append(struct StringBuilder *to, char c) {
+ERROR sb_append(struct StringBuilder *to, char c) {
     if (to->count + 1 == to->cap) {
         if (mult_overflows(to->cap, LOAD_FACTOR)) {
-            return false;
+            return SB_APND_MULT_OVERFLOW_FAIL;
         }
         char *new_mem = realloc(to->mem, to->cap * LOAD_FACTOR);
         if (!new_mem) {
-            return false;
+            return SB_APND_MALLOC_FAIL;
         }
         to->mem = new_mem;
         to->cap *= LOAD_FACTOR;
@@ -45,18 +50,22 @@ bool sb_append(struct StringBuilder *to, char c) {
     to->mem[to->count] = c;
     to->mem[to->count + 1] = '\0';
     ++to->count;
-    return true;
+    return NO_ERROR;
 }
-char *sb_into_string(struct StringBuilder sb) {
-    char *ret = malloc(sb.count + 1);
+
+ERROR sb_into_string(struct StringBuilder *sb, char **into) {
+    // TODO Use realloc? Or just return `sb.mem` directly
+    char *ret = malloc(sb->count + 1);
     if (!ret) {
-        return NULL;
+        return SB_TS_MALLOC_FAIL;
     }
-    memcpy(ret, sb.mem, sb.count);
-    ret[sb.count] = 0;
-    sb_free(&sb);
-    return ret;
+    memcpy(ret, sb->mem, sb->count);
+    ret[sb->count] = 0;
+    sb_free(sb);
+    *into = ret;
+    return NO_ERROR;
 }
+
 void sb_free(struct StringBuilder *sb) {
     free(sb->mem);
     sb->mem = NULL;
