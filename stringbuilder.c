@@ -3,15 +3,15 @@
 #include <stdint.h>
 #include "stringbuilder.h"
 
-//const ERROR STRINGBUILDER_FAIL;   //  7000
-//const ERROR SB_CTOR_FAIL = 7010;
-  const ERROR SB_CTOR_BAD_CAP_FAIL = 7011;
-  const ERROR SB_CTOR_MALLOC_FAIL = 7012;
-//const ERROR SB_APPEND_FAIL = 7020;
+//const ERROR STRINGBUILDER_FAIL;       // 7000
+//const ERROR SB_CTOR_FAIL               = 7010;
+  const ERROR SB_CTOR_BAD_CAP_FAIL       = 7011;
+  const ERROR SB_CTOR_MALLOC_FAIL        = 7012;
+//const ERROR SB_APPEND_FAIL             = 7020;
   const ERROR SB_APND_MULT_OVERFLOW_FAIL = 7021;
-  const ERROR SB_APND_MALLOC_FAIL = 7022;
-//const ERROR SB_TO_STRING_FAIL = 7030;
-  const ERROR SB_TS_MALLOC_FAIL = 7031;
+  const ERROR SB_APND_MALLOC_FAIL        = 7022;
+//const ERROR SB_TO_STRING_FAIL          = 7030;
+  const ERROR SB_TS_MALLOC_FAIL          = 7031;
 
 // TODO Write tests/stringbuilder.c
 

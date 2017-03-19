@@ -44,6 +44,7 @@ ERROR cb_copy(const struct CodeBlock from, struct CodeBlock *into) {
 
 // non-public method; shouldn't get a public ERROR for itself
 bool cb_expand(struct CodeBlock *cb) {
+    // TODO protect against SIZE_MAX overflow
     size_t new_cap = cb->cap * 2 * sizeof(struct Token);
     struct Token *new_mem = realloc(cb->tokens, new_cap);
     if (!new_mem) return false;

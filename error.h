@@ -40,6 +40,14 @@ static const ERROR NO_ERROR = 0;
 //extern const ERROR  METHOD_MAP_FAIL;              //  5750
 //extern const ERROR  RUNNABLE_FAIL;                //  6000
 //extern const ERROR  STRINGBUILDER_FAIL;           //  7000
+//extern const ERROR   SB_CTOR_FAIL;                //   7010
+  extern const ERROR    SB_CTOR_BAD_CAP_FAIL;       //    7011
+  extern const ERROR    SB_CTOR_MALLOC_FAIL;        //    7012
+//extern const ERROR   SB_APPEND_FAIL;              //   7020
+  extern const ERROR    SB_APND_MULT_OVERFLOW_FAIL; //    7021
+  extern const ERROR    SB_APND_MALLOC_FAIL;        //    7022
+//extern const ERROR   SB_TO_STRING_FAIL;           //   7030
+  extern const ERROR    SB_TS_MALLOC_FAIL;          //    7031
 //extern const ERROR  TOKENIZER_FAIL;               //  8000
 //extern const ERROR   CTOR_FAIL;                   //   8100
 //extern const ERROR    CTOR_STR_FAIL;              //    8110
