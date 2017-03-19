@@ -115,7 +115,8 @@ Major version `0` is pre-completion; some of the parts may be
   * [ ] Everything in the `TODO` comments - 0.5.5  
     ...as long as it's possible to do now; i.e. doesn't require work that's
       slated for completion in a later milestone.
-  * [ ] Misc. cleanup tasks:
+  * [ ] Unit testing for `StringBuilder`.
+  * [ ] Misc. cleanup tasks - 0.5.7
     * Make sure `Object`s aren't accidentally getting passed around by value
       to avoid nasty memory-leak-related bugs later.
     * Ditto for `Tokenizer`s and file handle cleanup.
