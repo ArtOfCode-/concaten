@@ -30,7 +30,9 @@ static const ERROR NO_ERROR = 0;
   extern const ERROR   CB_GET_BAD_IDX_FAIL;         //   1041;
 //extern const ERROR  CB_SET_FAIL;                  //  1050;
   extern const ERROR   CB_SET_BAD_IDX_FAIL;         //   1051;
-//extern const ERROR  DATA_STACK_FAIL;              //  2000
+//extern const ERROR  DATA_STACK_FAIL;              //  1500
+  extern const ERROR   DST_PUSH_MALLOC_FAIL;        //   1501
+  extern const ERROR   DST_POP_EMPTY_FAIL;          //   1502
 //extern const ERROR  TOKEN_STACK_FAIL;             //  3000
 //extern const ERROR  SCOPE_STACK_FAIL;             //  4000
 //extern const ERROR  OBJECT_FAIL;                  //  5000

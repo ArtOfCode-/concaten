@@ -52,7 +52,6 @@ struct Token {
     enum TokenType type;
 };
 
-
 char *tkn_type_name(enum TokenType);
 void tkn_free(struct Token *);
 // object_t tkn_value(Token) // defined in object.h

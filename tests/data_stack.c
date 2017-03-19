@@ -2,40 +2,44 @@
 
 #include "../data_stack.h"
 
-#define LINE str(__LINE__) ": "
 #define assert_pop_eq(num, what) \
-    dst##num##_got = dst_pop(&dst##num); \
-    tassert(dst##num##_got == &what, LINE str(num) " got bad result")
+    tassert(dst_pop(&dst##num, &dst##num##_got) == NO_ERROR, \
+            "failed to pop"); \
+    tassert(dst##num##_got == &what, \
+            str(__LINE__) ": " str(num) " got bad result")
+
 #define assert_no_pop(num) \
-    dst##num##_got = dst_pop(&dst##num); \
-    tassert(!dst##num##_got, LINE str(num) " got bad result")
+    tassert(dst_pop(&dst##num, NULL) == DST_POP_EMPTY_FAIL, \
+            str(__LINE__) ": " str(num) " got bad result")
 
 struct TestResult test_data_stack() {
-    struct DataStack dst1 = dst_new();
-    long val = 12;
     size_t successes = 0, total = 0;
+    struct DataStack dst1;
+    struct Object *dst2_got;
+    struct Object *dst1_got;
+    tassert(dst_new(&dst1) == NO_ERROR, "failed to init datastack");
+    long val = 12;
     struct Object foo = ctno_literal(&val, sizeof(long), TID_long, NULL); ++val;
     struct Object bar = ctno_literal(&val, sizeof(long), TID_long, NULL); ++val;
     struct Object baz = ctno_literal(&val, sizeof(long), TID_long, NULL); ++val;
     struct Object wuf = ctno_literal(&val, sizeof(long), TID_long, NULL); ++val;
-    dst_push(&dst1, &foo);
-    dst_push(&dst1, &bar);
-    dst_push(&dst1, &baz);
-    dst_push(&dst1, &wuf);
-    struct DataStack dst2 = dst_copy(dst1);
-    struct Object *dst2_got;
+    tassert(dst_push(&dst1, &foo) == NO_ERROR, "failed to push");
+    tassert(dst_push(&dst1, &bar) == NO_ERROR, "failed to push");
+    tassert(dst_push(&dst1, &baz) == NO_ERROR, "failed to push");
+    tassert(dst_push(&dst1, &wuf) == NO_ERROR, "failed to push");
+    struct DataStack dst2;
+    tassert(dst_copy(dst1, &dst2) == NO_ERROR, "failed to copy");
     assert_pop_eq(2, wuf);
     assert_pop_eq(2, baz);
     assert_pop_eq(2, bar);
-    dst_push(&dst2, &wuf);
-    dst_push(&dst2, &baz);
+    tassert(dst_push(&dst2, &wuf) == NO_ERROR, "failed to push");
+    tassert(dst_push(&dst2, &baz) == NO_ERROR, "failed to push");
     assert_pop_eq(2, baz);
-    dst_push(&dst1, &foo);
+    tassert(dst_push(&dst1, &foo) == NO_ERROR, "failed to push");
     assert_pop_eq(2, wuf);
-    dst_push(&dst1, &bar);
+    tassert(dst_push(&dst1, &bar) == NO_ERROR, "failed to push");
     assert_pop_eq(2, foo);
     assert_no_pop(2);
-    struct Object *dst1_got;
     assert_pop_eq(1, bar);
     assert_pop_eq(1, foo);
     assert_pop_eq(1, wuf);
@@ -43,6 +47,8 @@ struct TestResult test_data_stack() {
     assert_pop_eq(1, bar);
     assert_pop_eq(1, foo);
     assert_no_pop(1);
+    dst_free(&dst1);
+    dst_free(&dst2);
     
     return (struct TestResult) { .successes = successes, .total = total };
 }

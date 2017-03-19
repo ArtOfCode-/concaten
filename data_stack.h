@@ -2,6 +2,7 @@
 #define CONCATEN_DATA_STACK_H
 
 #include "object.h"
+#include "error.h"
 
 // linked-list has O(1) push/pop always, and can be copied in O(1) (as long as it's not a deep copy!)
 
@@ -16,10 +17,10 @@ struct DataStack {
     struct DST_Node *head;
 };
 
-struct DataStack dst_new();
-bool dst_push(struct DataStack *, struct Object *);
-struct Object *dst_pop(struct DataStack *);
-struct DataStack dst_copy(const struct DataStack);
+ERROR dst_new(struct DataStack *);
+ERROR dst_copy(const struct DataStack, struct DataStack *);
+ERROR dst_push(struct DataStack *, struct Object *);
+ERROR dst_pop(struct DataStack *, struct Object **);
 void dst_free(struct DataStack *);
 
 #endif //CONCATEN_DATA_STACK_H

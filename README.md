@@ -87,7 +87,7 @@ Major version `0` is pre-completion; some of the parts may be
     3. Collect all error codes in `errors.h`, ensure no dupes/overlap  
       Also, a `const char *to_str(error_code)` to provide error messages
     * [x] `code_block.h`
-    * [ ] `data_stack.h`
+    * [x] `data_stack.h`
     * [ ] `method_map.h`
     * [ ] `object.h`
     * [ ] `prop_map.h`
@@ -105,11 +105,21 @@ Major version `0` is pre-completion; some of the parts may be
   * [ ] Write a code style guide 0.5.4  
     Start by getting down the ideas, see what patterns emerge, categorize
       based on that.
+    * Topics to cover:
+      * `foo = malloc(sizeof(*foo))` vs. `sizeof(FooType)`
+      * save old, build in `foo->bar` or build in variable, copy to `foo->bar`
+      * continuation line indent for function calls
+      * always check for `NULL` in out params & ignore, or sometimes error?
+      * `free`s return error/success? (`free()` doesn't)
     * [ ] Go through the code to make sure everything abides by it.
   * [ ] Everything in the `TODO` comments - 0.5.5  
     ...as long as it's possible to do now; i.e. doesn't require work that's
       slated for completion in a later milestone.
-  * [ ] Make sure everything still works - 0.5.6
+  * [ ] Misc. cleanup tasks:
+    * Make sure `Object`s aren't accidentally getting passed around by value
+      to avoid nasty memory-leak-related bugs later.
+    * Ditto for `Tokenizer`s and file handle cleanup.
+  * [ ] Make sure everything still works
 
 ###Upcoming milestones
 
