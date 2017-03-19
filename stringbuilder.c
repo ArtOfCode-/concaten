@@ -27,7 +27,7 @@ ERROR sb_new(size_t init_cap, struct StringBuilder *into) {
     into->mem[0] = 0;
     into->cap = init_cap;
     into->count = 0;
-    return true;
+    return NO_ERROR;
 }
 
 bool mult_overflows(size_t a, size_t b) {
