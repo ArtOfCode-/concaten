@@ -91,7 +91,7 @@ Major version `0` is pre-completion; some of the parts may be
     * [ ] `method_map.h`
     * [ ] `object.h`
     * [ ] `prop_map.h`
-    * [ ] `stringbuilder.h`
+    * [x] `stringbuilder.h`
     * [ ] `token_stack.h`
     * [x] `tokenizer.h`
   * [ ] TLC for `tknr_next` - 0.5.2  
