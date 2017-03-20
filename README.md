@@ -102,8 +102,7 @@ Major version `0` is pre-completion; some of the parts may be
     * [ ] We don't need to take `char *next_char`. That's a holdover.
     * [ ] Use `unsigned char` instead of `char`.
     * Would it be clearer to use `skip_char` instead of `read_char`?
-  * [ ] Give every type its own `.h` and `.c` - 0.5.3
-  * [ ] Write a code style guide 0.5.4  
+  * [ ] Write a code style guide 0.5.3  
     Start by getting down the ideas, see what patterns emerge, categorize
       based on that.
     * Topics to cover:
@@ -113,14 +112,15 @@ Major version `0` is pre-completion; some of the parts may be
       * always check for `NULL` in out params & ignore, or sometimes error?
       * `free`s return error/success? (`free()` doesn't)
     * [ ] Go through the code to make sure everything abides by it.
-  * [ ] Everything in the `TODO` comments - 0.5.5  
+  * [ ] Everything in the `TODO` comments - 0.5.4  
     ...as long as it's possible to do now; i.e. doesn't require work that's
       slated for completion in a later milestone.
-  * [ ] Unit testing for `StringBuilder`.
-  * [ ] Misc. cleanup tasks - 0.5.7
-    * Make sure `Object`s aren't accidentally getting passed around by value
-      to avoid nasty memory-leak-related bugs later.
-    * Ditto for `Tokenizer`s and file handle cleanup.
+  * [ ] Misc. cleanup tasks
+    * [ ] Give every type its own `.h` and `.c`
+    * [ ] Make sure `Object`s aren't accidentally getting passed around by
+      value to avoid nasty memory-leak-related bugs later.
+    * [ ] Ditto for `Tokenizer`s and file handle cleanup.
+    * [ ] Unit testing for `StringBuilder`.
   * [ ] Make sure everything still works
 
 ###Upcoming milestones
