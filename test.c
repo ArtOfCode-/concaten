@@ -2,7 +2,7 @@
 
 #define do_test(module_name) do { \
     ++idx; \
-    printf("Testing %-15s", str(module_name)"..."); \
+    printf("Testing %-20s", str(module_name)"..."); \
     struct TestResult tr = test_##module_name(); \
     if (tr.successes != tr.total) { \
         size_t fails = tr.total - tr.successes; \
@@ -15,6 +15,7 @@
 
 int main() {
     size_t idx = 0;
+    do_test(stringbuilder);
     do_test(tokenizer);
     do_test(prop_map);
     do_test(method_map);

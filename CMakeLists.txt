@@ -10,5 +10,6 @@ set(SOURCE_FILES
 add_executable(concaten main.c ${SOURCE_FILES})
 set(TEST_SOURCES
         tests/prop_map.c tests/tokenizer.c tests/method_map.c tests/object.c
-        tests/data_stack.c tests/token_stack.c tests/code_block.c)
+        tests/data_stack.c tests/token_stack.c tests/code_block.c
+        tests/stringbuilder.c)
 add_executable(tester test.c ${SOURCE_FILES} ${TEST_SOURCES})

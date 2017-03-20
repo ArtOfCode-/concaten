@@ -18,6 +18,7 @@ struct TestResult {
     size_t successes, total;
 };
 
+struct TestResult test_stringbuilder();
 struct TestResult test_tokenizer();
 struct TestResult test_prop_map();
 struct TestResult test_method_map();
