@@ -36,10 +36,11 @@ struct Object ctno_dynamic(struct PropMap pm, struct MethodMap *methods) {
 
 struct Object ctno_copy(struct Object copying) {
     if (copying.error) return (struct Object) { .error = 1 };
+    mm_claim(copying.methods); // TODO Error if necessary
     struct Object ret = (struct Object) {
             .error = 0,
             .is_literal = copying.is_literal,
-            .methods = mm_claim(copying.methods),
+            .methods = copying.methods,
             .refcount = 0
     };
     if (copying.is_literal) {
@@ -116,5 +117,6 @@ void ctno_free(struct Object *freeing) {
 
 struct Object tkn_value(struct Token tkn) {
     // TODO this thing's body
+    // maybe it should go in its own file?
     return (struct Object) { .error = 1 };
 }

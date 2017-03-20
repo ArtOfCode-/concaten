@@ -11,7 +11,7 @@ test_f(10) test_f(11) test_f(12) test_f(13) test_f(14)
 test_f(15) test_f(16) test_f(17) test_f(18) test_f(19)
 
 #define a_set(key, value) \
-    tassert(mm_set(&mm, key, value), str(__LINE__) " assignment failed")
+    tassert(mm_set(&mm, key, value) == NO_ERROR, "assignment failed");
 #define a_is_key(key) \
     tassert(mm_is_key(mm, key), key " isn't a key!")
 #define a_not_key(key) \
@@ -21,19 +21,20 @@ test_f(15) test_f(16) test_f(17) test_f(18) test_f(19)
 #define a_not_val(val) \
     tassert(!mm_is_value(mm, val), str(val) " is a value!")
 #define a_get_val(key, expect) \
-    tassert(mm_get(mm, key) == expect, "unexpected value for " key)
+    tassert(mm_get(mm, key, &val) == NO_ERROR, "failed to get for " key); \
+    tassert(val == expect, "unexpected value for " key)
+#define a_no_get_val(key) \
+    tassert(mm_get(mm, key, &val) != NO_ERROR, "successfully got for " key)
 #define a_remove(key) \
-    tassert(mm_remove(&mm, key), "failed to remove")
-
-//"first", "second", "third", "fourth", "fifth",
-//"eleventh", "twelfth", "bar", "woof", "sixteenth",
-//"nineteenth", "twentieth", "foo", "eighteenth"
+    tassert(mm_remove(&mm, key) == NO_ERROR, "failed to remove")
 
 struct TestResult test_method_map() {
     size_t successes = 0, total = 0;
     // very low number of buckets initially so it has to rehash
     // ...eventually. I hate the pigeonhole principle.
-    struct MethodMap mm = mm_new(2);
+    struct MethodMap mm;
+    MM_VALUE_TYPE val;
+    tassert(mm_new(2, &mm) == NO_ERROR, "failed to initialize");
     a_set("first", f0);
     a_set("second", f1);
     a_set("third", f2);
@@ -49,13 +50,13 @@ struct TestResult test_method_map() {
     a_get_val("eighth", f7);
     a_remove("eighth");
     a_not_key("eighth");
-    a_get_val("eighth", NULL);
+    a_no_get_val("eighth");
     a_set("ninth", f8);
     a_set("tenth", f9);
     a_is_val(f1);
     a_not_val(f12);
     a_get_val("third", f2);
-    a_get_val("eleventh", NULL);
+    a_no_get_val("eleventh");
     a_not_key("eleventh");
     a_set("eleventh", f10);
     a_set("twelfth", f11);
@@ -65,7 +66,7 @@ struct TestResult test_method_map() {
     a_set("fourteenth", f13);
     a_set("fifteenth", f14);
     a_not_key("thirteenth");
-    a_get_val("thirteenth", NULL);
+    a_no_get_val("thirteenth");
     a_is_key("fifth");
     a_not_key("bar");
     a_is_key("tenth");

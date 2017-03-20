@@ -89,7 +89,7 @@ Major version `0` is pre-completion; some of the parts may be
       Also, a `const char *to_str(error_code)` to provide error messages
     * [x] `code_block.h`
     * [x] `data_stack.h`
-    * [ ] `method_map.h`
+    * [x] `method_map.h`
     * [ ] `object.h`
     * [ ] `prop_map.h`
     * [x] `stringbuilder.h`
@@ -113,6 +113,7 @@ Major version `0` is pre-completion; some of the parts may be
       * `free`s return error/success? (`free()` doesn't)
       * `free`s check for null, skip if it is?
       * null-check on "this"-equivalent?
+      * Order of parameters (esp. out params, and in ctors)
     * [ ] Go through the code to make sure everything abides by it.
   * [ ] Everything in the `TODO` comments - 0.5.4  
     ...as long as it's possible to do now; i.e. doesn't require work that's
@@ -123,6 +124,7 @@ Major version `0` is pre-completion; some of the parts may be
       value to avoid nasty memory-leak-related bugs later.
     * [ ] Ditto for `Tokenizer`s and file handle cleanup.
     * [x] Unit testing for `StringBuilder`.
+    * [ ] Implement that one Token -> Object method
   * [ ] Make sure everything still works
 
 ###Upcoming milestones
