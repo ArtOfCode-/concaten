@@ -120,7 +120,7 @@ Major version `0` is pre-completion; some of the parts may be
     * [ ] Make sure `Object`s aren't accidentally getting passed around by
       value to avoid nasty memory-leak-related bugs later.
     * [ ] Ditto for `Tokenizer`s and file handle cleanup.
-    * [ ] Unit testing for `StringBuilder`.
+    * [x] Unit testing for `StringBuilder`.
   * [ ] Make sure everything still works
 
 ###Upcoming milestones
