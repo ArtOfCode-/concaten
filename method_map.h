@@ -3,6 +3,7 @@
 
 #include <stddef.h>
 #include <stdbool.h>
+#include "error.h"
 
 // we'll switch this to data_stack, scope_stack, token_stack once
 // those are written; for now, we want a compileable and testable
@@ -33,15 +34,15 @@ struct MethodMap {
     int error;
 };
 
-struct MethodMap mm_new(size_t);
-struct MethodMap *mm_claim(struct MethodMap *);
-bool mm_set(struct MethodMap *, const char *, MM_FUNC_TYPE);
-MM_FUNC_TYPE mm_get(const struct MethodMap, const char *);
+ERROR mm_new(size_t, struct MethodMap *);
+ERROR mm_claim(struct MethodMap *);
+ERROR mm_set(struct MethodMap *, const char *, MM_FUNC_TYPE);
+ERROR mm_get(const struct MethodMap, const char *, MM_FUNC_TYPE *);
 // NB: `true` means it was removed, `false` means it wasn't there
-bool mm_remove(struct MethodMap *, const char *);
+ERROR mm_remove(struct MethodMap *, const char *);
 bool mm_is_key(const struct MethodMap, const char *);
 bool mm_is_value(const struct MethodMap, MM_FUNC_TYPE);
-bool mm_rehash(struct MethodMap *, size_t);
+ERROR mm_rehash(struct MethodMap *, size_t);
 void mm_free(struct MethodMap *);
 
 

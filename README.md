@@ -111,6 +111,8 @@ Major version `0` is pre-completion; some of the parts may be
       * continuation line indent for function calls
       * always check for `NULL` in out params & ignore, or sometimes error?
       * `free`s return error/success? (`free()` doesn't)
+      * `free`s check for null, skip if it is?
+      * null-check on "this"-equivalent?
     * [ ] Go through the code to make sure everything abides by it.
   * [ ] Everything in the `TODO` comments - 0.5.4  
     ...as long as it's possible to do now; i.e. doesn't require work that's
