@@ -1,6 +1,8 @@
 #ifndef CONCATEN_CTN_OBJECT_H
 #define CONCATEN_CTN_OBJECT_H
 
+#include "error.h"
+
 #include "prop_map.h"
 #include "method_map.h"
 
