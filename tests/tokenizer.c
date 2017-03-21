@@ -45,7 +45,7 @@ void test(const struct Spec ts, size_t i) {
         }
         tkn_free(&next);
     }
-    if (err == NT_INPUT_END_FAIL && tknr_end(&t)) err = NO_ERROR;
+    if (err == TKNR_NT_INPUT_END_FAIL && tknr_end(&t)) err = NO_ERROR;
 end:;
     tassert(cnt >= ts.token_count, "%zu: Too few tokens (got %zu)",
             i, cnt);
@@ -70,22 +70,22 @@ end:;
 }
 #define stest_bd(_source) (struct Spec) { \
     .source = _source, \
-    .code = SYN_NUM_ILLEGAL_DIGIT_FAIL, \
+    .code = TKNR_SYN_NUM_ILLEGAL_DIGIT_FAIL, \
     .types = NULL, \
     .token_count = 0, \
     .is_from_file = false \
 }
 struct TestResult test_tokenizer() {
     struct Spec tests[] = {
-            stest_e("", CTOR_STR_BAD_STRLEN_FAIL),
-            stest_e("\"ends early", SYN_UNEXPECTED_END_FAIL),
-            stest_e("r/ends early", SYN_UNEXPECTED_END_FAIL),
+            stest_e("", TKNR_CTOR_STR_BAD_STRLEN_FAIL),
+            stest_e("\"ends early", TKNR_SYN_UNEXPECTED_END_FAIL),
+            stest_e("r/ends early", TKNR_SYN_UNEXPECTED_END_FAIL),
             stest_bd("0b012"),
             stest_bd("-0x1fg"),
             stest_bd("0o178"),
             (struct Spec) {
                     .source = "r/ege/xkcd",
-                    .code = SYN_RGX_BAD_FLAG_FAIL,
+                    .code = TKNR_SYN_RGX_BAD_FLAG_FAIL,
                     .is_from_file = false,
                     .token_count = 0,
                     .types = NULL

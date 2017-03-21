@@ -7,35 +7,35 @@
 #include "stringbuilder.h"
 
 //const ERROR TOKENIZER_FAIL             = 8000;
-//const ERROR CTOR_FAIL                  =  8100;
-//const ERROR CTOR_STR_FAIL              =   8110;
-  const ERROR CTOR_STR_MALLOC_FAIL       =    8111;
-  const ERROR CTOR_STR_BAD_STRLEN_FAIL   =    8112;
-  const ERROR CTOR_STR_NULL_ARG_FAIL     =    8113;
-//const ERROR CTOR_FILE_FAIL             =   8120;
-  const ERROR CTOR_FILE_MALLOC_FAIL      =    8121;
-  const ERROR CTOR_FILE_BAD_STRLEN_FAIL  =    8122;
-  const ERROR CTOR_FILE_NULL_ARG_FAIL    =    8123;
-  const ERROR CTOR_FILE_FOPEN_FAIL       =    8124;
+//const ERROR TKNR_CTOR_FAIL                  =  8100;
+//const ERROR TKNR_CTOR_STR_FAIL              =   8110;
+  const ERROR TKNR_CTOR_STR_MALLOC_FAIL       =    8111;
+  const ERROR TKNR_CTOR_STR_BAD_STRLEN_FAIL   =    8112;
+  const ERROR TKNR_CTOR_STR_NULL_ARG_FAIL     =    8113;
+//const ERROR TKNR_CTOR_FILE_FAIL             =   8120;
+  const ERROR TKNR_CTOR_FILE_MALLOC_FAIL      =    8121;
+  const ERROR TKNR_CTOR_FILE_BAD_STRLEN_FAIL  =    8122;
+  const ERROR TKNR_CTOR_FILE_NULL_ARG_FAIL    =    8123;
+  const ERROR TKNR_CTOR_FILE_FOPEN_FAIL       =    8124;
 //const ERROR READ_CHAR_FAIL             =  8200;
-  const ERROR FILE_READ_FAIL             =   8210;
-  const ERROR FILE_READ_EOF_FAIL         =    8211;
-//const ERROR STRING_READ_FAIL           =   8220;
-  const ERROR STRING_READ_EOS_FAIL       =    8221;
-//const ERROR NEXT_TOKEN_FAIL            =  8300;
-  const ERROR NT_MALLOC_FAIL             =   8301;
-  const ERROR NT_NEW_SB_FAIL             =   8302;
-  const ERROR NT_SB_FREE_COPY_FAIL       =   8303;
-  const ERROR NT_INPUT_END_FAIL          =   8304;
-//const ERROR TOKENIZER_SYNTAX_FAIL      = 8500;
-  const ERROR SYN_NO_SEPARATION_FAIL     =  8501;
-  const ERROR SYN_UNEXPECTED_END_FAIL    =  8502;
-//const ERROR SYN_STR_FAIL               =  8510;
-  const ERROR SYN_STR_MULTILINE_FAIL     =   8511;
-//const ERROR SYN_NUM_FAIL               =  8520;
-  const ERROR SYN_NUM_ILLEGAL_DIGIT_FAIL =   8521;
-//const ERROR SYN_RGX_FAIL               =  8530;
-  const ERROR SYN_RGX_BAD_FLAG_FAIL      =   8531;
+  const ERROR TKNR_FILE_READ_FAIL             =   8210;
+  const ERROR TKNR_FILE_READ_EOF_FAIL         =    8211;
+//const ERROR TKNR_STRING_READ_FAIL           =   8220;
+  const ERROR TKNR_STRING_READ_EOS_FAIL       =    8221;
+//const ERROR TKNR_NEXT_TOKEN_FAIL            =  8300;
+  const ERROR TKNR_NT_MALLOC_FAIL             =   8301;
+  const ERROR TKNR_NT_NEW_SB_FAIL             =   8302;
+  const ERROR TKNR_NT_SB_FREE_COPY_FAIL       =   8303;
+  const ERROR TKNR_NT_INPUT_END_FAIL          =   8304;
+//const ERROR TKNR_SYNTAX_FAIL      = 8500;
+  const ERROR TKNR_SYN_NO_SEPARATION_FAIL     =  8501;
+  const ERROR TKNR_SYN_UNEXPECTED_END_FAIL    =  8502;
+//const ERROR TKNR_SYN_STR_FAIL               =  8510;
+  const ERROR TKNR_SYN_STR_MULTILINE_FAIL     =   8511;
+//const ERROR TKNR_SYN_NUM_FAIL               =  8520;
+  const ERROR TKNR_SYN_NUM_ILLEGAL_DIGIT_FAIL =   8521;
+//const ERROR TKNR_SYN_RGX_FAIL               =  8530;
+  const ERROR TKNR_SYN_RGX_BAD_FLAG_FAIL      =   8531;
 
 struct Token tkn_empty(size_t line, size_t index) {
     return (struct Token) {
@@ -80,14 +80,14 @@ void tkn_free(struct Token *t) {
 ERROR get_next_char_file(struct Tokenizer *from) {
     struct FileSource *fs = &from->source.file;
     if (tknr_end(from)) {
-        return FILE_READ_EOF_FAIL;
+        return TKNR_FILE_READ_EOF_FAIL;
     } else if (fs->next_chars_pos == BUF_SIZE) {
         size_t count = fread(fs->buf, sizeof(char), BUF_SIZE, fs->fptr);
         if (count != BUF_SIZE) {
             if (feof(fs->fptr)) {
                 fs->eof = count;
             } else {
-                return FILE_READ_FAIL;
+                return TKNR_FILE_READ_FAIL;
             }
         }
         fs->next_chars_pos = 0;
@@ -99,7 +99,7 @@ ERROR get_next_char_file(struct Tokenizer *from) {
 ERROR get_next_char_string(struct Tokenizer *from) {
     struct StringSource *ss = &from->source.string;
     if (tknr_end(from)) {
-        return STRING_READ_EOS_FAIL;
+        return TKNR_STRING_READ_EOS_FAIL;
     } else {
         from->next_char = *ss->cur_pos;
         ++ss->cur_pos;
@@ -139,19 +139,19 @@ ERROR tknr_from_string(const char *mem, const char *origin,
             .just_started = true,
     };
     if (!mem || !origin) {
-        return CTOR_STR_NULL_ARG_FAIL;
+        return TKNR_CTOR_STR_NULL_ARG_FAIL;
     }
     size_t mem_len = strlen(mem);
     size_t origin_len = strlen(origin);
     if (!mem_len || !origin_len) {
-        return CTOR_STR_BAD_STRLEN_FAIL;
+        return TKNR_CTOR_STR_BAD_STRLEN_FAIL;
     }
     ret.origin_len = origin_len + 1;
     
     // .source
     char *mem_c = malloc(mem_len + 1);
     if (!mem_c) {
-        return CTOR_STR_MALLOC_FAIL;
+        return TKNR_CTOR_STR_MALLOC_FAIL;
     }
     strcpy(mem_c, mem);
     ret.source.string = (struct StringSource) {
@@ -164,7 +164,7 @@ ERROR tknr_from_string(const char *mem, const char *origin,
     char *origin_c = malloc(origin_len * sizeof(char) + 1);
     if (!origin_c) {
         free(ret.source.string.begin);
-        return CTOR_STR_MALLOC_FAIL;
+        return TKNR_CTOR_STR_MALLOC_FAIL;
     }
     strcpy(origin_c, origin);
     ret.origin = origin_c;
@@ -193,18 +193,18 @@ ERROR tknr_from_filepath(const char *path, struct Tokenizer *into) {
     };
     
     if (!path) {
-        return CTOR_FILE_NULL_ARG_FAIL;
+        return TKNR_CTOR_FILE_NULL_ARG_FAIL;
     }
     size_t path_len = strlen(path);
     if (!path_len) {
-        return CTOR_FILE_BAD_STRLEN_FAIL;
+        return TKNR_CTOR_FILE_BAD_STRLEN_FAIL;
     }
     ret.origin_len = path_len + 1;
     
     // .source
     FILE *fptr = fopen(path, "rb");
     if (!fptr) {
-        return CTOR_FILE_FOPEN_FAIL;
+        return TKNR_CTOR_FILE_FOPEN_FAIL;
     }
     ret.source.file.fptr = fptr;
     
@@ -212,7 +212,7 @@ ERROR tknr_from_filepath(const char *path, struct Tokenizer *into) {
     char *path_c = malloc(path_len * sizeof(char) + 1);
     if (!path_c) {
         fclose(fptr);
-        return CTOR_FILE_MALLOC_FAIL;
+        return TKNR_CTOR_FILE_MALLOC_FAIL;
     }
     strcpy(path_c, path);
     ret.origin = path_c;
@@ -226,7 +226,7 @@ ERROR tknr_from_filepath(const char *path, struct Tokenizer *into) {
             fclose(fptr);
             free(ret.origin);
             ret.origin = NULL;
-            return FILE_READ_FAIL;
+            return TKNR_FILE_READ_FAIL;
         }
     }
     ret.next_char = fs->buf[0];
@@ -332,7 +332,7 @@ ERROR get_string(struct Tokenizer *from, char *next_char,
     ERROR err;
     struct StringBuilder raw;
     if (sb_new(STARTING_RAW_MEM, &raw) != NO_ERROR) {
-        return NT_NEW_SB_FAIL;
+        return TKNR_NT_NEW_SB_FAIL;
     }
     while (1) {
         err = sb_append(&raw, peek_char(from));
@@ -340,7 +340,7 @@ ERROR get_string(struct Tokenizer *from, char *next_char,
         err = read_char(from, NULL);
         if (err) goto error;
         if (tknr_end(from)) {
-            err = SYN_UNEXPECTED_END_FAIL;
+            err = TKNR_SYN_UNEXPECTED_END_FAIL;
             goto error;
         }
         *next_char = peek_char(from);
@@ -356,7 +356,7 @@ ERROR get_string(struct Tokenizer *from, char *next_char,
             if (err != NO_ERROR) goto error;
         }
         if (*next_char == '\n') {
-            err = SYN_STR_MULTILINE_FAIL;
+            err = TKNR_SYN_STR_MULTILINE_FAIL;
             goto error;
         }
         if (*next_char == '"') {
@@ -371,7 +371,7 @@ ERROR get_string(struct Tokenizer *from, char *next_char,
     size_t raw_cstr_len = raw.count;
     char *raw_cstr;
     if (sb_into_string(&raw, &raw_cstr) != NO_ERROR) {
-        err = NT_SB_FREE_COPY_FAIL;
+        err = TKNR_NT_SB_FREE_COPY_FAIL;
         goto error;
     }
     partial.raw = raw_cstr;
@@ -390,7 +390,7 @@ ERROR get_number(struct Tokenizer *from, char *next_char, struct Token partial,
     ERROR err;
     struct StringBuilder raw;
     if (sb_new(STARTING_RAW_MEM, &raw) != NO_ERROR) {
-        err = NT_NEW_SB_FAIL;
+        err = TKNR_NT_NEW_SB_FAIL;
         goto error;
     }
     if (neg) {
@@ -455,13 +455,13 @@ ERROR get_number(struct Tokenizer *from, char *next_char, struct Token partial,
         }
     }
     if (!is_ws(*next_char) && !tknr_end(from)) {
-        err = SYN_NUM_ILLEGAL_DIGIT_FAIL;
+        err = TKNR_SYN_NUM_ILLEGAL_DIGIT_FAIL;
         goto error;
     }
     partial.raw_len = raw.count;
     err = sb_into_string(&raw, &partial.raw);
     if (err != NO_ERROR) {
-        err = NT_SB_FREE_COPY_FAIL;
+        err = TKNR_NT_SB_FREE_COPY_FAIL;
         goto error;
     }
     partial.type = decimal ? TKN_REAL : TKN_INTEGER;
@@ -494,7 +494,7 @@ ERROR get_regex(struct Tokenizer *from, struct StringBuilder raw,
             err = read_char(from, NULL);
             if (err) goto error;
             if (tknr_end(from)) {
-                err = SYN_UNEXPECTED_END_FAIL;
+                err = TKNR_SYN_UNEXPECTED_END_FAIL;
                 goto error;
             }
             err = sb_append(&raw, peek_char(from));
@@ -502,7 +502,7 @@ ERROR get_regex(struct Tokenizer *from, struct StringBuilder raw,
             err = read_char(from, NULL);
             if (err) goto error;
             if (tknr_end(from)) {
-                err = SYN_UNEXPECTED_END_FAIL;
+                err = TKNR_SYN_UNEXPECTED_END_FAIL;
                 goto error;
             }
         }
@@ -518,7 +518,7 @@ ERROR get_regex(struct Tokenizer *from, struct StringBuilder raw,
         err = read_char(from, NULL);
         if (err) goto error;
         if (tknr_end(from)) {
-            err = SYN_UNEXPECTED_END_FAIL;
+            err = TKNR_SYN_UNEXPECTED_END_FAIL;
             goto error;
         }
         next_char = peek_char(from);
@@ -532,14 +532,14 @@ ERROR get_regex(struct Tokenizer *from, struct StringBuilder raw,
         next_char = peek_char(from);
     }
     if (!is_ws(next_char) && !tknr_end(from)) {
-        err = SYN_RGX_BAD_FLAG_FAIL;
+        err = TKNR_SYN_RGX_BAD_FLAG_FAIL;
         goto error;
     }
     ret.type = TKN_REGEX;
     ret.raw_len = raw.count;
     err = sb_into_string(&raw, &ret.raw);
     if (err != NO_ERROR) {
-        err = NT_SB_FREE_COPY_FAIL;
+        err = TKNR_NT_SB_FREE_COPY_FAIL;
         goto error;
     }
     *out = ret;
@@ -552,27 +552,27 @@ error:;
 
 ERROR tknr_next(struct Tokenizer *from, struct Token *out) {
     if (tknr_end(from)) {
-        return NT_INPUT_END_FAIL;
+        return TKNR_NT_INPUT_END_FAIL;
     }
     if (!skip_between(from)) {
         // at the very beginning, it's OK not to have separation
         // (files can start with code)
         if (!from->just_started) {
-            return SYN_NO_SEPARATION_FAIL;
+            return TKNR_SYN_NO_SEPARATION_FAIL;
         }
     }
     if (from->just_started) {
         from->just_started = false;
     }
     if (tknr_end(from)) {
-        return NT_INPUT_END_FAIL;
+        return TKNR_NT_INPUT_END_FAIL;
     }
     
     ERROR err;
     struct Token ret = tkn_empty(from->line, from->index);
     ret.origin = malloc(from->origin_len * sizeof(char));
     if (!ret.origin) {
-        err = NT_MALLOC_FAIL;
+        err = TKNR_NT_MALLOC_FAIL;
         goto error;
     }
     strcpy(ret.origin, from->origin);
@@ -584,7 +584,7 @@ ERROR tknr_next(struct Tokenizer *from, struct Token *out) {
     }
     struct StringBuilder raw;
     if (sb_new(STARTING_RAW_MEM, &raw) != NO_ERROR) {
-        err = NT_NEW_SB_FAIL;
+        err = TKNR_NT_NEW_SB_FAIL;
         goto error;
     }
     if (next_char == ':') {
@@ -619,7 +619,7 @@ ERROR tknr_next(struct Tokenizer *from, struct Token *out) {
     ret.raw_len = raw.count;
     err = sb_into_string(&raw, &ret.raw);
     if (err != NO_ERROR) {
-        err = NT_SB_FREE_COPY_FAIL;
+        err = TKNR_NT_SB_FREE_COPY_FAIL;
         goto error;
     }
     *out = ret;
