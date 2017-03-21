@@ -29,8 +29,6 @@ struct MethodMap {
     size_t item_count;
     struct MM_Bucket *buckets;
     size_t refcount;
-    
-    int error;
 };
 
 ERROR mm_new(size_t, struct MethodMap *);
