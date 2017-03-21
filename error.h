@@ -36,6 +36,16 @@ static const ERROR NO_ERROR = 0;
 //extern const ERROR  TOKEN_STACK_FAIL;                  //  3000
 //extern const ERROR  SCOPE_STACK_FAIL;                  //  4000
 //extern const ERROR  OBJECT_FAIL;                       //  5000
+  extern const ERROR CTNO_CTOR_MALLOC_FAIL;              //   5001
+  extern const ERROR CTNO_COPY_PROPS_FAIL;               //   5002
+  extern const ERROR CTNO_COPY_DATA_FAIL;                //   5003
+  extern const ERROR CTNO_GET_NO_KEY_FAIL;               //   5004
+  extern const ERROR CTNO_GET_LITERAL_FAIL;              //   5005
+  extern const ERROR CTNO_SET_LITERAL_FAIL;              //   5006
+  extern const ERROR CTNO_SET_CYCLE_FAIL;                //   5007
+  extern const ERROR CTNO_SET_ADD_FAIL;                  //   5008
+  extern const ERROR CTNO_SET_CLAIM_FAIL;                //   5009
+  extern const ERROR CTNO_CLAIM_MAX_REFCOUNT;            //   5010
 //extern const ERROR  PROP_MAP_FAIL;                     //  5500
 //extern const ERROR  METHOD_MAP_FAIL                    //  5750
   extern const ERROR   MM_CTOR_MALLOC_FAIL;              //   5751

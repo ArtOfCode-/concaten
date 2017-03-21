@@ -12,7 +12,9 @@ struct TestResult test_prop_map() {
     struct PropMap pm = pm_new(8);
     tassert(pm.item_count == 0, "why are there items wtf");
     long num = 1;
-    struct Object val = ctno_literal(&num, sizeof(long), TID_long, NULL);
+    struct Object val;
+    tassert(ctno_literal(&num, sizeof(long), NULL, &val) == NO_ERROR,
+            "failed to initialize val");
     struct Object *ret;
     a_set("foobar", &val);
     tassert(pm_get(pm, "foobar") == &val, "failed to get expected value");

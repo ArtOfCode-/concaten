@@ -6,26 +6,9 @@
 #include "prop_map.h"
 #include "method_map.h"
 
-// C has no RTTI, so we do this s**t
-enum TypeId {
-    TID_long,
-    TID_double,
-    TID_char, // AKA string (stores series of chars :P)
-    TID_bool,
-    TID_MethodMap,
-    TID_CodeBlock,
-    TID_DataStack,
-    TID_TokenStack,
-    // TODO ScopeStack,
-    // TODO List,
-    // TODO Map,
-    
-};
-
 struct LiteralData {
     size_t size;
     void *value;
-    enum TypeId type_id;
 };
 
 struct Object {
@@ -39,29 +22,17 @@ struct Object {
     // central copy. If the object's specific version is modified, the methods are copied then.
     struct MethodMap *methods;
     size_t refcount;
-    
-    int error;
 };
 
-struct Object ctno_literal(const void *, size_t, enum TypeId id,
-                           struct MethodMap *);
-struct Object ctno_dynamic(const struct PropMap, struct MethodMap *);
-struct Object ctno_copy(const struct Object);
-// ctno_mk_* methods for every literal type; might be defined elsewhere
-bool ctno_set_prop(struct Object *, const char *, struct Object *);
-struct Object *ctno_get_prop(const struct Object, const char *);
+ERROR ctno_literal(const void *, size_t, struct MethodMap *, struct Object *);
+ERROR ctno_dynamic(const struct PropMap, struct MethodMap *, struct Object *);
+ERROR ctno_copy(const struct Object, struct Object *);
+ERROR ctno_set_prop(struct Object *, const char *, struct Object *);
+ERROR ctno_get_prop(const struct Object, const char *, struct Object *);
 // this has to be a macro so we get type-correct stuff done :/
 #define ctno_to(ctno, type) \
-    ((ctno).is_literal ? \
-        ((ctno).data.literal.type_id == TID_##type ? \
-            ((type *) (ctno).data.literal.value) \
-        : NULL) \
-    : NULL)
-struct Object *ctno_claim(struct Object *);
+    ((ctno).is_literal ? ((type *) (ctno).data.literal.value) : NULL)
+ERROR ctno_claim(struct Object *);
 void ctno_free(struct Object *);
-
-// with reference to tokenizer.h
-struct Token;
-struct Object tkn_value(struct Token);
 
 #endif //CONCATEN_CTN_OBJECT_H

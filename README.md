@@ -90,7 +90,7 @@ Major version `0` is pre-completion; some of the parts may be
     * [x] `code_block.h`
     * [x] `data_stack.h`
     * [x] `method_map.h`
-    * [ ] `object.h`
+    * [x] `object.h`
     * [ ] `prop_map.h`
     * [x] `stringbuilder.h`
     * [ ] `token_stack.h`
@@ -109,11 +109,13 @@ Major version `0` is pre-completion; some of the parts may be
       * `foo = malloc(sizeof(*foo))` vs. `sizeof(FooType)`
       * save old, build in `foo->bar` or build in variable, copy to `foo->bar`
       * continuation line indent for function calls
-      * always check for `NULL` in out params & ignore, or sometimes error?
+      * check for `NULL` in out params & ignore, or sometimes error?
       * `free`s return error/success? (`free()` doesn't)
       * `free`s check for null, skip if it is?
       * null-check on "this"-equivalent?
       * Order of parameters (esp. out params, and in ctors)
+      * exceptions to the "all returns must be through out params and all
+        functions return `ERROR`s" rule? (e.g. `_claim`)
     * [ ] Go through the code to make sure everything abides by it.
   * [ ] Everything in the `TODO` comments - 0.5.4  
     ...as long as it's possible to do now; i.e. doesn't require work that's
@@ -125,6 +127,8 @@ Major version `0` is pre-completion; some of the parts may be
     * [ ] Ditto for `Tokenizer`s and file handle cleanup.
     * [x] Unit testing for `StringBuilder`.
     * [ ] Implement that one Token -> Object method
+    * [ ] Condense the error codes.
+    * [ ] Make sure everything checks return values (where there are any)
   * [ ] Make sure everything still works
 
 ###Upcoming milestones

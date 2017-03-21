@@ -58,7 +58,6 @@ ERROR mm_new(size_t width, struct MethodMap *into) {
             .bk_gr_pref = 0,
             .item_count = 0,
             .buckets = buckets,
-            .error = 0
     };
     return NO_ERROR;
 }
