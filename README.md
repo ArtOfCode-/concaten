@@ -123,7 +123,7 @@ Major version `0` is pre-completion; some of the parts may be
   * [ ] Misc. cleanup tasks
     * [ ] Give every type its own `.h` and `.c`
     * [ ] Make sure `Object`s aren't accidentally getting passed around by
-      value to avoid nasty memory-leak-related bugs later.
+      value to avoid nasty GC-related bugs later.
     * [ ] Ditto for `Tokenizer`s and file handle cleanup.
     * [x] Unit testing for `StringBuilder`.
     * [ ] Implement that one Token -> Object method
