@@ -4,16 +4,19 @@
 #include "object.h"
 
 const ERROR CTNO_CTOR_MALLOC_FAIL = 5001;
-const ERROR CTNO_COPY_PROPS_FAIL = 5002;
-const ERROR CTNO_COPY_DATA_FAIL = 5003;
-const ERROR CTNO_COPY_CLAIM_FAIL = 5004;
-const ERROR CTNO_GET_NO_KEY_FAIL = 5005;
-const ERROR CTNO_GET_LITERAL_FAIL = 5006;
-const ERROR CTNO_SET_LITERAL_FAIL = 5007;
-const ERROR CTNO_SET_CYCLE_FAIL = 5008;
-const ERROR CTNO_SET_ADD_FAIL = 5009;
-const ERROR CTNO_SET_CLAIM_FAIL = 5010;
-const ERROR CTNO_CLAIM_MAX_REFCOUNT = 5011;
+const ERROR CTNO_CTOR_PM_NEW_FAIL = 5002;
+const ERROR CTNO_COPY_PROPS_FAIL = 5003;
+const ERROR CTNO_COPY_DATA_FAIL = 5004;
+const ERROR CTNO_COPY_CLAIM_FAIL = 5005;
+const ERROR CTNO_GET_NO_KEY_FAIL = 5006;
+const ERROR CTNO_GET_LITERAL_FAIL = 5007;
+const ERROR CTNO_GET_PM_GET_FAIL = 5008;
+const ERROR CTNO_SET_LITERAL_FAIL = 5009;
+const ERROR CTNO_SET_CYCLE_FAIL = 5010;
+const ERROR CTNO_SET_ADD_FAIL = 5011;
+const ERROR CTNO_SET_CLAIM_FAIL = 5012;
+const ERROR CTNO_SET_PM_GET_FAIL = 5013;
+const ERROR CTNO_CLAIM_MAX_REFCOUNT = 5014;
 
 ERROR ctno_literal(const void *data, const size_t data_size,
                    struct MethodMap *meths, struct Object *into) {
@@ -36,7 +39,8 @@ ERROR ctno_literal(const void *data, const size_t data_size,
 
 ERROR ctno_dynamic(struct PropMap pm, struct MethodMap *methods,
                    struct Object *into) {
-    struct PropMap copy = pm_copy(pm);
+    struct PropMap copy;
+    if (pm_copy(pm, &copy) != NO_ERROR) return CTNO_CTOR_PM_NEW_FAIL;
     if (copy.error) return CTNO_COPY_PROPS_FAIL;
     *into = (struct Object) {
             .data.properties = copy,
@@ -48,6 +52,7 @@ ERROR ctno_dynamic(struct PropMap pm, struct MethodMap *methods,
 }
 
 ERROR ctno_copy(const struct Object copying, struct Object *into) {
+    // TODO add ctno_copy to tests
     if (mm_claim(copying.methods) != NO_ERROR) return CTNO_COPY_CLAIM_FAIL;
     struct Object ret = (struct Object) {
             .is_literal = copying.is_literal,
@@ -58,10 +63,14 @@ ERROR ctno_copy(const struct Object copying, struct Object *into) {
         const size_t width = copying.data.literal.size;
         void *d_c = malloc(width);
         if (!d_c) return CTNO_COPY_DATA_FAIL;
+        memcpy(d_c, copying.data.literal.value, width);
         ret.data.literal.size = width;
         ret.data.literal.value = d_c;
     } else {
-        struct PropMap pm_c = pm_copy(copying.data.properties);
+        struct PropMap pm_c;
+        if (pm_copy(copying.data.properties, &pm_c) != NO_ERROR) {
+            return CTNO_COPY_PROPS_FAIL;
+        }
         ret.data.properties = pm_c;
     }
     *into = ret;
@@ -85,7 +94,13 @@ bool check_for_cycles(struct Object *checking, struct Object *in) {
 ERROR ctno_set_prop(struct Object *to, const char *key,
                    struct Object *adding) {
     if (to->is_literal) return CTNO_SET_LITERAL_FAIL;
-    struct Object *old = pm_get(to->data.properties, key);
+    struct Object *old;
+    ERROR err = pm_get(to->data.properties, key, &old);
+    if (err != NO_ERROR && err != PM_GET_NO_KEY_FAIL) {
+        return CTNO_SET_PM_GET_FAIL;
+    } else {
+        old = NULL;
+    }
     if (ctno_claim(adding) != NO_ERROR) return CTNO_SET_CLAIM_FAIL;
     if (check_for_cycles(to, adding)) return CTNO_SET_CYCLE_FAIL;
     if (!pm_set(&to->data.properties, key, adding)) return CTNO_SET_ADD_FAIL;
@@ -95,13 +110,17 @@ ERROR ctno_set_prop(struct Object *to, const char *key,
 
 ERROR ctno_get_prop(const struct Object to, const char *key, struct Object *into) {
     if (to.is_literal) return CTNO_GET_LITERAL_FAIL;
-    struct Object *got = pm_get(to.data.properties, key);
-    if (!got) {
-        return CTNO_GET_NO_KEY_FAIL;
-    } else {
-        *into = *got;
-        return NO_ERROR;
+    struct Object *got;
+    ERROR err = pm_get(to.data.properties, key, &got);
+    if (err != NO_ERROR) {
+        if (err != PM_GET_NO_KEY_FAIL) {
+            return CTNO_GET_PM_GET_FAIL;
+        } else {
+            return CTNO_GET_NO_KEY_FAIL;
+        }
     }
+    *into = *got;
+    return NO_ERROR;
 }
 
 ERROR ctno_claim(struct Object *claiming) {

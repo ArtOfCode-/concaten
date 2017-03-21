@@ -3,6 +3,7 @@
 
 #include <stddef.h>
 #include <stdbool.h>
+#include "error.h"
 
 // Note: I'm writing this so it can be used with a different type, which is significantly more
 // complex, and that I don't want to spend the time to write just yet. I'm using `int` in its
@@ -30,21 +31,20 @@ struct PropMap {
     size_t bucket_count;
     size_t bk_gr_pref;
     size_t item_count;
-    // size_t (*hash)(const char *) // private function in .c
     struct PM_Bucket *buckets;
 
     int error;
 };
 
-struct PropMap pm_new(size_t);
-struct PropMap pm_copy(struct PropMap);
-bool pm_set(struct PropMap *, const char *, PM_VALUE_TYPE);
-PM_VALUE_TYPE pm_get(const struct PropMap, const char *);
+ERROR pm_new(size_t, struct PropMap *);
+ERROR pm_copy(const struct PropMap, struct PropMap *);
+ERROR pm_set(struct PropMap *, const char *, PM_VALUE_TYPE);
+ERROR pm_get(const struct PropMap, const char *, PM_VALUE_TYPE *);
 // NB: `true` means it was removed, `false` means it wasn't there
-bool pm_remove(struct PropMap *, const char *);
+ERROR pm_remove(struct PropMap *, const char *);
 bool pm_is_key(const struct PropMap, const char *);
 bool pm_is_value(const struct PropMap, PM_VALUE_TYPE);
-bool pm_rehash(struct PropMap *, size_t);
+ERROR pm_rehash(struct PropMap *, size_t);
 void pm_free(struct PropMap *);
 
 #endif //CONCATEN_PROP_MAP_H
