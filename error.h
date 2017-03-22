@@ -47,6 +47,14 @@ static const ERROR NO_ERROR = 0;
   extern const ERROR CTNO_SET_CLAIM_FAIL;                //   5009
   extern const ERROR CTNO_CLAIM_MAX_REFCOUNT;            //   5010
 //extern const ERROR  PROP_MAP_FAIL;                     //  5500
+  extern const ERROR   PM_CTOR_MALLOC_FAIL;              //   5501
+  extern const ERROR   PM_COPY_MALLOC_FAIL;              //   5502
+  extern const ERROR   PM_NESTED_REHASH_FAIL;            //   5503
+  extern const ERROR   PM_RH_CREATE_FAIL;                //   5504
+  extern const ERROR   PM_RH_BAD_SIZE_FAIL;              //   5505
+  extern const ERROR   PM_SET_REHASH_FAIL;               //   5508
+  extern const ERROR   PM_GET_NO_KEY_FAIL;               //   5509
+  extern const ERROR   PM_RMV_NO_KEY_FAIL;               //   5510
 //extern const ERROR  METHOD_MAP_FAIL                    //  5750
   extern const ERROR   MM_CTOR_MALLOC_FAIL;              //   5751
   extern const ERROR   MM_NESTED_REHASH_FAIL;            //   5752

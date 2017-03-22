@@ -10,8 +10,7 @@
   const ERROR MM_RH_CREATE_FAIL = 5761;
   const ERROR MM_RH_BAD_SIZE_FAIL = 5762;
 //const ERROR MM_SET_FAIL = 5770;
-  const ERROR MM_SET_BAD_KEY_FAIL = 5771;
-  const ERROR MM_SET_REHASH_FAIL = 5772;
+  const ERROR MM_SET_REHASH_FAIL = 5771;
 //const ERROR MM_GET_FAIL = 5780;
   const ERROR MM_GET_NO_KEY_FAIL = 5781;
 //const ERROR MM_REMOVE_FAIL = 5790;
@@ -68,7 +67,6 @@ ERROR mm_claim(struct MethodMap *mm) {
 }
 
 ERROR mm_set(struct MethodMap *mm, const char *key, MM_VALUE_TYPE f) {
-    if (!mm || !key) return MM_SET_BAD_KEY_FAIL;
     size_t key_len = strlen(key);
     size_t idx = mm_hash(key) % mm->bucket_count;
     struct MM_Bucket *bucket = &mm->buckets[idx];

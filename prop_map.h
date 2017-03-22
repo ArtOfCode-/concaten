@@ -9,8 +9,7 @@
 // complex, and that I don't want to spend the time to write just yet. I'm using `int` in its
 // place. These macros are defined so it's easy to switch the types out.
 struct Object;
-#define PM_VALUE_TYPE struct Object *
-#define PM_INVALID_VALUE NULL
+typedef struct Object *PM_VALUE_TYPE;
 
 // if any 1 bucket is > this size, rehash
 #define PM_MAX_BUCKET_DEPTH 8
@@ -32,8 +31,6 @@ struct PropMap {
     size_t bk_gr_pref;
     size_t item_count;
     struct PM_Bucket *buckets;
-
-    int error;
 };
 
 ERROR pm_new(size_t, struct PropMap *);

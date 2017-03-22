@@ -127,8 +127,10 @@ Major version `0` is pre-completion; some of the parts may be
     * [ ] Ditto for `Tokenizer`s and file handle cleanup.
     * [x] Unit testing for `StringBuilder`.
     * [ ] Implement that one Token -> Object method
-    * [ ] Condense the error codes.
+    * [ ] Condense the error codes and make sure they're named consistently.
+    * [ ] Nested error types? (i.e. SOME_ERROR thrown b/c SOME_OTHER_ERROR)
     * [ ] Make sure everything checks return values (where there are any)
+    * [ ] Make `PropMap`
   * [ ] Make sure everything still works
 
 ###Upcoming milestones

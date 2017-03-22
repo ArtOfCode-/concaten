@@ -9,7 +9,8 @@
 
 struct TestResult test_prop_map() {
     size_t successes = 0, total = 0;
-    struct PropMap pm = pm_new(8);
+    struct PropMap pm;
+    tassert(pm_new(8, &pm) == NO_ERROR, "failed to initialize");
     tassert(pm.item_count == 0, "why are there items wtf");
     long num = 1;
     struct Object val;
@@ -17,16 +18,16 @@ struct TestResult test_prop_map() {
             "failed to initialize val");
     struct Object *ret;
     a_set("foobar", &val);
-    tassert(pm_get(pm, "foobar") == &val, "failed to get expected value");
+    tassert(pm_get(pm, "foobar", &ret) == NO_ERROR, "failed to get expected value");
     a_set("asdf", &val);
     a_set("z", &val);
     a_set("crum", &val);
     tassert(pm.item_count == 4, "wrong item count");
     tassert(pm_is_key(pm, "foobar"), "failed to find existing key");
     tassert(pm_is_value(pm, &val), "how the hell, it's been added 4 times");
-    tassert((ret = pm_get(pm, "z")), "failed to get existing item");
+    tassert(pm_get(pm, "z", &ret) == NO_ERROR, "failed to get existing item");
     tassert(ret == &val, "got wrong value");
-    tassert(!pm_get(pm, "a"), "got by nonexistent key");
+    tassert(pm_get(pm, "a", &ret) == , "got by nonexistent key");
     tassert(!pm_is_key(pm, "a"), "found nonexistent key");
     a_set("00000000", &val);
     tassert(pm_get(pm, "00000000") == &val, "got wrong value");

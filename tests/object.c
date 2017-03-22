@@ -21,7 +21,9 @@ struct TestResult test_object() {
     tassert(ctno_literal(name, 7, NULL, &t2) == NO_ERROR,
             "failed to initialize t2");
     struct Object t3;
-    tassert(ctno_dynamic(pm_new(8), NULL, &t3) == NO_ERROR,
+    struct PropMap t1pm;
+    tassert(pm_new(8, &t1pm) == NO_ERROR, "failed to create propmap");
+    tassert(ctno_dynamic(t1pm, NULL, &t3) == NO_ERROR,
             "failed to initialize t3");
     tassert(ctno_set_prop(&t3, "1", &t1) == NO_ERROR, "failed to set val");
     tassert(ctno_set_prop(&t3, "2", &t2) == NO_ERROR, "failed to set val");
@@ -47,7 +49,9 @@ struct TestResult test_object() {
     tassert(ctno_set_prop(&t3, "self", &t3) == CTNO_SET_CYCLE_FAIL,
             "direct cycles allowed");
     struct Object t4;
-    tassert(ctno_dynamic(pm_new(8), NULL, &t4) == NO_ERROR,
+    struct PropMap t4pm;
+    tassert(pm_new(8, &t4pm) == NO_ERROR, "failed to initialize propmap")
+    tassert(ctno_dynamic(t4pm, NULL, &t4) == NO_ERROR,
             "failed to initialize t4");
     tassert(ctno_set_prop(&t4, "self2", &t3) == NO_ERROR,
             "failed intermediary step");

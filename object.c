@@ -4,7 +4,7 @@
 #include "object.h"
 
 const ERROR CTNO_CTOR_MALLOC_FAIL = 5001;
-const ERROR CTNO_CTOR_PM_NEW_FAIL = 5002;
+const ERROR CTNO_CTOR_PM_COPY_FAIL = 5002;
 const ERROR CTNO_COPY_PROPS_FAIL = 5003;
 const ERROR CTNO_COPY_DATA_FAIL = 5004;
 const ERROR CTNO_COPY_CLAIM_FAIL = 5005;
@@ -40,8 +40,7 @@ ERROR ctno_literal(const void *data, const size_t data_size,
 ERROR ctno_dynamic(struct PropMap pm, struct MethodMap *methods,
                    struct Object *into) {
     struct PropMap copy;
-    if (pm_copy(pm, &copy) != NO_ERROR) return CTNO_CTOR_PM_NEW_FAIL;
-    if (copy.error) return CTNO_COPY_PROPS_FAIL;
+    if (pm_copy(pm, &copy) != NO_ERROR) return CTNO_CTOR_PM_COPY_FAIL;
     *into = (struct Object) {
             .data.properties = copy,
             .is_literal = false,
