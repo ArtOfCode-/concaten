@@ -5,9 +5,8 @@ int main() {
     // actually getting exectued, see test.c, its `int main()`, and the files
     // in tests/
     puts("Hello, World!");
-    // in pseudocode, though, this is what's going to happen:
+    // in pseudocode, though, this is roughly what's going to happen:
   /*
-    // TODO Something to handle CLI args
     foreach (path in cli-args) {
       tknr = tknr_from_file(path);
       tokens = ts_new(tknr);

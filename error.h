@@ -10,7 +10,6 @@ static const ERROR NO_ERROR = 0;
  | Core class errors |
  +-------------------*/
 
-// TODO Contract error ranges to minimum sensible w/ enough room
 // General errors (0-999)
 extern const ERROR USER_DEFINED_ERROR_TYPE;
 

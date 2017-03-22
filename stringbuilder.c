@@ -11,9 +11,7 @@
   const ERROR SB_APND_MULT_OVERFLOW_FAIL = 7021;
   const ERROR SB_APND_MALLOC_FAIL        = 7022;
 //const ERROR SB_TO_STRING_FAIL          = 7030;
-  const ERROR SB_TS_MALLOC_FAIL          = 7031;
-
-// TODO Write tests/stringbuilder.c
+  const ERROR SB_TS_REALLOC_FAIL          = 7031;
 
 ERROR sb_new(size_t init_cap, struct StringBuilder *into) {
     if (init_cap == 0) {
@@ -54,14 +52,16 @@ ERROR sb_append(struct StringBuilder *to, char c) {
 }
 
 ERROR sb_into_string(struct StringBuilder *sb, char **into) {
-    // TODO Use realloc? Or just return `sb.mem` directly
-    char *ret = malloc(sb->count + 1);
+    char *ret = realloc(sb->mem, sb->count + 1);
     if (!ret) {
-        return SB_TS_MALLOC_FAIL;
+        return SB_TS_REALLOC_FAIL;
     }
-    memcpy(ret, sb->mem, sb->count);
     ret[sb->count] = 0;
-    sb_free(sb);
+    *sb = (struct StringBuilder) {
+            .mem = NULL,
+            .cap = 0,
+            .count = 0
+    };
     *into = ret;
     return NO_ERROR;
 }

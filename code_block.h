@@ -13,7 +13,6 @@ ERROR cb_new(size_t, struct CodeBlock *);
 ERROR cb_copy(const struct CodeBlock, struct CodeBlock *);
 ERROR cb_append(struct CodeBlock *, const struct Token);
 // no cb_push_to(CodeBlock, TokenStack) b/c that's in Runnable
-// TODO all the array functions, too
 ERROR cb_insert(struct CodeBlock *, size_t, struct Token);
 ERROR cb_remove(struct CodeBlock *, size_t);
 ERROR cb_prepend(struct CodeBlock *, struct Token);

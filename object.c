@@ -51,7 +51,6 @@ ERROR ctno_dynamic(struct PropMap pm, struct MethodMap *methods,
 }
 
 ERROR ctno_copy(const struct Object copying, struct Object *into) {
-    // TODO add ctno_copy to tests
     if (mm_claim(copying.methods) != NO_ERROR) return CTNO_COPY_CLAIM_FAIL;
     struct Object ret = (struct Object) {
             .is_literal = copying.is_literal,

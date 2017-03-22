@@ -1,4 +1,4 @@
-Concaten v0.5.0
+Concaten v0.5.1
 ===============
 
 Concaten is a concatenative, stack-based, strongly but optionally strictly
@@ -78,7 +78,7 @@ Major version `0` is pre-completion; some of the parts may be
     * [x] Change to count successes + only display totals
     * [x] Collect successes/fails in main test method; if there are failures,
       HCF and exit with error code representing failed module.
-  * [ ] Consistent error handling across all functions - 0.5.1  
+  * [x] Consistent error handling across all functions - 0.5.1  
     For each of the files listed below:
     1. Make methods return an `unsigned long` error code. If they can't
       fail, then they'll always return success.  
@@ -93,7 +93,7 @@ Major version `0` is pre-completion; some of the parts may be
     * [x] `object.h`
     * [x] `prop_map.h`
     * [x] `stringbuilder.h`
-    * [ ] `token_stack.h`
+    * [x] `token_stack.h`
     * [x] `tokenizer.h`
   * [ ] TLC for `tknr_next` - 0.5.2  
     It's currently a jumbled mess. Some careful thought will be good for it,
@@ -117,7 +117,11 @@ Major version `0` is pre-completion; some of the parts may be
       * exceptions to the "all returns must be through out params and all
         functions return `ERROR`s" rule? (e.g. `_claim`)
     * [ ] Go through the code to make sure everything abides by it.
-  * [ ] Everything in the `TODO` comments - 0.5.4  
+  * [ ] Ensure everything is unit tested - 0.5.4
+    * [x] `StringBuilder`
+    * [ ] `ctno_copy`
+    * Look for unused functions; those indicate obvious non-tests
+  * [ ] Everything in the `TODO` comments - 0.5.5  
     ...as long as it's possible to do now; i.e. doesn't require work that's
       slated for completion in a later milestone.
   * [ ] Misc. cleanup tasks
@@ -125,14 +129,10 @@ Major version `0` is pre-completion; some of the parts may be
     * [ ] Make sure `Object`s aren't accidentally getting passed around by
       value to avoid nasty GC-related bugs later
     * [ ] Ditto for `Tokenizer`s and file handle cleanup
-    * [x] Unit testing for `StringBuilder`
-    * [ ] Unit testing for `ctno_copy`
     * [ ] Implement that one Token -> Object method
     * [ ] Condense the error codes and make sure they're named consistently.
     * [ ] Nested error types? (i.e. SOME_ERROR thrown b/c SOME_OTHER_ERROR)
     * [ ] Make sure everything checks return values (where there are any)
-    * [ ] Make `PropMap`
-  * [ ] Make sure everything still works
 
 ###Upcoming milestones
 
@@ -148,6 +148,7 @@ Major version `0` is pre-completion; some of the parts may be
 * [ ] Main method - 0.8
 * [ ] Minimal standard library - 0.9  
   Words like `if`, `{`, and `puts` so we can play with the language at all.
+  * When designing/adding arrays, add the same methods to `CodeBlock`
 * [ ] Misc. required updates as needed
   * [ ] Thorough code review  
     Finding places where the code is needlessly complicated, duplicated, or
