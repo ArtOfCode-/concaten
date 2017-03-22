@@ -14,7 +14,7 @@ static const ERROR NO_ERROR = 0;
 // General errors (0-999)
 extern const ERROR USER_DEFINED_ERROR_TYPE;
 
-// CodeBlock errors (1000-1999)
+// CodeBlock error codes (1000-1999)
 extern const ERROR CB_CTOR_MALLOC_FAIL;              // 1001;
 extern const ERROR CB_COPY_MALLOC_FAIL;              // 1002;
 extern const ERROR CB_APND_EXPAND_FAIL;              // 1003;
@@ -25,9 +25,12 @@ extern const ERROR CB_RMV_BAD_IDX_FAIL;              // 1031;
 extern const ERROR CB_GET_BAD_IDX_FAIL;              // 1041;
 extern const ERROR CB_SET_BAD_IDX_FAIL;              // 1051;
 
-// DataStack errors (2000-2999)
+// DataStack error codes (2000-2999)
 extern const ERROR DST_PUSH_MALLOC_FAIL;             // 2001
 extern const ERROR DST_POP_EMPTY_FAIL;               // 2002
+
+// TokenStack error codes (3000-3999)
+extern const ERROR TST_// TODO Finish this
 
 // Object error codes (5000-5499)
 extern const ERROR CTNO_CTOR_MALLOC_FAIL;            // 5001

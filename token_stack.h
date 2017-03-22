@@ -33,14 +33,14 @@ struct TokenStack {
     bool tracking_changes;
 };
 
-struct TokenStack tst_new(const struct Tokenizer);
-bool tst_push(struct TokenStack *, const struct Token);
-bool tst_pop(struct TokenStack *, struct Token *);
-bool tst_peek(const struct TokenStack, struct Token *);
-bool tst_push_level(struct TokenStack *);
-bool tst_pop_level(struct TokenStack *);
-void tst_save_state(struct TokenStack *);
-bool tst_restore_state(struct TokenStack *);
+ERROR tst_new(const struct Tokenizer, struct TokenStack *);
+ERROR tst_push(struct TokenStack *, const struct Token);
+ERROR tst_pop(struct TokenStack *, struct Token *);
+ERROR tst_peek(const struct TokenStack, struct Token *);
+ERROR tst_push_level(struct TokenStack *);
+ERROR tst_pop_level(struct TokenStack *);
+ERROR tst_save_state(struct TokenStack *);
+ERROR tst_restore_state(struct TokenStack *);
 void tst_free(struct TokenStack *);
 
 #endif //CONCATEN_TOKEN_STACK_H

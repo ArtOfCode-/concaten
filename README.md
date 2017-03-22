@@ -123,9 +123,10 @@ Major version `0` is pre-completion; some of the parts may be
   * [ ] Misc. cleanup tasks
     * [ ] Give every type its own `.h` and `.c`
     * [ ] Make sure `Object`s aren't accidentally getting passed around by
-      value to avoid nasty GC-related bugs later.
-    * [ ] Ditto for `Tokenizer`s and file handle cleanup.
-    * [x] Unit testing for `StringBuilder`.
+      value to avoid nasty GC-related bugs later
+    * [ ] Ditto for `Tokenizer`s and file handle cleanup
+    * [x] Unit testing for `StringBuilder`
+    * [ ] Unit testing for `ctno_copy`
     * [ ] Implement that one Token -> Object method
     * [ ] Condense the error codes and make sure they're named consistently.
     * [ ] Nested error types? (i.e. SOME_ERROR thrown b/c SOME_OTHER_ERROR)
