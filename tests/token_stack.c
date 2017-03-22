@@ -21,34 +21,34 @@ struct Token gen_token(size_t num, size_t layer_num) {
 static size_t total = 0;
 static size_t successes = 0;
 
-void a_token_push(struct TokenStack *tst, struct Token pushing, bool res) {
+void a_token_push(struct TokenStack *tst, struct Token pushing, ERROR res) {
     tassert(tst_push(tst, pushing) == res,
             "unexpected result when pushing %zu %zu (%d)",
             pushing.index, pushing.line, !res);
 }
 
-void a_token_pop(struct TokenStack *tst, bool expected, size_t index, size_t line) {
+void a_token_pop(struct TokenStack *tst, ERROR expected, size_t index, size_t line) {
     struct Token popped;
-    if (!tst_pop(tst, &popped)) {
-        tassert(!expected, "no result when one was expected");
-        return;
+    ERROR err = tst_pop(tst, &popped);
+    tassert(err == expected, "got unexpected return result");
+    if (err == NO_ERROR) {
+        tassert(popped.index == index && popped.line == line,
+                "wrong element popped (%zu %zu, not %zu %zu)",
+                popped.index, popped.line, index, line);
     }
-    tassert(popped.index == index && popped.line == line,
-            "wrong element popped (%zu %zu, not %zu %zu)",
-            popped.index, popped.line, index, line);
 }
 
-void a_level_push(struct TokenStack *tst, bool expected) {
+void a_level_push(struct TokenStack *tst, ERROR expected) {
     tassert(tst_push_level(tst) == expected,
             "unexpected result when pushing level (%d)", !expected);
 }
 
-void a_level_pop(struct TokenStack *tst, bool expected) {
+void a_level_pop(struct TokenStack *tst, ERROR expected) {
     tassert(tst_pop_level(tst) == expected,
             "unexpected result when popping level (%d)\n", !expected);
 }
 
-void a_restore(struct TokenStack *tst, bool expected) {
+void a_restore(struct TokenStack *tst, ERROR expected) {
     tassert(tst_restore_state(tst) == expected,
             "unexpected result when restoring (%d)\n", !expected);
 }

@@ -15,22 +15,38 @@ static const ERROR NO_ERROR = 0;
 extern const ERROR USER_DEFINED_ERROR_TYPE;
 
 // CodeBlock error codes (1000-1999)
-extern const ERROR CB_CTOR_MALLOC_FAIL;              // 1001;
-extern const ERROR CB_COPY_MALLOC_FAIL;              // 1002;
-extern const ERROR CB_APND_EXPAND_FAIL;              // 1003;
-extern const ERROR CB_INST_BAD_IDX_FAIL;             // 1011;
-extern const ERROR CB_INST_EXPAND_FAIL;              // 1012;
-extern const ERROR CB_PREP_EXPAND_FAIL;              // 1022;
-extern const ERROR CB_RMV_BAD_IDX_FAIL;              // 1031;
-extern const ERROR CB_GET_BAD_IDX_FAIL;              // 1041;
-extern const ERROR CB_SET_BAD_IDX_FAIL;              // 1051;
+extern const ERROR CB_CTOR_MALLOC_FAIL;              // 1001
+extern const ERROR CB_COPY_MALLOC_FAIL;              // 1002
+extern const ERROR CB_APND_EXPAND_FAIL;              // 1003
+extern const ERROR CB_INST_BAD_IDX_FAIL;             // 1011
+extern const ERROR CB_INST_EXPAND_FAIL;              // 1012
+extern const ERROR CB_PREP_EXPAND_FAIL;              // 1022
+extern const ERROR CB_RMV_BAD_IDX_FAIL;              // 1031
+extern const ERROR CB_GET_BAD_IDX_FAIL;              // 1041
+extern const ERROR CB_SET_BAD_IDX_FAIL;              // 1051
 
 // DataStack error codes (2000-2999)
 extern const ERROR DST_PUSH_MALLOC_FAIL;             // 2001
 extern const ERROR DST_POP_EMPTY_FAIL;               // 2002
 
 // TokenStack error codes (3000-3999)
-extern const ERROR TST_// TODO Finish this
+extern const ERROR TST_PUSH_MALLOC_FAIL;             // 3001
+extern const ERROR TST_PUSH_SAVE_FAIL;               // 3002
+extern const ERROR TST_POP_EMPTY_FAIL;          // 3003
+extern const ERROR TST_POP_SAVE_FAIL;                // 3004
+extern const ERROR TST_PEEK_EMPTY_FAIL;              // 3005
+extern const ERROR TST_PUSH_LEVEL_MALLOC_FAIL;       // 3006
+extern const ERROR TST_PUSH_LEVEL_SAVE_FAIL;         // 3007
+extern const ERROR TST_POP_LEVEL_EMPTY_FAIL;         // 3008
+extern const ERROR TST_POP_LEVEL_SAVE_FAIL;          // 3009
+extern const ERROR TST_RSTR_NOT_SAVING_FAIL;         // 3010
+extern const ERROR TST_RSTR_POP_FAIL;                // 3011
+extern const ERROR TST_RSTR_PUSH_FAIL;               // 3012
+extern const ERROR TST_RSTR_POP_LEVEL_FAIL;          // 3013
+extern const ERROR TST_RSTR_PUSH_LEVEL_FAIL;         // 3014
+
+// ScopeStack error codes (4000-4999)
+// TODO ScopeStack errors
 
 // Object error codes (5000-5499)
 extern const ERROR CTNO_CTOR_MALLOC_FAIL;            // 5001
@@ -45,14 +61,14 @@ extern const ERROR CTNO_SET_CLAIM_FAIL;              // 5009
 extern const ERROR CTNO_CLAIM_MAX_REFCOUNT;          // 5010
 
 // Prop map error codes (5500-5749)
-extern const ERROR PM_CTOR_MALLOC_FAIL;              //  5501
-extern const ERROR PM_COPY_MALLOC_FAIL;              //  5502
-extern const ERROR PM_NESTED_REHASH_FAIL;            //  5503
-extern const ERROR PM_RH_CREATE_FAIL;                //  5504
-extern const ERROR PM_RH_BAD_SIZE_FAIL;              //  5505
-extern const ERROR PM_SET_REHASH_FAIL;               //  5508
-extern const ERROR PM_GET_NO_KEY_FAIL;               //  5509
-extern const ERROR PM_RMV_NO_KEY_FAIL;               //  5510
+extern const ERROR PM_CTOR_MALLOC_FAIL;              // 5501
+extern const ERROR PM_COPY_MALLOC_FAIL;              // 5502
+extern const ERROR PM_NESTED_REHASH_FAIL;            // 5503
+extern const ERROR PM_RH_CREATE_FAIL;                // 5504
+extern const ERROR PM_RH_BAD_SIZE_FAIL;              // 5505
+extern const ERROR PM_SET_REHASH_FAIL;               // 5508
+extern const ERROR PM_GET_NO_KEY_FAIL;               // 5509
+extern const ERROR PM_RMV_NO_KEY_FAIL;               // 5510
 
 // Method map error codes (5750-5999)
 extern const ERROR MM_CTOR_MALLOC_FAIL;              // 5751
