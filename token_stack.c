@@ -167,17 +167,25 @@ ERROR tst_restore_state(struct TokenStack *this) {
         // errors are determined by the action we're trying to reverse
         switch (todo->type) {
             case TSCN_TOKEN_POP:
-                if (tst_push(this, todo->data.popped) != NO_ERROR) return TST_RSTR_POP_FAIL;
+                if (tst_push(this, todo->data.popped) != NO_ERROR) {
+                    return TST_RSTR_POP_FAIL;
+                }
                 break;
             case TSCN_TOKEN_PUSH:
-                if (tst_pop(this, NULL) != NO_ERROR) return TST_RSTR_PUSH_FAIL;
+                if (tst_pop(this, NULL) != NO_ERROR) {
+                    return TST_RSTR_PUSH_FAIL;
+                }
                 break;
             case TSCN_LEVEL_POP:
-                if (tst_push_level(this) != NO_ERROR) return TST_RSTR_POP_LEVEL_FAIL;
+                if (tst_push_level(this) != NO_ERROR) {
+                    return TST_RSTR_POP_LEVEL_FAIL;
+                }
                 this->level_head->token_head = todo->data.popped_head;
                 break;
             case TSCN_LEVEL_PUSH:
-                if (tst_pop_level(this) != NO_ERROR) return TST_RSTR_PUSH_LEVEL_FAIL;
+                if (tst_pop_level(this) != NO_ERROR) {
+                    return TST_RSTR_PUSH_LEVEL_FAIL;
+                }
                 break;
         }
         struct TS_ChangeNode *next = todo->prev;

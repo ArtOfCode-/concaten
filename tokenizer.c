@@ -590,7 +590,7 @@ ERROR tknr_next(struct Tokenizer *from, struct Token *out) {
     if (next_char == ':') {
         ret.type = TKN_IDENTIFIER;
     } else if (next_char == '-') {
-        err = sb_append(&raw, peek_char(from));
+        err = sb_append(&raw, next_char);
         if (err != NO_ERROR) goto error;
         err = read_char(from, NULL);
         if (err != NO_ERROR) goto error;

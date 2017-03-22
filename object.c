@@ -101,12 +101,15 @@ ERROR ctno_set_prop(struct Object *to, const char *key,
     }
     if (ctno_claim(adding) != NO_ERROR) return CTNO_SET_CLAIM_FAIL;
     if (check_for_cycles(to, adding)) return CTNO_SET_CYCLE_FAIL;
-    if (pm_set(&to->data.properties, key, adding) != NO_ERROR) return CTNO_SET_ADD_FAIL;
+    if (pm_set(&to->data.properties, key, adding) != NO_ERROR) {
+        return CTNO_SET_ADD_FAIL;
+    }
     ctno_free(old);
     return NO_ERROR;
 }
 
-ERROR ctno_get_prop(const struct Object to, const char *key, struct Object *into) {
+ERROR ctno_get_prop(const struct Object to, const char *key,
+                    struct Object *into) {
     if (to.is_literal) return CTNO_GET_LITERAL_FAIL;
     struct Object *got;
     ERROR err = pm_get(to.data.properties, key, &got);
