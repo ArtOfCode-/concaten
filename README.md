@@ -91,7 +91,7 @@ Major version `0` is pre-completion; some of the parts may be
     * [x] `data_stack.h`
     * [x] `method_map.h`
     * [x] `object.h`
-    * [ ] `prop_map.h`
+    * [x] `prop_map.h`
     * [x] `stringbuilder.h`
     * [ ] `token_stack.h`
     * [x] `tokenizer.h`

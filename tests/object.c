@@ -50,11 +50,11 @@ struct TestResult test_object() {
             "direct cycles allowed");
     struct Object t4;
     struct PropMap t4pm;
-    tassert(pm_new(8, &t4pm) == NO_ERROR, "failed to initialize propmap")
+    tassert(pm_new(8, &t4pm) == NO_ERROR, "failed to initialize propmap");
     tassert(ctno_dynamic(t4pm, NULL, &t4) == NO_ERROR,
             "failed to initialize t4");
     tassert(ctno_set_prop(&t4, "self2", &t3) == NO_ERROR,
-            "failed intermediary step");
+            "failed intermediary add");
     tassert(ctno_set_prop(&t3, "self", &t4) == CTNO_SET_CYCLE_FAIL,
             "indirect cycles allowed");
     ctno_free(&t4);

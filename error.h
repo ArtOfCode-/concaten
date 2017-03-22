@@ -4,7 +4,7 @@
 typedef unsigned long ERROR;
 #define EFMT "%lu"
 
-extern const ERROR NO_ERROR = 0;
+static const ERROR NO_ERROR = 0;
 
 /*-------------------*
  | Core class errors |

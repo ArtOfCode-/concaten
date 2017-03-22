@@ -4,7 +4,7 @@
 #include "../object.h"
 
 #define a_set(key, val) \
-    tassert(pm_set(&pm, key, val), "failed to set")
+    tassert(pm_set(&pm, key, val) == NO_ERROR, "failed to set")
 
 
 struct TestResult test_prop_map() {
@@ -27,10 +27,11 @@ struct TestResult test_prop_map() {
     tassert(pm_is_value(pm, &val), "how the hell, it's been added 4 times");
     tassert(pm_get(pm, "z", &ret) == NO_ERROR, "failed to get existing item");
     tassert(ret == &val, "got wrong value");
-    tassert(pm_get(pm, "a", &ret) == , "got by nonexistent key");
+    tassert(pm_get(pm, "a", &ret) == PM_GET_NO_KEY_FAIL, "got fake key");
     tassert(!pm_is_key(pm, "a"), "found nonexistent key");
     a_set("00000000", &val);
-    tassert(pm_get(pm, "00000000") == &val, "got wrong value");
+    tassert(pm_get(pm, "00000000", &ret) == NO_ERROR, "failed to get");
+    tassert(ret == &val, "got wrong value");
     a_set("0000000012345678", &val);
     a_set("12345678", &val);
     a_set("abc4567887654321", &val);
@@ -43,10 +44,11 @@ struct TestResult test_prop_map() {
     a_set("ac345678", &val);
     a_set("ad345678", &val);
     tassert(pm_is_value(pm, &val), "failed to find existing value");
-    tassert((ret = pm_get(pm, "z")), "failed to get existing item");
+    tassert(pm_get(pm, "z", &ret) == NO_ERROR, "failed to get existing item");
+    tassert(&val == ret, "failed to get correct value");
     tassert(ret == &val, "got wrong value");
-    tassert(pm_remove(&pm, "z"), "failed to remove");
-    tassert(!pm_get(pm, "z"), "got by removed key");
+    tassert(pm_remove(&pm, "z") == NO_ERROR, "failed to remove");
+    tassert(pm_get(pm, "z", &ret) == PM_GET_NO_KEY_FAIL, "got removed key");
     tassert(!pm_is_key(pm, "z"), "found removed key");
     tassert(pm_is_value(pm, &val), "lost value after removal");
     pm_free(&pm);
