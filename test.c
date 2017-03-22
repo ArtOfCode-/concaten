@@ -15,13 +15,13 @@
 
 int main() {
     size_t idx = 0;
-    do_test(stringbuilder);
-    do_test(tokenizer);
-    do_test(prop_map);
+    do_test(code_block);
+    do_test(data_stack);
     do_test(method_map);
     do_test(object);
-    do_test(data_stack);
+    do_test(prop_map);
+    do_test(stringbuilder);
     do_test(token_stack);
-    do_test(code_block);
+    do_test(tokenizer);
     puts("Done with all tests");
 }
