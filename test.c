@@ -2,7 +2,6 @@
 
 #include <sys/time.h>
 #include <stdbool.h>
-#include <w32api/_timeval.h>
 
 bool __test(struct TestResult (*testf)(), const char *test_name) {
     struct timeval beg, end;
