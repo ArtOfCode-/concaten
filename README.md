@@ -108,7 +108,7 @@ Major version `0` is pre-completion; some of the parts may be
       based on that.
     * [x] Actually write it.
     * [ ] Go through the code to make sure everything abides by it.
-      * [ ] `tests/code_block.c`
+      * [x] `tests/code_block.c`
       * [ ] `tests/data_stack.c`
       * [ ] `tests/method_map.c`
       * [ ] `tests/object.c`
