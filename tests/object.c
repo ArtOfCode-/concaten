@@ -1,5 +1,5 @@
 #include <string.h>
-#include "../tests.h"
+#include "../test.h"
 
 #include "../object.h"
 

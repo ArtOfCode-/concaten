@@ -1,4 +1,4 @@
-#include "../tests.h"
+#include "../test.h"
 
 #include "../prop_map.h"
 #include "../object.h"
