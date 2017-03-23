@@ -16,11 +16,13 @@
       `FooType *f = malloc(sizeof(FooType))`
     * When replacing something, create the replacement in a variable, *then*
       copy it into its destination, rather than creating it in the destination
-      and having to copy the original back.
+      and having to copy the original back if you need to revert.
     * Always perform `NULL` checks on passed-in pointers. If `NULL` shouldn't
       have been passed, return an error.
       * out params, in constructors or elsewhere, should never be `NULL`, so
         return an error immediately if `NULL` is passed in.
+    * Use a single error handler if possible; whenever an error occurs, set
+      the error to return and `goto error_handler`.
 3. Use standard library conventions where possible.
     * `void foo_free(Foo *f)` will just silently return immediately if `NULL`
       is passed in.
@@ -41,4 +43,6 @@
   * Out parameters are always last.
 * Open braces on the same line as their associated statement/expression/etc.
 * Lines are no more than 79 actual characters (80 including LF newline)
+* One space around binary operators, none between a unary operator and its
+  operand.
 * 
