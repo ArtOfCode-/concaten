@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 3.6)
 project(concaten C)
 
 set(CMAKE_C_STANDARD 11)
-set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wall -Werror")
+set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wall -Wextra -Werror")
 
 set(SOURCE_FILES
         tokenizer.c stringbuilder.c method_map.c prop_map.c object.c
