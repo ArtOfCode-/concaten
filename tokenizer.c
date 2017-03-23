@@ -327,8 +327,8 @@ ERROR add_while_in_range(struct Tokenizer *from, struct StringBuilder *raw,
 
 #define STARTING_RAW_MEM 16
 
-ERROR get_string(struct Tokenizer *from, char *next_char,
-                struct Token partial, struct Token *out) {
+ERROR get_string(struct Tokenizer *from, struct Token partial,
+                 struct Token *out) {
     ERROR err;
     struct StringBuilder raw;
     if (sb_new(STARTING_RAW_MEM, &raw) != NO_ERROR) {
@@ -343,8 +343,8 @@ ERROR get_string(struct Tokenizer *from, char *next_char,
             err = TKNR_SYN_UNEXPECTED_END_FAIL;
             goto error;
         }
-        *next_char = peek_char(from);
-        if (*next_char == '\\') {
+        char next_char = peek_char(from);
+        if (next_char == '\\') {
             err = sb_append(&raw, peek_char(from));
             if (err != NO_ERROR) goto error;
             err = read_char(from, NULL);
@@ -355,11 +355,11 @@ ERROR get_string(struct Tokenizer *from, char *next_char,
             err = read_char(from, NULL);
             if (err != NO_ERROR) goto error;
         }
-        if (*next_char == '\n') {
+        if (next_char == '\n') {
             err = TKNR_SYN_STR_MULTILINE_FAIL;
             goto error;
         }
-        if (*next_char == '"') {
+        if (next_char == '"') {
             // add the quote
             err = sb_append(&raw, peek_char(from));
             if (err != NO_ERROR) goto error;
@@ -385,10 +385,11 @@ error:;
     return err;
 }
 
-ERROR get_number(struct Tokenizer *from, char *next_char, struct Token partial,
-                bool neg, struct Token *out) {
+ERROR get_number(struct Tokenizer *from, struct Token partial, bool neg,
+                 struct Token *out) {
     ERROR err;
     struct StringBuilder raw;
+    char next_char = peek_char(from);
     if (sb_new(STARTING_RAW_MEM, &raw) != NO_ERROR) {
         err = TKNR_NT_NEW_SB_FAIL;
         goto error;
@@ -401,17 +402,17 @@ ERROR get_number(struct Tokenizer *from, char *next_char, struct Token partial,
     enum {
         B2, B8, B10, B16
     } base = B10;
-    if (*next_char == '0') {
+    if (next_char == '0') {
         err = sb_append(&raw, peek_char(from));
         if (err != NO_ERROR) goto error;
         err = read_char(from, NULL);
         if (err != NO_ERROR) goto error;
-        *next_char = peek_char(from);
-        if (*next_char == 'x') {
+        next_char = peek_char(from);
+        if (next_char == 'x') {
             base = B16;
-        } else if (*next_char == 'o') {
+        } else if (next_char == 'o') {
             base = B8;
-        } else if (*next_char == 'b') {
+        } else if (next_char == 'b') {
             base = B2;
         }
         err = sb_append(&raw, peek_char(from));
@@ -421,40 +422,40 @@ ERROR get_number(struct Tokenizer *from, char *next_char, struct Token partial,
     }
     bool decimal = false;
     if (base == B16) {
-        err = add_while_in_ranges(from, &raw, next_char, "0aA", "9fF", 3);
+        err = add_while_in_ranges(from, &raw, &next_char, "0aA", "9fF", 3);
         if (err != NO_ERROR) goto error;
     } else if (base == B8) {
-        err = add_while_in_range(from, &raw, next_char, '0', '7');
+        err = add_while_in_range(from, &raw, &next_char, '0', '7');
         if (err != NO_ERROR) goto error;
     } else if (base == B2) {
-        err = add_while_in_range(from, &raw, next_char, '0', '1');
+        err = add_while_in_range(from, &raw, &next_char, '0', '1');
         if (err != NO_ERROR) goto error;
     } else if (base == B10) {
         // add decimal digits
-        err = add_while_in_range(from, &raw, next_char, '0', '9');
+        err = add_while_in_range(from, &raw, &next_char, '0', '9');
         if (err != NO_ERROR) goto error;
         // un punto
-        if (*next_char == '.') {
+        if (next_char == '.') {
             decimal = true;
             err = sb_append(&raw, peek_char(from));
             if (err != NO_ERROR) goto error;
             err = read_char(from, NULL);
             if (err != NO_ERROR) goto error;
-            err = add_while_in_range(from, &raw, next_char, '0', '9');
+            err = add_while_in_range(from, &raw, &next_char, '0', '9');
             if (err != NO_ERROR) goto error;
         }
         // exponents
-        if (*next_char == 'e') {
+        if (next_char == 'e') {
             decimal = true;
             err = sb_append(&raw, peek_char(from));
             if (err != NO_ERROR) goto error;
             err = read_char(from, NULL);
             if (err != NO_ERROR) goto error;
-            err = add_while_in_range(from, &raw, next_char, '0', '9');
+            err = add_while_in_range(from, &raw, &next_char, '0', '9');
             if (err != NO_ERROR) goto error;
         }
     }
-    if (!is_ws(*next_char) && !tknr_end(from)) {
+    if (!is_ws(next_char) && !tknr_end(from)) {
         err = TKNR_SYN_NUM_ILLEGAL_DIGIT_FAIL;
         goto error;
     }
@@ -578,9 +579,9 @@ ERROR tknr_next(struct Tokenizer *from, struct Token *out) {
     strcpy(ret.origin, from->origin);
     char next_char = peek_char(from);
     if (next_char == '"') { // single-line string
-        return get_string(from, &next_char, ret, out);
+        return get_string(from, ret, out);
     } else if ('0' <= next_char && next_char <= '9') {
-        return get_number(from, &next_char, ret, false, out);
+        return get_number(from, ret, false, out);
     }
     struct StringBuilder raw;
     if (sb_new(STARTING_RAW_MEM, &raw) != NO_ERROR) {
@@ -596,7 +597,7 @@ ERROR tknr_next(struct Tokenizer *from, struct Token *out) {
         if (err != NO_ERROR) goto error;
         next_char = peek_char(from);
         if ('0' <= next_char && next_char <= '9') {
-            return get_number(from, &next_char, ret, true, out);
+            return get_number(from, ret, true, out);
         }
     } else if (next_char == 'r') {
         err = sb_append(&raw, peek_char(from));
