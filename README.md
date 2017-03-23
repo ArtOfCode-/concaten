@@ -106,18 +106,36 @@ Major version `0` is pre-completion; some of the parts may be
   * [ ] Write a code style guide 0.5.3  
     Start by getting down the ideas, see what patterns emerge, categorize
       based on that.
-    * Topics to cover:
-      * `foo = malloc(sizeof(*foo))` vs. `sizeof(FooType)`
-      * save old, build in `foo->bar` or build in variable, copy to `foo->bar`
-      * continuation line indent for function calls
-      * check for `NULL` in out params & ignore, or sometimes error?
-      * `free`s return error/success? (`free()` doesn't)
-      * `free`s check for null, skip if it is?
-      * null-check on "this"-equivalent?
-      * Order of parameters (esp. out params, and in ctors)
-      * exceptions to the "all returns must be through out params and all
-        functions return `ERROR`s" rule? (e.g. `_claim`)
+    * [x] Actually write it.
     * [ ] Go through the code to make sure everything abides by it.
+      * [ ] `tests/code_block.c`
+      * [ ] `tests/data_stack.c`
+      * [ ] `tests/method_map.c`
+      * [ ] `tests/object.c`
+      * [ ] `tests/prop_map.c`
+      * [ ] `tests/stringbuilder.c`
+      * [ ] `tests/token_stack.c`
+      * [ ] `tests/tokenizer.c`
+      * [ ] `main.c`
+      * [ ] `error.h`
+      * [ ] `code_block.c`
+      * [ ] `code_block.h`
+      * [ ] `data_stack.c`
+      * [ ] `data_stack.h`
+      * [ ] `method_map.c`
+      * [ ] `method_map.h`
+      * [ ] `object.c`
+      * [ ] `object.h`
+      * [ ] `prop_map.c`
+      * [ ] `prop_map.h`
+      * [ ] `stringbuilder.c`
+      * [ ] `stringbuilder.h`
+      * [ ] `token_stack.c`
+      * [ ] `token_stack.h`
+      * [ ] `tokenizer.c`
+      * [ ] `tokenizer.h`
+      * [ ] `test.c`
+      * [ ] `test.h`
   * [ ] Ensure everything is unit tested - 0.5.4
     * [x] `StringBuilder`
     * [ ] `ctno_copy`
