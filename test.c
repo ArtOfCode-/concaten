@@ -1,17 +1,29 @@
 #include "tests.h"
 
-#define do_test(module_name) do { \
-    ++idx; \
-    printf("Testing %-19s", str(module_name)"..."); \
-    struct TestResult tr = test_##module_name(); \
-    if (tr.successes != tr.total) { \
-        size_t fails = tr.total - tr.successes; \
-        printf("\n%zu/%zu failed.\n", fails, tr.total); \
-        return idx; \
-    } else { \
-        printf(" %3zu successes.\n", tr.total); \
-    } \
-} while(0)
+#include <sys/time.h>
+#include <stdbool.h>
+#include <w32api/_timeval.h>
+
+bool __test(struct TestResult (*testf)(), const char *test_name) {
+    struct timeval beg, end;
+    printf("Testing %-19s", test_name);
+    gettimeofday(&beg, NULL);
+    struct TestResult tr = testf();
+    gettimeofday(&end, NULL);
+    if (tr.successes != tr.total) {
+        size_t fails = tr.total - tr.successes;
+        printf("\n%zu failed in %zu us.\n", fails, end.tv_usec - beg.tv_usec);
+        return false;
+    } else {
+        printf("%3zu succeeded in %3zu us.\n", tr.successes,
+               end.tv_usec - beg.tv_usec);
+        return true;
+    }
+}
+
+#define do_test(module_name) \
+    if (__test(test_##module_name, #module_name "...")) ++idx; \
+    else return idx;
 
 int main() {
     size_t idx = 0;
