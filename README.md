@@ -99,9 +99,9 @@ Major version `0` is pre-completion; some of the parts may be
     It's currently a jumbled mess. Some careful thought will be good for it,
       to simplify it as much as possible. FSA may be useful, as well as taking
       a peek at FORTH and Factor's tokenizers.
-    * [ ] We don't need to take `char *next_char`. That's a holdover.
-    * [ ] Use `unsigned char` instead of `char`.
-    * Would it be clearer to use `skip_char` instead of `read_char`?
+    * [x] We don't need to take `char *next_char`. That's a holdover.
+    * ~~[ ] Use `unsigned char` instead of `char`.~~
+    * [ ] Use `skip_char` instead of `read_char`
   * [ ] Write a code style guide 0.5.3  
     Start by getting down the ideas, see what patterns emerge, categorize
       based on that.
