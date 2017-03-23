@@ -29,9 +29,17 @@
 
 ###Style
 * Indent with spaces, and spaces only.
+* Indent by 4 * [indent level] spaces (plus any additions)
+* After a `{`, increase the indent level by 1.
+After a `}`, decrease it by 1.
 * When continuing a line:
-  * If continuing a parameter list or parenthetical expression, align with the
-    innermost opening parenthesis.
+  * If continuing a struct initialization (i.e. `(A) { .a = 1 }`), each line
+    is indented one level beyond the braces.
+  * If continuing a parameter list or parenthetical expression:
+    * If the expression begins directly after a `(`, align with the innermost
+      opening parenthesis.
+    * If it's on its own line, indent that line and all subsequent ones two
+      additional levels compared to the enclosing indentation
   * If continuing an expression that's not wrapped in parentheses, align with
     the first character of the expression.
 * When defining a function:
