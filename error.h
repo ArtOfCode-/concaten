@@ -31,7 +31,7 @@ extern const ERROR DST_POP_EMPTY_FAIL;               // 2002
 // TokenStack error codes (3000-3999)
 extern const ERROR TST_PUSH_MALLOC_FAIL;             // 3001
 extern const ERROR TST_PUSH_SAVE_FAIL;               // 3002
-extern const ERROR TST_POP_EMPTY_FAIL;          // 3003
+extern const ERROR TST_POP_EMPTY_FAIL;               // 3003
 extern const ERROR TST_POP_SAVE_FAIL;                // 3004
 extern const ERROR TST_PEEK_EMPTY_FAIL;              // 3005
 extern const ERROR TST_PUSH_LEVEL_MALLOC_FAIL;       // 3006
