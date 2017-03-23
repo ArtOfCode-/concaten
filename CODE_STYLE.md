@@ -31,7 +31,9 @@
 * Indent with spaces, and spaces only.
 * Indent by 4 * [indent level] spaces (plus any additions)
 * After a `{`, increase the indent level by 1.
-After a `}`, decrease it by 1.
+* After a `}`, decrease it by 1.
+* Preprocessor directives have no indent on their first line. Any lines after
+  the first are indented by one level
 * When continuing a line:
   * If continuing a struct initialization (i.e. `(A) { .a = 1 }`), each line
     is indented one level beyond the braces.
