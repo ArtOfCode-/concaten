@@ -149,7 +149,8 @@ Major version `0` is pre-completion; some of the parts may be
     * [ ] Make sure `Object`s aren't accidentally getting passed around by
       value to avoid nasty GC-related bugs later
     * [ ] Ditto for `Tokenizer`s and file handle cleanup
-    * [ ] Implement that one Token -> Object method
+    * [ ] Implement that one Token -> Object method (forgot to do this in
+      0.1)
     * [ ] Condense the error codes and make sure they're named consistently.
     * [ ] Nested error types? (i.e. SOME_ERROR thrown b/c SOME_OTHER_ERROR)
     * [ ] Make sure everything checks return values (where there are any)
