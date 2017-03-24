@@ -10,7 +10,7 @@ set(TEST_FLAGS "")
 set(TEST_LIBS)
 
 # Used by things like gperftools, so I figure I might as well drop it in.
-set(PROFILE_FLAGS "")
+set(PROFILE_FLAGS "-g")
 set(PROFILE_LIBS)
 
 set(NORMAL_SRCS
@@ -23,19 +23,19 @@ set(TEST_SRCS
 
 add_executable(concaten main.c ${NORMAL_SRCS})
 set_target_properties(concaten PROPERTIES COMPILE_FLAGS
-        ${NORMAL_FLAGS})
+        "${NORMAL_FLAGS}")
 target_link_libraries(concaten ${NORMAL_LIBS})
 add_executable(tester test.c ${NORMAL_SRCS} ${TEST_SRCS})
 set_target_properties(concaten PROPERTIES COMPILE_FLAGS
-        ${NORMAL_FLAGS} ${TEST_FLAGS})
+        "${NORMAL_FLAGS} ${TEST_FLAGS}")
 target_link_libraries(tester ${NORMAL_LIBS} ${TEST_LIBS})
 
 add_executable(concaten_profile main.c ${NORMAL_SRCS})
 set_target_properties(concaten PROPERTIES COMPILE_FLAGS
-        ${NORMAL_FLAGS} ${PROFILE_FLAGS})
+        "${NORMAL_FLAGS} ${PROFILE_FLAGS}")
 target_link_libraries(concaten_profile ${NORMAL_LIBS} ${PROFILE_LIBS})
 add_executable(tester_profile test.c ${NORMAL_SRCS} ${TEST_SRCS})
 set_target_properties(concaten PROPERTIES COMPILE_FLAGS
-        ${NORMAL_FLAGS} ${TEST_FLAGS} ${PROFILE_FLAGS})
+        "${NORMAL_FLAGS} ${TEST_FLAGS} ${PROFILE_FLAGS}")
 target_link_libraries(tester_profile
         ${NORMAL_LIBS} ${TEST_LIBS} ${PROFILE_LIBS})
