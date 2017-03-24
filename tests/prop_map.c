@@ -6,7 +6,6 @@
 #define a_set(key, val) \
     tassert(pm_set(&pm, key, val) == NO_ERROR, "failed to set")
 
-
 struct TestResult test_prop_map() {
     size_t successes = 0, total = 0;
     struct PropMap pm;

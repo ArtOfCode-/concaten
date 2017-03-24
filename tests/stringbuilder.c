@@ -1,8 +1,8 @@
 #include "../test.h"
 
-#include "../stringbuilder.h"
-
 #include <string.h>
+
+#include "../stringbuilder.h"
 
 struct TestResult test_stringbuilder() {
     size_t total = 0, successes = 0;

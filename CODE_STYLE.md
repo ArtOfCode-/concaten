@@ -27,7 +27,7 @@
     * `void foo_free(Foo *f)` will just silently return immediately if `NULL`
       is passed in.
 
-###Style
+###Misc. Details
 * Indent with spaces, and spaces only.
 * Indent by 4 * [indent level] spaces (plus any additions)
 * After a `{`, increase the indent level by 1.
@@ -41,7 +41,7 @@
     * If the expression begins directly after a `(`, align with the innermost
       opening parenthesis.
     * If it's on its own line, indent that line and all subsequent ones two
-      additional levels compared to the enclosing indentation
+      additional levels more than the enclosing indentation.
   * If continuing an expression that's not wrapped in parentheses, align with
     the first character of the expression.
 * When defining a function:
@@ -55,4 +55,8 @@
 * Lines are no more than 79 actual characters (80 including LF newline)
 * One space around binary operators, none between a unary operator and its
   operand.
-* 
+* Include a source file's `.h` at the very beginning, then standard headers
+  (`<>`), then mine (`""`).
+* Include headers as little as possible -- if `<string.h>` is only needed for
+  something's implementation, include it only in the relevant source file, not
+  the header.

@@ -5,10 +5,26 @@
 #define test_f(num) \
     void f##num(int i, char *s) { printf("f" str(num) ": %d; %s\n", i, s); }
 
-test_f(0)  test_f(1)  test_f(2)  test_f(3)  test_f(4)
-test_f(5)  test_f(6)  test_f(7)  test_f(8)  test_f(9)
-test_f(10) test_f(11) test_f(12) test_f(13) test_f(14)
-test_f(15) test_f(16) test_f(17) test_f(18) test_f(19)
+test_f(0)
+test_f(1)
+test_f(2)
+test_f(3)
+test_f(4)
+test_f(5)
+test_f(6)
+test_f(7)
+test_f(8)
+test_f(9)
+test_f(10)
+test_f(11)
+test_f(12)
+test_f(13)
+test_f(14)
+test_f(15)
+test_f(16)
+test_f(17)
+test_f(18)
+test_f(19)
 
 #define a_set(key, value) \
     tassert(mm_set(&mm, key, value) == NO_ERROR, "assignment failed");

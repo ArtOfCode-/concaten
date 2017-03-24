@@ -109,13 +109,13 @@ Major version `0` is pre-completion; some of the parts may be
     * [x] Actually write it.
     * [ ] Go through the code to make sure everything abides by it.
       * [x] `tests/code_block.c`
-      * [ ] `tests/data_stack.c`
-      * [ ] `tests/method_map.c`
-      * [ ] `tests/object.c`
-      * [ ] `tests/prop_map.c`
-      * [ ] `tests/stringbuilder.c`
-      * [ ] `tests/token_stack.c`
-      * [ ] `tests/tokenizer.c`
+      * [x] `tests/data_stack.c`
+      * [x] `tests/method_map.c`
+      * [x] `tests/object.c`
+      * [x] `tests/prop_map.c`
+      * [x] `tests/stringbuilder.c`
+      * [x] `tests/token_stack.c`
+      * [x] `tests/tokenizer.c`
       * [ ] `main.c`
       * [ ] `error.h`
       * [ ] `code_block.c`
