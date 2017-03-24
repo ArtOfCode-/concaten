@@ -1,5 +1,4 @@
-Concaten v0.5.2
-===============
+# Concaten v0.5.2
 
 Concaten is a concatenative, stack-based, strongly but optionally strictly
 typed, hyperdynamic, garbage-collected, interpreted programming language. In
@@ -70,7 +69,7 @@ Major version `0` is pre-completion; some of the parts may be
 
 ---
 
-###Current milestone
+### Current milestone
 
 #### Intermediary refactor - 0.5
 
@@ -159,7 +158,7 @@ Major version `0` is pre-completion; some of the parts may be
     * [ ] Nested error types? (i.e. SOME_ERROR thrown b/c SOME_OTHER_ERROR)
     * [ ] Make sure everything checks return values (where there are any)
 
-###Upcoming milestones
+### Upcoming milestones
 
 * [ ] `runnable.h` - 0.6  
   A combination object so I can either define things in Concaten, through
@@ -241,7 +240,7 @@ Major version `0` is pre-completion; some of the parts may be
     of Unicode codepoints.  
   Also, support Unicode in string-modification/i18n modules.
 
-###Previous milestones
+### Previous milestones
 
 * [x] `tokenizer.h` - 0.0  
   Converts a stream of characters into a stream of tokens. That way, the
