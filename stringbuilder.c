@@ -52,17 +52,12 @@ ERROR sb_append(struct StringBuilder *to, char c) {
 }
 
 ERROR sb_into_string(struct StringBuilder *sb, char **into) {
-    char *ret = realloc(sb->mem, sb->count + 1);
-    if (!ret) {
-        return SB_TS_REALLOC_FAIL;
-    }
-    ret[sb->count] = 0;
+    *into = sb->mem;
     *sb = (struct StringBuilder) {
             .mem = NULL,
             .cap = 0,
             .count = 0
     };
-    *into = ret;
     return NO_ERROR;
 }
 
