@@ -10,7 +10,7 @@ set(TEST_FLAGS "")
 set(TEST_LIBS)
 
 # Used by things like gperftools, so I figure I might as well drop it in.
-set(PROFILE_FLAGS "-g")
+set(PROFILE_FLAGS "-static -g")
 set(PROFILE_LIBS)
 
 set(NORMAL_SRCS
