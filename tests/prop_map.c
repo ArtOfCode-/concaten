@@ -1,11 +1,10 @@
-#include "../tests.h"
+#include "../test.h"
 
 #include "../prop_map.h"
 #include "../object.h"
 
 #define a_set(key, val) \
     tassert(pm_set(&pm, key, val) == NO_ERROR, "failed to set")
-
 
 struct TestResult test_prop_map() {
     size_t successes = 0, total = 0;

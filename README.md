@@ -1,5 +1,4 @@
-Concaten v0.5.1
-===============
+# Concaten v0.5.2
 
 Concaten is a concatenative, stack-based, strongly but optionally strictly
 typed, hyperdynamic, garbage-collected, interpreted programming language. In
@@ -51,6 +50,11 @@ For an example of how the language will probably look, see `test.ctn`.
   specced out, actual usage might reveal things that I didn't consider, and
   therefore need to add in, remove, or change.
 
+If you want to contribute, awesome! Be sure to check out `CODE_STYLE.md` and
+`CONTRIBUTING.md`; they sketch out how I'd like the code to look and what the
+process (roughly) looks like, so that I can keep things as organized as they
+can be.
+
 ---
 
 **A note about versions**: My format is `major.milestone`, where each is
@@ -65,7 +69,7 @@ Major version `0` is pre-completion; some of the parts may be
 
 ---
 
-###Current milestone
+### Current milestone
 
 #### Intermediary refactor - 0.5
 
@@ -95,31 +99,51 @@ Major version `0` is pre-completion; some of the parts may be
     * [x] `stringbuilder.h`
     * [x] `token_stack.h`
     * [x] `tokenizer.h`
-  * [ ] TLC for `tknr_next` - 0.5.2  
+  * [x] TLC for `tknr_next` - 0.5.2  
     It's currently a jumbled mess. Some careful thought will be good for it,
       to simplify it as much as possible. FSA may be useful, as well as taking
       a peek at FORTH and Factor's tokenizers.
     * [x] We don't need to take `char *next_char`. That's a holdover.
     * ~~[ ] Use `unsigned char` instead of `char`.~~
-    * [ ] Use `skip_char` instead of `read_char`
+    * [x] Use `skip_char` instead of `read_char`  
+    It's pretty much unsalvageable :( Oh well.
   * [ ] Write a code style guide 0.5.3  
     Start by getting down the ideas, see what patterns emerge, categorize
       based on that.
-    * Topics to cover:
-      * `foo = malloc(sizeof(*foo))` vs. `sizeof(FooType)`
-      * save old, build in `foo->bar` or build in variable, copy to `foo->bar`
-      * continuation line indent for function calls
-      * check for `NULL` in out params & ignore, or sometimes error?
-      * `free`s return error/success? (`free()` doesn't)
-      * `free`s check for null, skip if it is?
-      * null-check on "this"-equivalent?
-      * Order of parameters (esp. out params, and in ctors)
-      * exceptions to the "all returns must be through out params and all
-        functions return `ERROR`s" rule? (e.g. `_claim`)
+    * [x] Actually write it.
     * [ ] Go through the code to make sure everything abides by it.
+      * [x] `tests/code_block.c`
+      * [x] `tests/data_stack.c`
+      * [x] `tests/method_map.c`
+      * [x] `tests/object.c`
+      * [x] `tests/prop_map.c`
+      * [x] `tests/stringbuilder.c`
+      * [x] `tests/token_stack.c`
+      * [x] `tests/tokenizer.c`
+      * [ ] `main.c`
+      * [ ] `error.h`
+      * [ ] `code_block.c`
+      * [ ] `code_block.h`
+      * [ ] `data_stack.c`
+      * [ ] `data_stack.h`
+      * [ ] `method_map.c`
+      * [ ] `method_map.h`
+      * [ ] `object.c`
+      * [ ] `object.h`
+      * [ ] `prop_map.c`
+      * [ ] `prop_map.h`
+      * [ ] `stringbuilder.c`
+      * [ ] `stringbuilder.h`
+      * [ ] `token_stack.c`
+      * [ ] `token_stack.h`
+      * [ ] `tokenizer.c`
+      * [ ] `tokenizer.h`
+      * [ ] `test.c`
+      * [ ] `test.h`
   * [ ] Ensure everything is unit tested - 0.5.4
     * [x] `StringBuilder`
     * [ ] `ctno_copy`
+    * [ ] `tst_peek`?
     * Look for unused functions; those indicate obvious non-tests
   * [ ] Everything in the `TODO` comments - 0.5.5  
     ...as long as it's possible to do now; i.e. doesn't require work that's
@@ -129,12 +153,13 @@ Major version `0` is pre-completion; some of the parts may be
     * [ ] Make sure `Object`s aren't accidentally getting passed around by
       value to avoid nasty GC-related bugs later
     * [ ] Ditto for `Tokenizer`s and file handle cleanup
-    * [ ] Implement that one Token -> Object method
+    * [ ] Implement that one Token -> Object method (forgot to do this in
+      0.1)
     * [ ] Condense the error codes and make sure they're named consistently.
     * [ ] Nested error types? (i.e. SOME_ERROR thrown b/c SOME_OTHER_ERROR)
     * [ ] Make sure everything checks return values (where there are any)
 
-###Upcoming milestones
+### Upcoming milestones
 
 * [ ] `runnable.h` - 0.6  
   A combination object so I can either define things in Concaten, through
@@ -216,7 +241,7 @@ Major version `0` is pre-completion; some of the parts may be
     of Unicode codepoints.  
   Also, support Unicode in string-modification/i18n modules.
 
-###Previous milestones
+### Previous milestones
 
 * [x] `tokenizer.h` - 0.0  
   Converts a stream of characters into a stream of tokens. That way, the

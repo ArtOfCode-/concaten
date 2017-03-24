@@ -52,14 +52,14 @@ struct Token {
     enum TokenType type;
 };
 
-char *tkn_type_name(enum TokenType);
+const char *tkn_type_name(enum TokenType);
 void tkn_free(struct Token *);
 // object_t tkn_value(Token) // defined in object.h
 
 ERROR tknr_from_string(const char *, const char *origin, struct Tokenizer *);
 ERROR tknr_from_filepath(const char *path, struct Tokenizer *);
 ERROR tknr_next(struct Tokenizer *, struct Token *);
-bool tknr_end(struct Tokenizer *);
+bool tknr_end(const struct Tokenizer);
 void tknr_free(struct Tokenizer *);
 
 #endif // ndef CONCATEN_TOKENIZER_H

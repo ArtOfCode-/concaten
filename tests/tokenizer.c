@@ -1,4 +1,4 @@
-#include "../tests.h"
+#include "../test.h"
 
 #include <stdlib.h>
 
@@ -45,13 +45,13 @@ void test(const struct Spec ts, size_t i) {
         }
         tkn_free(&next);
     }
-    if (err == TKNR_NT_INPUT_END_FAIL && tknr_end(&t)) err = NO_ERROR;
+    if (err == TKNR_NT_INPUT_END_FAIL && tknr_end(t)) err = NO_ERROR;
 end:;
     tassert(cnt >= ts.token_count, "%zu: Too few tokens (got %zu)",
             i, cnt);
     tassert(cnt <= ts.token_count, "%zu: Too many tokens (got %zu)",
             i, cnt);
-    if (ts.types && !tknr_end(&t)) {
+    if (ts.types && !tknr_end(t)) {
         tassert(next.type == ts.types[cnt - 1], "%zu: Wrong type (%s not %s)",
                 i, tkn_type_name(next.type), tkn_type_name(ts.types[cnt-1]));
         tknr_free(&t);

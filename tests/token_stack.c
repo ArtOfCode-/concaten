@@ -1,4 +1,4 @@
-#include "../tests.h"
+#include "../test.h"
 
 #include "../token_stack.h"
 

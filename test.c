@@ -1,4 +1,4 @@
-#include "tests.h"
+#include "test.h"
 
 #include <sys/time.h>
 #include <stdbool.h>
@@ -14,7 +14,7 @@ bool __test(struct TestResult (*testf)(), const char *test_name) {
         printf("\n%zu failed in %zu us.\n", fails, end.tv_usec - beg.tv_usec);
         return false;
     } else {
-        printf("%3zu succeeded in %3zu us.\n", tr.successes,
+        printf("%3zu succeeded in %4zu us.\n", tr.successes,
                end.tv_usec - beg.tv_usec);
         return true;
     }
