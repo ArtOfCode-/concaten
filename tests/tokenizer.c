@@ -32,21 +32,19 @@ void test(const struct Spec ts, size_t i) {
     } else {
         err = tknr_from_string(ts.source, "<test>", &t);
     }
-    if (err) {
-        goto end;
-    }
-    while ((err = tknr_next(&t, &next)) == NO_ERROR) {
-        ++cnt;
-        if (cnt > ts.token_count) {
-            break;
+    if (!err) {
+        while ((err = tknr_next(&t, &next)) == NO_ERROR) {
+            ++cnt;
+            if (cnt > ts.token_count) {
+                break;
+            }
+            if (ts.types && (next.type != ts.types[cnt - 1])) {
+                break;
+            }
+            tkn_free(&next);
         }
-        if (ts.types && (next.type != ts.types[cnt - 1])) {
-            break;
-        }
-        tkn_free(&next);
+        if (err == TKNR_NT_INPUT_END_FAIL && tknr_end(t)) err = NO_ERROR;
     }
-    if (err == TKNR_NT_INPUT_END_FAIL && tknr_end(t)) err = NO_ERROR;
-end:;
     tassert(cnt >= ts.token_count, "%zu: Too few tokens (got %zu)",
             i, cnt);
     tassert(cnt <= ts.token_count, "%zu: Too many tokens (got %zu)",
