@@ -9,9 +9,9 @@ set(NORMAL_LIBS)
 set(TEST_FLAGS "")
 set(TEST_LIBS)
 
-set(PROFILE_FLAGS "-fno-builtin-malloc -fno-builtin-calloc"
-        "-fno-builtin-realloc -fno-builtin-free")
-set(PROFILE_LIBS tcmalloc profiler)
+# Used by things like gperftools, so I figure I might as well drop it in.
+set(PROFILE_FLAGS "")
+set(PROFILE_LIBS)
 
 set(NORMAL_SRCS
         tokenizer.c stringbuilder.c method_map.c prop_map.c object.c
