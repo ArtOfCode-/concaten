@@ -54,11 +54,11 @@ end:;
     if (ts.types && !tknr_end(t)) {
         tassert(next.type == ts.types[cnt - 1], "%zu: Wrong type (%s not %s)",
                 i, tkn_type_name(next.type), tkn_type_name(ts.types[cnt-1]));
-        tknr_free(&t);
     }
     tassert(ts.code == err, "%zu: Incorrect code (" EFMT ", not " EFMT ")",
             i, err, ts.code);
     tkn_free(&next);
+    tknr_free(&t);
 }
 
 #define stest_e(_source, _code) (struct Spec) { \
