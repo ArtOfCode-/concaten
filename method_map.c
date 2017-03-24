@@ -49,7 +49,7 @@ ERROR mm_new(size_t width, struct MethodMap *into) {
     if (!buckets) {
         return MM_CTOR_MALLOC_FAIL;
     }
-    for (size_t i = 0; i < MM_MAX_BUCKET_DEPTH; ++i) {
+    for (size_t i = 0; i < width; ++i) {
         buckets[i] = mm_bk_zero();
     }
     *into = (struct MethodMap) {

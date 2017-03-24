@@ -3,8 +3,18 @@
 
 #CMake files/build
 cmake-build-*/
+CMakeFiles/
+CMakeCache.txt
+Makefile
+*.cmake
 
 *.swp
 *.stackdump
 *.exe
 *.out
+
+tester
+concaten
+tester_profile
+concaten_profile
+
