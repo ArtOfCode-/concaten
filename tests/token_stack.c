@@ -5,14 +5,15 @@
 #include <string.h>
 
 struct Token gen_token(size_t num, size_t layer_num) {
-    char *mem = malloc(12);
+    char *mem = malloc(14);
+    memcpy(mem, "gen_token-res", 14);
     sprintf(mem, "layer_%zu", layer_num);
     return (struct Token) {
             .line = layer_num,
             .index = num,
             .origin = mem,
             .origin_len = strlen(mem) + 1,
-            .raw = "gen_token-res",
+            .raw = mem,
             .raw_len = 14,
             .type = TKN_WORD
     };
