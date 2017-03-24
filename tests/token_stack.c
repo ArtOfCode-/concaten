@@ -35,6 +35,7 @@ void a_token_pop(struct TokenStack *tst, ERROR expected, size_t index, size_t li
         tassert(popped.index == index && popped.line == line,
                 "wrong element popped (%zu %zu, not %zu %zu)",
                 popped.index, popped.line, index, line);
+        tkn_free(&popped);
     }
 }
 
