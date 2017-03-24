@@ -32,7 +32,7 @@ void test(const struct Spec ts, size_t i) {
     } else {
         err = tknr_from_string(ts.source, "<test>", &t);
     }
-    if (err) {
+    if (err != NO_ERROR) {
         tassert(err == ts.code, "%zu: failed with bad error code", i);
     } else {
         while ((err = tknr_next(&t, &next)) == NO_ERROR) {
