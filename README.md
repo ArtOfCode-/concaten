@@ -1,4 +1,4 @@
-Concaten v0.5.1
+Concaten v0.5.2
 ===============
 
 Concaten is a concatenative, stack-based, strongly but optionally strictly
