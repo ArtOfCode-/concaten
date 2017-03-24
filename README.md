@@ -51,6 +51,11 @@ For an example of how the language will probably look, see `test.ctn`.
   specced out, actual usage might reveal things that I didn't consider, and
   therefore need to add in, remove, or change.
 
+If you want to contribute, awesome! Be sure to check out `CODE_STYLE.md` and
+`CONTRIBUTING.md`; they sketch out how I'd like the code to look and what the
+process (roughly) looks like, so that I can keep things as organized as they
+can be.
+
 ---
 
 **A note about versions**: My format is `major.milestone`, where each is
