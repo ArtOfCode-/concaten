@@ -32,31 +32,34 @@ void test(const struct Spec ts, size_t i) {
     } else {
         err = tknr_from_string(ts.source, "<test>", &t);
     }
-    if (!err) {
+    if (err) {
+        tassert(err == ts.code, "%zu: failed with bad error code", i);
+    } else {
         while ((err = tknr_next(&t, &next)) == NO_ERROR) {
             ++cnt;
             if (cnt > ts.token_count) {
+                tkn_free(&next);
                 break;
             }
             if (ts.types && (next.type != ts.types[cnt - 1])) {
+                tkn_free(&next);
                 break;
             }
             tkn_free(&next);
         }
         if (err == TKNR_NT_INPUT_END_FAIL && tknr_end(t)) err = NO_ERROR;
+        tassert(cnt >= ts.token_count, "%zu: Too few tokens (got %zu)",
+                i, cnt);
+        tassert(cnt <= ts.token_count, "%zu: Too many tokens (got %zu)",
+                i, cnt);
+        if (ts.types && !tknr_end(t)) {
+            tassert(next.type == ts.types[cnt - 1], "%zu: Wrong type (%s not %s)",
+                    i, tkn_type_name(next.type), tkn_type_name(ts.types[cnt-1]));
+        }
+        tassert(ts.code == err, "%zu: Incorrect code (" EFMT ", not " EFMT ")",
+                i, err, ts.code);
+        tknr_free(&t);
     }
-    tassert(cnt >= ts.token_count, "%zu: Too few tokens (got %zu)",
-            i, cnt);
-    tassert(cnt <= ts.token_count, "%zu: Too many tokens (got %zu)",
-            i, cnt);
-    if (ts.types && !tknr_end(t)) {
-        tassert(next.type == ts.types[cnt - 1], "%zu: Wrong type (%s not %s)",
-                i, tkn_type_name(next.type), tkn_type_name(ts.types[cnt-1]));
-    }
-    tassert(ts.code == err, "%zu: Incorrect code (" EFMT ", not " EFMT ")",
-            i, err, ts.code);
-    tkn_free(&next);
-    tknr_free(&t);
 }
 
 #define stest_e(_source, _code) (struct Spec) { \
