@@ -1,0 +1,264 @@
+==3418== Memcheck, a memory error detector
+==3418== Copyright (C) 2002-2015, and GNU GPL'd, by Julian Seward et al.
+==3418== Using Valgrind-3.12.0 and LibVEX; rerun with -h for copyright info
+==3418== Command: ./tester_profile
+==3418== Parent PID: 2
+==3418== 
+==3418== 
+==3418== FILE DESCRIPTORS: 0 open at exit.
+==3418== 
+==3418== HEAP SUMMARY:
+==3418==     in use at exit: 9,649 bytes in 37 blocks
+==3418==   total heap usage: 491 allocs, 454 frees, 20,928 bytes allocated
+==3418== 
+==3418== 7 bytes in 1 blocks are definitely lost in loss record 1 of 36
+==3418==    at 0x4C2ABE3: malloc (vg_replace_malloc.c:299)
+==3418==    by 0x4044FD: ctno_literal (object.c:23)
+==3418==    by 0x408733: test_object (object.c:21)
+==3418==    by 0x400ABE: do_test (test.c:10)
+==3418==    by 0x400BCF: main (test.c:33)
+==3418== 
+==3418== 8 bytes in 1 blocks are definitely lost in loss record 2 of 36
+==3418==    at 0x4C2ABE3: malloc (vg_replace_malloc.c:299)
+==3418==    by 0x4044FD: ctno_literal (object.c:23)
+==3418==    by 0x4086B7: test_object (object.c:17)
+==3418==    by 0x400ABE: do_test (test.c:10)
+==3418==    by 0x400BCF: main (test.c:33)
+==3418== 
+==3418== 8 bytes in 1 blocks are definitely lost in loss record 3 of 36
+==3418==    at 0x4C2ABE3: malloc (vg_replace_malloc.c:299)
+==3418==    by 0x400D6D: tkn_copy (tokenizer.c:69)
+==3418==    by 0x4051A9: tst_pop (token_stack.c:101)
+==3418==    by 0x409FB0: a_token_pop (token_stack.c:34)
+==3418==    by 0x40AA2A: test_token_stack (token_stack.c:86)
+==3418==    by 0x400ABE: do_test (test.c:10)
+==3418==    by 0x400C32: main (test.c:36)
+==3418== 
+==3418== 8 bytes in 1 blocks are definitely lost in loss record 4 of 36
+==3418==    at 0x4C2ABE3: malloc (vg_replace_malloc.c:299)
+==3418==    by 0x400D6D: tkn_copy (tokenizer.c:69)
+==3418==    by 0x4051A9: tst_pop (token_stack.c:101)
+==3418==    by 0x409FB0: a_token_pop (token_stack.c:34)
+==3418==    by 0x40AA48: test_token_stack (token_stack.c:87)
+==3418==    by 0x400ABE: do_test (test.c:10)
+==3418==    by 0x400C32: main (test.c:36)
+==3418== 
+==3418== 8 bytes in 1 blocks are definitely lost in loss record 5 of 36
+==3418==    at 0x4C2ABE3: malloc (vg_replace_malloc.c:299)
+==3418==    by 0x400D6D: tkn_copy (tokenizer.c:69)
+==3418==    by 0x4051A9: tst_pop (token_stack.c:101)
+==3418==    by 0x409FB0: a_token_pop (token_stack.c:34)
+==3418==    by 0x40AA66: test_token_stack (token_stack.c:88)
+==3418==    by 0x400ABE: do_test (test.c:10)
+==3418==    by 0x400C32: main (test.c:36)
+==3418== 
+==3418== 8 bytes in 1 blocks are definitely lost in loss record 6 of 36
+==3418==    at 0x4C2ABE3: malloc (vg_replace_malloc.c:299)
+==3418==    by 0x400D6D: tkn_copy (tokenizer.c:69)
+==3418==    by 0x4051A9: tst_pop (token_stack.c:101)
+==3418==    by 0x409FB0: a_token_pop (token_stack.c:34)
+==3418==    by 0x40AC0D: test_token_stack (token_stack.c:92)
+==3418==    by 0x400ABE: do_test (test.c:10)
+==3418==    by 0x400C32: main (test.c:36)
+==3418== 
+==3418== 8 bytes in 1 blocks are definitely lost in loss record 7 of 36
+==3418==    at 0x4C2ABE3: malloc (vg_replace_malloc.c:299)
+==3418==    by 0x400D6D: tkn_copy (tokenizer.c:69)
+==3418==    by 0x4051A9: tst_pop (token_stack.c:101)
+==3418==    by 0x409FB0: a_token_pop (token_stack.c:34)
+==3418==    by 0x40AC2B: test_token_stack (token_stack.c:93)
+==3418==    by 0x400ABE: do_test (test.c:10)
+==3418==    by 0x400C32: main (test.c:36)
+==3418== 
+==3418== 8 bytes in 1 blocks are definitely lost in loss record 8 of 36
+==3418==    at 0x4C2ABE3: malloc (vg_replace_malloc.c:299)
+==3418==    by 0x400D6D: tkn_copy (tokenizer.c:69)
+==3418==    by 0x4051A9: tst_pop (token_stack.c:101)
+==3418==    by 0x409FB0: a_token_pop (token_stack.c:34)
+==3418==    by 0x40AC49: test_token_stack (token_stack.c:94)
+==3418==    by 0x400ABE: do_test (test.c:10)
+==3418==    by 0x400C32: main (test.c:36)
+==3418== 
+==3418== 12 bytes in 1 blocks are definitely lost in loss record 9 of 36
+==3418==    at 0x4C2ABE3: malloc (vg_replace_malloc.c:299)
+==3418==    by 0x409E36: gen_token (token_stack.c:10)
+==3418==    by 0x40AD49: test_token_stack (token_stack.c:103)
+==3418==    by 0x400ABE: do_test (test.c:10)
+==3418==    by 0x400C32: main (test.c:36)
+==3418== 
+==3418== 12 bytes in 1 blocks are definitely lost in loss record 10 of 36
+==3418==    at 0x4C2ABE3: malloc (vg_replace_malloc.c:299)
+==3418==    by 0x409E36: gen_token (token_stack.c:10)
+==3418==    by 0x40ADCC: test_token_stack (token_stack.c:104)
+==3418==    by 0x400ABE: do_test (test.c:10)
+==3418==    by 0x400C32: main (test.c:36)
+==3418== 
+==3418== 12 bytes in 1 blocks are definitely lost in loss record 11 of 36
+==3418==    at 0x4C2ABE3: malloc (vg_replace_malloc.c:299)
+==3418==    by 0x409E36: gen_token (token_stack.c:10)
+==3418==    by 0x40AE4F: test_token_stack (token_stack.c:105)
+==3418==    by 0x400ABE: do_test (test.c:10)
+==3418==    by 0x400C32: main (test.c:36)
+==3418== 
+==3418== 14 bytes in 1 blocks are definitely lost in loss record 12 of 36
+==3418==    at 0x4C2ABE3: malloc (vg_replace_malloc.c:299)
+==3418==    by 0x400D4C: tkn_copy (tokenizer.c:65)
+==3418==    by 0x4051A9: tst_pop (token_stack.c:101)
+==3418==    by 0x409FB0: a_token_pop (token_stack.c:34)
+==3418==    by 0x40AA2A: test_token_stack (token_stack.c:86)
+==3418==    by 0x400ABE: do_test (test.c:10)
+==3418==    by 0x400C32: main (test.c:36)
+==3418== 
+==3418== 14 bytes in 1 blocks are definitely lost in loss record 13 of 36
+==3418==    at 0x4C2ABE3: malloc (vg_replace_malloc.c:299)
+==3418==    by 0x400D4C: tkn_copy (tokenizer.c:65)
+==3418==    by 0x4051A9: tst_pop (token_stack.c:101)
+==3418==    by 0x409FB0: a_token_pop (token_stack.c:34)
+==3418==    by 0x40AA48: test_token_stack (token_stack.c:87)
+==3418==    by 0x400ABE: do_test (test.c:10)
+==3418==    by 0x400C32: main (test.c:36)
+==3418== 
+==3418== 14 bytes in 1 blocks are definitely lost in loss record 14 of 36
+==3418==    at 0x4C2ABE3: malloc (vg_replace_malloc.c:299)
+==3418==    by 0x400D4C: tkn_copy (tokenizer.c:65)
+==3418==    by 0x4051A9: tst_pop (token_stack.c:101)
+==3418==    by 0x409FB0: a_token_pop (token_stack.c:34)
+==3418==    by 0x40AA66: test_token_stack (token_stack.c:88)
+==3418==    by 0x400ABE: do_test (test.c:10)
+==3418==    by 0x400C32: main (test.c:36)
+==3418== 
+==3418== 14 bytes in 1 blocks are definitely lost in loss record 15 of 36
+==3418==    at 0x4C2ABE3: malloc (vg_replace_malloc.c:299)
+==3418==    by 0x400D4C: tkn_copy (tokenizer.c:65)
+==3418==    by 0x4051A9: tst_pop (token_stack.c:101)
+==3418==    by 0x409FB0: a_token_pop (token_stack.c:34)
+==3418==    by 0x40AC0D: test_token_stack (token_stack.c:92)
+==3418==    by 0x400ABE: do_test (test.c:10)
+==3418==    by 0x400C32: main (test.c:36)
+==3418== 
+==3418== 14 bytes in 1 blocks are definitely lost in loss record 16 of 36
+==3418==    at 0x4C2ABE3: malloc (vg_replace_malloc.c:299)
+==3418==    by 0x400D4C: tkn_copy (tokenizer.c:65)
+==3418==    by 0x4051A9: tst_pop (token_stack.c:101)
+==3418==    by 0x409FB0: a_token_pop (token_stack.c:34)
+==3418==    by 0x40AC2B: test_token_stack (token_stack.c:93)
+==3418==    by 0x400ABE: do_test (test.c:10)
+==3418==    by 0x400C32: main (test.c:36)
+==3418== 
+==3418== 14 bytes in 1 blocks are definitely lost in loss record 17 of 36
+==3418==    at 0x4C2ABE3: malloc (vg_replace_malloc.c:299)
+==3418==    by 0x400D4C: tkn_copy (tokenizer.c:65)
+==3418==    by 0x4051A9: tst_pop (token_stack.c:101)
+==3418==    by 0x409FB0: a_token_pop (token_stack.c:34)
+==3418==    by 0x40AC49: test_token_stack (token_stack.c:94)
+==3418==    by 0x400ABE: do_test (test.c:10)
+==3418==    by 0x400C32: main (test.c:36)
+==3418== 
+==3418== 14 bytes in 1 blocks are definitely lost in loss record 18 of 36
+==3418==    at 0x4C2ABE3: malloc (vg_replace_malloc.c:299)
+==3418==    by 0x409E12: gen_token (token_stack.c:8)
+==3418==    by 0x40AD49: test_token_stack (token_stack.c:103)
+==3418==    by 0x400ABE: do_test (test.c:10)
+==3418==    by 0x400C32: main (test.c:36)
+==3418== 
+==3418== 14 bytes in 1 blocks are definitely lost in loss record 19 of 36
+==3418==    at 0x4C2ABE3: malloc (vg_replace_malloc.c:299)
+==3418==    by 0x409E12: gen_token (token_stack.c:8)
+==3418==    by 0x40ADCC: test_token_stack (token_stack.c:104)
+==3418==    by 0x400ABE: do_test (test.c:10)
+==3418==    by 0x400C32: main (test.c:36)
+==3418== 
+==3418== 14 bytes in 1 blocks are definitely lost in loss record 20 of 36
+==3418==    at 0x4C2ABE3: malloc (vg_replace_malloc.c:299)
+==3418==    by 0x409E12: gen_token (token_stack.c:8)
+==3418==    by 0x40AE4F: test_token_stack (token_stack.c:105)
+==3418==    by 0x400ABE: do_test (test.c:10)
+==3418==    by 0x400C32: main (test.c:36)
+==3418== 
+==3418== 32 bytes in 2 blocks are definitely lost in loss record 27 of 36
+==3418==    at 0x4C2ABE3: malloc (vg_replace_malloc.c:299)
+==3418==    by 0x402889: sb_new (stringbuilder.c:16)
+==3418==    by 0x40251C: tknr_next (tokenizer.c:598)
+==3418==    by 0x406CB9: test (tokenizer.c:40)
+==3418==    by 0x40722B: test_tokenizer (tokenizer.c:122)
+==3418==    by 0x400ABE: do_test (test.c:10)
+==3418==    by 0x400C52: main (test.c:37)
+==3418== 
+==3418== 48 (24 direct, 24 indirect) bytes in 1 blocks are definitely lost in loss record 28 of 36
+==3418==    at 0x4C2ABE3: malloc (vg_replace_malloc.c:299)
+==3418==    by 0x404C04: dst_push (data_stack.c:26)
+==3418==    by 0x4096FC: test_data_stack (data_stack.c:48)
+==3418==    by 0x400ABE: do_test (test.c:10)
+==3418==    by 0x400B89: main (test.c:31)
+==3418== 
+==3418== 144 (24 direct, 120 indirect) bytes in 1 blocks are definitely lost in loss record 29 of 36
+==3418==    at 0x4C2ABE3: malloc (vg_replace_malloc.c:299)
+==3418==    by 0x404C04: dst_push (data_stack.c:26)
+==3418==    by 0x4098CB: test_data_stack (data_stack.c:52)
+==3418==    by 0x400ABE: do_test (test.c:10)
+==3418==    by 0x400B89: main (test.c:31)
+==3418== 
+==3418== 400 bytes in 1 blocks are definitely lost in loss record 30 of 36
+==3418==    at 0x4C2ABE3: malloc (vg_replace_malloc.c:299)
+==3418==    by 0x402C03: mm_new (method_map.c:48)
+==3418==    by 0x4075D0: test_method_map (method_map.c:53)
+==3418==    by 0x400ABE: do_test (test.c:10)
+==3418==    by 0x400BAC: main (test.c:32)
+==3418== 
+==3418== 800 bytes in 1 blocks are definitely lost in loss record 31 of 36
+==3418==    at 0x4C2ABE3: malloc (vg_replace_malloc.c:299)
+==3418==    by 0x402C03: mm_new (method_map.c:48)
+==3418==    by 0x4035B9: mm_rehash (method_map.c:188)
+==3418==    by 0x402E4E: mm_set (method_map.c:82)
+==3418==    by 0x407BC4: test_method_map (method_map.c:70)
+==3418==    by 0x400ABE: do_test (test.c:10)
+==3418==    by 0x400BAC: main (test.c:32)
+==3418== 
+==3418== 1,600 bytes in 1 blocks are definitely lost in loss record 32 of 36
+==3418==    at 0x4C2ABE3: malloc (vg_replace_malloc.c:299)
+==3418==    by 0x402C03: mm_new (method_map.c:48)
+==3418==    by 0x4035B9: mm_rehash (method_map.c:188)
+==3418==    by 0x402E4E: mm_set (method_map.c:82)
+==3418==    by 0x408351: test_method_map (method_map.c:90)
+==3418==    by 0x400ABE: do_test (test.c:10)
+==3418==    by 0x400BAC: main (test.c:32)
+==3418== 
+==3418== 1,600 bytes in 1 blocks are definitely lost in loss record 33 of 36
+==3418==    at 0x4C2ABE3: malloc (vg_replace_malloc.c:299)
+==3418==    by 0x4038EC: pm_new (prop_map.c:45)
+==3418==    by 0x408795: test_object (object.c:25)
+==3418==    by 0x400ABE: do_test (test.c:10)
+==3418==    by 0x400BCF: main (test.c:33)
+==3418== 
+==3418== 1,600 bytes in 1 blocks are definitely lost in loss record 34 of 36
+==3418==    at 0x4C2ABE3: malloc (vg_replace_malloc.c:299)
+==3418==    by 0x4039E2: pm_copy (prop_map.c:63)
+==3418==    by 0x4045BD: ctno_dynamic (object.c:43)
+==3418==    by 0x408826: test_object (object.c:26)
+==3418==    by 0x400ABE: do_test (test.c:10)
+==3418==    by 0x400BCF: main (test.c:33)
+==3418== 
+==3418== 1,600 bytes in 1 blocks are definitely lost in loss record 35 of 36
+==3418==    at 0x4C2ABE3: malloc (vg_replace_malloc.c:299)
+==3418==    by 0x4038EC: pm_new (prop_map.c:45)
+==3418==    by 0x408F24: test_object (object.c:53)
+==3418==    by 0x400ABE: do_test (test.c:10)
+==3418==    by 0x400BCF: main (test.c:33)
+==3418== 
+==3418== 1,600 bytes in 1 blocks are definitely lost in loss record 36 of 36
+==3418==    at 0x4C2ABE3: malloc (vg_replace_malloc.c:299)
+==3418==    by 0x4039E2: pm_copy (prop_map.c:63)
+==3418==    by 0x4045BD: ctno_dynamic (object.c:43)
+==3418==    by 0x408FB2: test_object (object.c:54)
+==3418==    by 0x400ABE: do_test (test.c:10)
+==3418==    by 0x400BCF: main (test.c:33)
+==3418== 
+==3418== LEAK SUMMARY:
+==3418==    definitely lost: 9,505 bytes in 31 blocks
+==3418==    indirectly lost: 144 bytes in 6 blocks
+==3418==      possibly lost: 0 bytes in 0 blocks
+==3418==    still reachable: 0 bytes in 0 blocks
+==3418==         suppressed: 0 bytes in 0 blocks
+==3418== 
+==3418== For counts of detected and suppressed errors, rerun with: -v
+==3418== ERROR SUMMARY: 30 errors from 30 contexts (suppressed: 0 from 0)
