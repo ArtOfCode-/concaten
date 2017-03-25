@@ -62,6 +62,11 @@ ERROR mm_new(size_t width, struct MethodMap *into) {
 }
 
 ERROR mm_claim(struct MethodMap *mm) {
+    // TODO Remove this check in prod.
+    // in test, I don't care about methods, so I set them to NULL
+    // in prod, every object must have methods; if it doesn't, it
+    // should fail.
+    if (mm == NULL) return NO_ERROR;
     ++mm->refcount;
     return NO_ERROR;
 }
