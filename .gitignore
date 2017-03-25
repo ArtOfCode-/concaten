@@ -4,7 +4,6 @@
 #CMake files/build
 cmake-build-*/
 CMakeFiles/
-CMakeCache.txt
 Makefile
 *.cmake
 
@@ -17,4 +16,5 @@ tester
 concaten
 tester_profile
 concaten_profile
-
+*.txt
+!CMakeLists.txt
