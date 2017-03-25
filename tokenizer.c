@@ -6,36 +6,27 @@
 #include "tokenizer.h"
 #include "stringbuilder.h"
 
-//const ERROR TOKENIZER_FAIL             = 8000;
-//const ERROR TKNR_CTOR_FAIL                  =  8100;
-//const ERROR TKNR_CTOR_STR_FAIL              =   8110;
-  const ERROR TKNR_CTOR_STR_MALLOC_FAIL       =    8111;
-  const ERROR TKNR_CTOR_STR_BAD_STRLEN_FAIL   =    8112;
-  const ERROR TKNR_CTOR_STR_NULL_ARG_FAIL     =    8113;
-//const ERROR TKNR_CTOR_FILE_FAIL             =   8120;
-  const ERROR TKNR_CTOR_FILE_MALLOC_FAIL      =    8121;
-  const ERROR TKNR_CTOR_FILE_BAD_STRLEN_FAIL  =    8122;
-  const ERROR TKNR_CTOR_FILE_NULL_ARG_FAIL    =    8123;
-  const ERROR TKNR_CTOR_FILE_FOPEN_FAIL       =    8124;
-//const ERROR READ_CHAR_FAIL             =  8200;
-  const ERROR TKNR_FILE_READ_FAIL             =   8210;
-  const ERROR TKNR_FILE_READ_EOF_FAIL         =    8211;
-//const ERROR TKNR_STRING_READ_FAIL           =   8220;
-  const ERROR TKNR_STRING_READ_EOS_FAIL       =    8221;
-//const ERROR TKNR_NEXT_TOKEN_FAIL            =  8300;
-  const ERROR TKNR_NT_MALLOC_FAIL             =   8301;
-  const ERROR TKNR_NT_NEW_SB_FAIL             =   8302;
-  const ERROR TKNR_NT_SB_FREE_COPY_FAIL       =   8303;
-  const ERROR TKNR_NT_INPUT_END_FAIL          =   8304;
-//const ERROR TKNR_SYNTAX_FAIL      = 8500;
-  const ERROR TKNR_SYN_NO_SEPARATION_FAIL     =  8501;
-  const ERROR TKNR_SYN_UNEXPECTED_END_FAIL    =  8502;
-//const ERROR TKNR_SYN_STR_FAIL               =  8510;
-  const ERROR TKNR_SYN_STR_MULTILINE_FAIL     =   8511;
-//const ERROR TKNR_SYN_NUM_FAIL               =  8520;
-  const ERROR TKNR_SYN_NUM_ILLEGAL_DIGIT_FAIL =   8521;
-//const ERROR TKNR_SYN_RGX_FAIL               =  8530;
-  const ERROR TKNR_SYN_RGX_BAD_FLAG_FAIL      =   8531;
+const ERROR TKNR_CTOR_STR_MALLOC_FAIL       = 8111;
+const ERROR TKNR_CTOR_STR_BAD_STRLEN_FAIL   = 8112;
+const ERROR TKNR_CTOR_STR_NULL_ARG_FAIL     = 8113;
+const ERROR TKNR_CTOR_FILE_MALLOC_FAIL      = 8121;
+const ERROR TKNR_CTOR_FILE_BAD_STRLEN_FAIL  = 8122;
+const ERROR TKNR_CTOR_FILE_NULL_ARG_FAIL    = 8123;
+const ERROR TKNR_CTOR_FILE_FOPEN_FAIL       = 8124;
+const ERROR TKNR_FILE_READ_FAIL             = 8210;
+const ERROR TKNR_FILE_READ_EOF_FAIL         = 8211;
+const ERROR TKNR_STRING_READ_EOS_FAIL       = 8221;
+const ERROR TKNR_NT_MALLOC_FAIL             = 8301;
+const ERROR TKNR_NT_NEW_SB_FAIL             = 8302;
+const ERROR TKNR_NT_SB_FREE_COPY_FAIL       = 8303;
+const ERROR TKNR_NT_INPUT_END_FAIL          = 8304;
+const ERROR TKNR_SYN_NO_SEPARATION_FAIL     = 8501;
+const ERROR TKNR_SYN_UNEXPECTED_END_FAIL    = 8502;
+const ERROR TKNR_SYN_STR_MULTILINE_FAIL     = 8511;
+const ERROR TKNR_SYN_NUM_ILLEGAL_DIGIT_FAIL = 8521;
+const ERROR TKNR_SYN_RGX_BAD_FLAG_FAIL      = 8531;
+const ERROR TKNR_TKN_COPY_MALLOC_RAW_FAIL   = 8601;
+const ERROR TKNR_TKN_COPY_MALLOC_ORG_FAIL   = 8601;
 
 struct Token tkn_empty(size_t line, size_t index) {
     return (struct Token) {
@@ -68,6 +59,28 @@ const char *tkn_type_name(enum TokenType t) {
         default:
             return NULL;
     }
+}
+
+ERROR tkn_copy(const struct Token from, struct Token *into) {
+    char *new_raw = malloc(from.raw_len);
+    if (!new_raw) {
+        return TKNR_TKN_COPY_MALLOC_RAW_FAIL;
+    }
+    char *new_origin = malloc(from.origin_len);
+    if (!new_origin) {
+        free(new_raw);
+        return TKNR_TKN_COPY_MALLOC_ORG_FAIL;
+    }
+    *into = (struct Token) {
+            .origin_len = from.origin_len,
+            .origin = new_origin,
+            .index = from.index,
+            .line = from.line,
+            .raw = new_raw,
+            .raw_len = from.raw_len,
+            .type = from.type
+    };
+    return NO_ERROR;
 }
 
 void tkn_free(struct Token *t) {

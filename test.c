@@ -11,11 +11,12 @@ bool __test(struct TestResult (*testf)(), const char *test_name) {
     gettimeofday(&end, NULL);
     if (tr.successes != tr.total) {
         size_t fails = tr.total - tr.successes;
-        printf("\n%zu failed in %zu us.\n", fails, end.tv_usec - beg.tv_usec);
+        printf("\n%zu failed in %zu us.\n", fails,
+               (size_t) end.tv_usec - beg.tv_usec);
         return false;
     } else {
         printf("%3zu succeeded in %4zu us.\n", tr.successes,
-               end.tv_usec - beg.tv_usec);
+               (size_t) end.tv_usec - beg.tv_usec);
         return true;
     }
 }

@@ -97,10 +97,16 @@ ERROR tst_pop(struct TokenStack *this, struct Token *ret) {
             return TST_POP_EMPTY_FAIL;
         }
     }
-    if (!tst_push_change(this, (struct TS_ChangeNode) {
-            .type = TSCN_TOKEN_POP, .data.popped = ret_val
-    })) {
-        return TST_POP_SAVE_FAIL;
+    if (this->tracking_changes) {
+        struct Token copy;
+        if (tkn_copy(ret_val, &copy) != NO_ERROR) {
+            return TST_POP_SAVE_FAIL;
+        }
+        if (!tst_push_change(this, (struct TS_ChangeNode) {
+                .type = TSCN_TOKEN_POP, .data.popped = copy
+        })) {
+            return TST_POP_SAVE_FAIL;
+        }
     }
     if (ret) *ret = ret_val;
     return NO_ERROR;

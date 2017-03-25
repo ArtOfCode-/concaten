@@ -53,6 +53,7 @@ struct Token {
 };
 
 const char *tkn_type_name(enum TokenType);
+ERROR tkn_copy(const struct Token, struct Token *);
 void tkn_free(struct Token *);
 // object_t tkn_value(Token) // defined in object.h
 
