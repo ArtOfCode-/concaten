@@ -35,7 +35,7 @@ void test(const struct Spec ts, size_t i) {
     if (err != NO_ERROR) {
         tassert(err == ts.code, "%zu: init error (" EFMT " not " EFMT ")%s",
                 i, err, ts.code, err == TKNR_CTOR_FILE_FOPEN_FAIL 
-                                 ? "(Make sure test.ctn is in the wd)" : "");
+                                 ? " (Make sure test.ctn is in the wd)" : "");
     } else {
         while ((err = tknr_next(&t, &next)) == NO_ERROR) {
             ++cnt;
