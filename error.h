@@ -15,7 +15,7 @@ extern const ERROR USER_DEFINED_ERROR_TYPE;
 
 // CodeBlock error codes (1000-1999)
 extern const ERROR CB_CTOR_MALLOC_FAIL;              // 1001
-extern const ERROR CB_COPY_MALLOC_FAIL;              // 1002
+extern const ERROR CB_COPY_MALLOC_FAIL;              // 1002                  
 extern const ERROR CB_APND_EXPAND_FAIL;              // 1003
 extern const ERROR CB_INST_BAD_IDX_FAIL;             // 1011
 extern const ERROR CB_INST_EXPAND_FAIL;              // 1012

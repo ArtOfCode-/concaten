@@ -2,9 +2,8 @@
 
 #include <stdlib.h>
 
-//const ERROR  DATA_STACK_FAIL;  // 2000
-  const ERROR DST_PUSH_MALLOC_FAIL = 2001;
-  const ERROR DST_POP_EMPTY_FAIL   = 2002;
+const ERROR DST_PUSH_MALLOC_FAIL = 2001;
+const ERROR DST_POP_EMPTY_FAIL   = 2002;
 
 void dst_node_free(struct DST_Node *freeing) {
     if (freeing) {

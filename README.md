@@ -1,4 +1,4 @@
-# Concaten v0.5.2
+# Concaten v0.5.3
 
 Concaten is a concatenative, stack-based, strongly but optionally strictly
 typed, hyperdynamic, garbage-collected, interpreted programming language. In
@@ -107,49 +107,21 @@ Major version `0` is pre-completion; some of the parts may be
     * ~~[ ] Use `unsigned char` instead of `char`.~~
     * [x] Use `skip_char` instead of `read_char`  
     It's pretty much unsalvageable :( Oh well.
-  * [ ] Write a code style guide 0.5.3  
+  * [x] Write a code style guide 0.5.3  
     Start by getting down the ideas, see what patterns emerge, categorize
       based on that.
     * [x] Actually write it.
-    * [ ] Go through the code to make sure everything abides by it.
-      * [x] `tests/code_block.c`
-      * [x] `tests/data_stack.c`
-      * [x] `tests/method_map.c`
-      * [x] `tests/object.c`
-      * [x] `tests/prop_map.c`
-      * [x] `tests/stringbuilder.c`
-      * [x] `tests/token_stack.c`
-      * [x] `tests/tokenizer.c`
-      * [x] `main.c`
-      * [x] `error.h`
-      * [x] `code_block.c`
-      * [x] `code_block.h`
-      * [ ] `data_stack.c`
-      * [ ] `data_stack.h`
-      * [ ] `method_map.c`
-      * [ ] `method_map.h`
-      * [ ] `object.c`
-      * [ ] `object.h`
-      * [ ] `prop_map.c`
-      * [ ] `prop_map.h`
-      * [ ] `stringbuilder.c`
-      * [ ] `stringbuilder.h`
-      * [ ] `token_stack.c`
-      * [ ] `token_stack.h`
-      * [ ] `tokenizer.c`
-      * [ ] `tokenizer.h`
-      * [ ] `test.c`
-      * [ ] `test.h`
+    * [x] Go through the code to make sure everything abides by it.
   * [ ] Ensure everything is unit tested - 0.5.4
     * [x] `StringBuilder`
     * [ ] `ctno_copy`
     * [ ] `tst_peek`?
     * Look for unused functions; those indicate obvious non-tests
+  * [ ] Go through the Valgrind report and eliminate the memory leaks
+    * This is gonna take a while. :(
   * [ ] Everything in the `TODO` comments - 0.5.5  
     ...as long as it's possible to do now; i.e. doesn't require work that's
       slated for completion in a later milestone.
-  * [ ] Go through the Valgrind report and eliminate the memory leaks
-    * This is gonna take a while. :(
   * [ ] Misc. cleanup tasks
     * [ ] Give every type its own `.h` and `.c`
     * [ ] Make sure `Object`s aren't accidentally getting passed around by

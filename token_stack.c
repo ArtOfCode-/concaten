@@ -1,6 +1,5 @@
 #include "token_stack.h"
 
-// 3000s
 const ERROR TST_PUSH_MALLOC_FAIL = 3001;
 const ERROR TST_PUSH_SAVE_FAIL = 3002;
 const ERROR TST_POP_EMPTY_FAIL = 3003;
