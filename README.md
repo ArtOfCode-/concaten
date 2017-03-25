@@ -148,6 +148,8 @@ Major version `0` is pre-completion; some of the parts may be
   * [ ] Everything in the `TODO` comments - 0.5.5  
     ...as long as it's possible to do now; i.e. doesn't require work that's
       slated for completion in a later milestone.
+  * [ ] Go through the Valgrind report and eliminate the memory leaks
+    * This is gonna take a while. :(
   * [ ] Misc. cleanup tasks
     * [ ] Give every type its own `.h` and `.c`
     * [ ] Make sure `Object`s aren't accidentally getting passed around by
