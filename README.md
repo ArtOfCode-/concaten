@@ -120,10 +120,10 @@ Major version `0` is pre-completion; some of the parts may be
       * [x] `tests/stringbuilder.c`
       * [x] `tests/token_stack.c`
       * [x] `tests/tokenizer.c`
-      * [ ] `main.c`
-      * [ ] `error.h`
-      * [ ] `code_block.c`
-      * [ ] `code_block.h`
+      * [x] `main.c`
+      * [x] `error.h`
+      * [x] `code_block.c`
+      * [x] `code_block.h`
       * [ ] `data_stack.c`
       * [ ] `data_stack.h`
       * [ ] `method_map.c`
