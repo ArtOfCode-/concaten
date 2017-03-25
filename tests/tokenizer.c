@@ -33,7 +33,8 @@ void test(const struct Spec ts, size_t i) {
         err = tknr_from_string(ts.source, "<test>", &t);
     }
     if (err != NO_ERROR) {
-        tassert(err == ts.code, "%zu: failed with bad error code", i);
+        tassert(err == ts.code, "%zu: bad init error (" EFMT " not " EFMT ")",
+                i, err, ts.code);
     } else {
         while ((err = tknr_next(&t, &next)) == NO_ERROR) {
             ++cnt;
