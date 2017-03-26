@@ -115,8 +115,10 @@ Major version `0` is pre-completion; some of the parts may be
   * [ ] Ensure everything is unit tested - 0.5.4
     * [x] `StringBuilder`
     * [x] `ctno_copy`
-    * [ ] `tst_peek`?
-    * Look for unused functions; those indicate obvious non-tests
+    * [ ] ~~`tst_peek`~~
+    * Look for unused functions; those indicate obvious non-tests  
+      The `mm_`s are listing as uncalled because they're only called through  
+        macros. There might be more similar errors elsewhere.
   * [ ] Go through the Valgrind report and eliminate the memory leaks
     * This is gonna take a while. :(
   * [ ] Everything in the `TODO` comments - 0.5.5  
@@ -134,6 +136,7 @@ Major version `0` is pre-completion; some of the parts may be
     * [ ] Make sure everything checks return values (where there are any)
     * [ ] Use a pushable `Tokenizer` in `TokenStack` to make the history bit
       more accurate.
+    * [ ] `tst_peek` is fundamentally broken right now. Make it work.
 
 ### Upcoming milestones
 
