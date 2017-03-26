@@ -1,7 +1,8 @@
-##Concaten v0.4.2
+# Concaten v0.5.3
 
-Concaten is a concatenative, stack-based, strongly but optionally strictly typed, hyperdynamic,
-garbage-collected, interpreted programming language. In order, that means that:
+Concaten is a concatenative, stack-based, strongly but optionally strictly
+typed, hyperdynamic, garbage-collected, interpreted programming language. In
+order, that means that:
 
 1. **concatenative** - Each "word" (Concaten's version of a function) is
   applied to the results of the one that appears before it in the source code.
@@ -49,6 +50,11 @@ For an example of how the language will probably look, see `test.ctn`.
   specced out, actual usage might reveal things that I didn't consider, and
   therefore need to add in, remove, or change.
 
+If you want to contribute, awesome! Be sure to check out `CODE_STYLE.md` and
+`CONTRIBUTING.md`; they sketch out how I'd like the code to look and what the
+process (roughly) looks like, so that I can keep things as organized as they
+can be.
+
 ---
 
 **A note about versions**: My format is `major.milestone`, where each is
@@ -63,35 +69,73 @@ Major version `0` is pre-completion; some of the parts may be
 
 ---
 
-###Current milestone
+### Current milestone
 
 #### Intermediary refactor - 0.5
 
 * [ ] Refactor to interface consistent across all bits and pieces - 0.5  
   The code is getting a little out of hand. I have some things I want to do to
     clean it up.
-  * [ ] Change tests to success counters - 0.5.0  
+  * [x] Change tests to success counters - 0.5.0  
     Count total tests, count number of successes (or, equivalently, fails)
       and report that.
-    * Collect successes/fails in main test method; if there are any failures,
+    * [x] Change to count successes + only display totals
+    * [x] Collect successes/fails in main test method; if there are failures,
       HCF and exit with error code representing failed module.
-  * [ ] Consistent error handling across all functions - 0.5.1  
-    * [ ] Make methods return an `unsigned long` error code. If they can't
+  * [x] Consistent error handling across all functions - 0.5.1  
+    For each of the files listed below:
+    1. Make methods return an `unsigned long` error code. If they can't
       fail, then they'll always return success.  
-      If you need to return data (e.g. map getters) use an out parameter.
-    * [ ] Convert `bool` error indicators to error codes  
+      If you need to return data (e.g. ctors, getters) use an out parameter.
+    2. Convert `bool` error indicators to error codes  
       Don't store error in an object, return it. (*cough* Tokenizer *cough*)
-    * [ ] Collect all error codes in `errors.h`, ensure no duplicates/overlap  
+    3. Collect all error codes in `errors.h`, ensure no dupes/overlap  
       Also, a `const char *to_str(error_code)` to provide error messages
-  * [ ] TLC for `tknr_next`.  
+    * [x] `code_block.h`
+    * [x] `data_stack.h`
+    * [x] `method_map.h`
+    * [x] `object.h`
+    * [x] `prop_map.h`
+    * [x] `stringbuilder.h`
+    * [x] `token_stack.h`
+    * [x] `tokenizer.h`
+  * [x] TLC for `tknr_next` - 0.5.2  
     It's currently a jumbled mess. Some careful thought will be good for it,
       to simplify it as much as possible. FSA may be useful, as well as taking
       a peek at FORTH and Factor's tokenizers.
-  * [ ] Write a code style guide.  
+    * [x] We don't need to take `char *next_char`. That's a holdover.
+    * [ ] ~~Use `unsigned char` instead of `char`.~~
+    * [x] Use `skip_char` instead of `read_char`  
+    It's pretty much unsalvageable :( Oh well.
+  * [x] Write a code style guide 0.5.3  
     Start by getting down the ideas, see what patterns emerge, categorize
       based on that.
+    * [x] Actually write it.
+    * [x] Go through the code to make sure everything abides by it.
+  * [ ] Ensure everything is unit tested - 0.5.4
+    * [x] `StringBuilder`
+    * [x] `ctno_copy`
+    * [ ] `tst_peek`?
+    * Look for unused functions; those indicate obvious non-tests
+  * [ ] Go through the Valgrind report and eliminate the memory leaks
+    * This is gonna take a while. :(
+  * [ ] Everything in the `TODO` comments - 0.5.5  
+    ...as long as it's possible to do now; i.e. doesn't require work that's
+      slated for completion in a later milestone.
+  * [ ] Misc. cleanup tasks
+    * [ ] Follow the last bullet point of the style guide
+    * [ ] Make sure `Object`s aren't accidentally getting passed around by
+      value to avoid nasty GC-related bugs later
+    * [ ] Ditto for `Tokenizer`s and file handle cleanup
+    * [ ] Implement that one Token -> Object method (forgot to do this in
+      0.1)
+    * [ ] Condense the error codes and make sure they're named consistently.
+    * [ ] Nested error types? (i.e. SOME_ERROR thrown b/c SOME_OTHER_ERROR)
+    * [ ] Make sure everything checks return values (where there are any)
+    * [ ] Use a pushable `Tokenizer` in `TokenStack` to make the history bit
+      more accurate.
 
-###Upcoming milestones
+### Upcoming milestones
 
 * [ ] `runnable.h` - 0.6  
   A combination object so I can either define things in Concaten, through
@@ -105,6 +149,7 @@ Major version `0` is pre-completion; some of the parts may be
 * [ ] Main method - 0.8
 * [ ] Minimal standard library - 0.9  
   Words like `if`, `{`, and `puts` so we can play with the language at all.
+  * When designing/adding arrays, add the same methods to `CodeBlock`
 * [ ] Misc. required updates as needed
   * [ ] Thorough code review  
     Finding places where the code is needlessly complicated, duplicated, or
@@ -146,19 +191,19 @@ Major version `0` is pre-completion; some of the parts may be
   * GUI (ditto)
 * [ ] Multithreading/thread safety - 2.0  
   This is going to require something close to a complete rewrite, to make sure
-    everything is as thread-safe as it can get. Note that this is intentionally
+    everything is as thread-safe as it can get. Note that this is deliberately
     a bullet list, not checkboxes, since it's ideas at this stage.
   * Make everything thread-safe (mutexes on read/write; allow parallel reads
     but not parallel writes)
-    * `set`s lock a mutex for the entire time; `get`s lock and then immediately
+    * `set`s lock a mutex for the entire time; `get`s lock and immediately
       unlock them? (to sync, make sure that gets don't occur in the middle of
       a set)
-      * Maybe disable this until first thread created, then enable it? (for the
-        sake of performance in single-threaded applications)
-    * Each thread gets its own stacks/scopes (copied, but independent); passing
-      data has to be done very, very intentionally. (This also obviates the need
+      * Maybe disable this until first thread created, then enable it? (for
+        performance in single-threaded applications)
+    * Each thread gets its own copied, but independent, stacks/scopes; passing
+      data has to be done very intentionally. (This also removes the need
       for synchronization on the stacks, which would get expensive)
-    * Force synchronization between reads/writes of console, files; GUI updates?
+    * Force sync between reads/writes of console/files; GUI updates?
   * [Task](https://msdn.microsoft.com/en-us/library/dd537609.aspx)s?
   * Asynchronous versions of the Networking and File I/O APIs.
   * Events? (technically possible already, but easier with multithreading)
@@ -172,7 +217,7 @@ Major version `0` is pre-completion; some of the parts may be
     of Unicode codepoints.  
   Also, support Unicode in string-modification/i18n modules.
 
-###Previous milestones
+### Previous milestones
 
 * [x] `tokenizer.h` - 0.0  
   Converts a stream of characters into a stream of tokens. That way, the
