@@ -55,7 +55,7 @@ ERROR ctno_copy(const struct Object copying, struct Object *into) {
     struct Object ret = (struct Object) {
             .is_literal = copying.is_literal,
             .methods = copying.methods,
-            .refcount = 0
+            .refcount = 1
     };
     if (copying.is_literal) {
         const size_t width = copying.data.literal.size;
