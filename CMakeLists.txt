@@ -9,8 +9,9 @@ set(NORMAL_LIBS)
 set(TEST_FLAGS "")
 set(TEST_LIBS)
 
-set(PROFILE_FLAGS "-static -g -fsanitize=address -fno-omit-frame-pointer")
-set(PROFILE_LIBS asan)
+# to enable ASan, add -fsanitize=address -fno-omit-frame-pointer and asan lib
+set(PROFILE_FLAGS "-static -g")
+set(PROFILE_LIBS)
 
 set(NORMAL_SRCS
         tokenizer.c stringbuilder.c method_map.c prop_map.c object.c
