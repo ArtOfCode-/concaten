@@ -77,7 +77,6 @@ ERROR pm_new(size_t width, struct PropMap *into) {
     return NO_ERROR;
 }
 
-ERROR ctno_claim(struct Object *);
 ERROR pm_copy(const struct PropMap copying, struct PropMap *into) {
     struct PropMap ret;
     if (pm_new(copying.bucket_count, &ret) != NO_ERROR) {

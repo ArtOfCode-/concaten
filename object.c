@@ -69,6 +69,14 @@ ERROR ctno_copy(const struct Object copying, struct Object *into) {
         if (pm_copy(copying.data.properties, &pm_c) != NO_ERROR) {
             return CTNO_COPY_PROPS_FAIL;
         }
+        for (size_t bidx = 0; bidx < pm_c.bucket_count; ++bidx) {
+            struct PM_Bucket *bk = &pm_c.buckets[bidx];
+            for (size_t iidx = 0; iidx < bk->count; ++iidx) {
+                if (ctno_claim(bk->items[iidx].val) != NO_ERROR) {
+                    return CTNO_COPY_CLAIM_FAIL;
+                }
+            }
+        }
         ret.data.properties = pm_c;
     }
     *into = ret;
