@@ -70,6 +70,7 @@ struct TestResult test_object() {
     tassert(t1.data.literal.value != t6.data.literal.value,
             "reference copy");
     tassert(*ctno_to(t1, long) == *ctno_to(t6, long), "unequal val");
+    ctno_free(&t6);
     ctno_free(&t3);
     // and _now_ t1/t2 should be gone.
     
