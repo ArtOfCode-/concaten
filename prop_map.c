@@ -208,6 +208,7 @@ ERROR pm_rehash(struct PropMap *pm, size_t new_size) {
             }
         }
     }
+    free(pm);
     *pm = new;
     return NO_ERROR;
 }
