@@ -202,6 +202,7 @@ ERROR mm_rehash(struct MethodMap *mm, size_t new_size) {
             }
         }
     }
+    free(mm);
     *mm = new;
     return NO_ERROR;
 }
