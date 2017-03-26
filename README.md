@@ -104,7 +104,7 @@ Major version `0` is pre-completion; some of the parts may be
       to simplify it as much as possible. FSA may be useful, as well as taking
       a peek at FORTH and Factor's tokenizers.
     * [x] We don't need to take `char *next_char`. That's a holdover.
-    * ~~[ ] Use `unsigned char` instead of `char`.~~
+    * [ ] ~~Use `unsigned char` instead of `char`.~~
     * [x] Use `skip_char` instead of `read_char`  
     It's pretty much unsalvageable :( Oh well.
   * [x] Write a code style guide 0.5.3  
@@ -114,7 +114,7 @@ Major version `0` is pre-completion; some of the parts may be
     * [x] Go through the code to make sure everything abides by it.
   * [ ] Ensure everything is unit tested - 0.5.4
     * [x] `StringBuilder`
-    * [ ] `ctno_copy`
+    * [x] `ctno_copy`
     * [ ] `tst_peek`?
     * Look for unused functions; those indicate obvious non-tests
   * [ ] Go through the Valgrind report and eliminate the memory leaks

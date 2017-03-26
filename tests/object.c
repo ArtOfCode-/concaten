@@ -4,7 +4,8 @@
 #include "../object.h"
 
 static size_t successes = 0, total = 0;
-void assert_eq(const char *restrict a, const char *restrict b, const char *restrict from) {
+void assert_eq(const char *restrict a, const char *restrict b,
+               const char *restrict from) {
     tassert(a, "LHS is null");
     tassert(b, "RHS is null");
     if (!a || !b) return;
@@ -13,14 +14,12 @@ void assert_eq(const char *restrict a, const char *restrict b, const char *restr
 
 struct TestResult test_object() {
     long val = 12;
-    struct Object t1;
+    struct Object t1, t2, t3;
     tassert(ctno_literal(&val, sizeof(long), NULL, &t1) == NO_ERROR,
             "failed to initialize t1");
     const char *name = "Foobar";
-    struct Object t2;
     tassert(ctno_literal(name, 7, NULL, &t2) == NO_ERROR,
             "failed to initialize t2");
-    struct Object t3;
     struct PropMap t1pm;
     tassert(pm_new(8, &t1pm) == NO_ERROR, "failed to create propmap");
     tassert(ctno_dynamic(t1pm, NULL, &t3) == NO_ERROR,
@@ -58,8 +57,21 @@ struct TestResult test_object() {
     tassert(ctno_set_prop(&t3, "self", &t4) == CTNO_SET_CYCLE_FAIL,
             "indirect cycles allowed");
     ctno_free(&t4);
+    struct Object t5, t5g1;
+    tassert(ctno_copy(t3, &t5) == NO_ERROR, "failed to copy");
+    tassert(t3.data.properties.buckets != t5.data.properties.buckets,
+            "reference copy, not real copy");
+    tassert(ctno_get_prop(t5, "1", &t5g1) == NO_ERROR, "failed to get");
+    tassert(t5g1.data.literal.value == t1.data.literal.value,
+            "failed to get identical object");
+    ctno_free(&t5);
+    struct Object t6;
+    tassert(ctno_copy(t1, &t6) == NO_ERROR, "failed to copy");
+    tassert(t1.data.literal.value != t6.data.literal.value,
+            "reference copy");
+    tassert(*ctno_to(t1, long) == *ctno_to(t6, long), "unequal val");
     ctno_free(&t3);
-    // and _now_ they should be gone.
+    // and _now_ t1/t2 should be gone.
     
     return (struct TestResult) { .successes = successes, .total = total };
 }

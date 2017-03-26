@@ -4,13 +4,14 @@
 #include <string.h>
 
 const ERROR PM_CTOR_MALLOC_FAIL = 5501;
-const ERROR PM_COPY_MALLOC_FAIL = 5502;
+const ERROR PM_COPY_CREATE_FAIL = 5502;
 const ERROR PM_NESTED_REHASH_FAIL = 5503;
 const ERROR PM_RH_CREATE_FAIL = 5504;
 const ERROR PM_RH_BAD_SIZE_FAIL = 5505;
 const ERROR PM_SET_REHASH_FAIL = 5508;
 const ERROR PM_GET_NO_KEY_FAIL = 5509;
-const ERROR PM_RMV_NO_KEY_FAIL = 5510;
+const ERROR PM_GET_MALLOC_FAIL = 5510;
+const ERROR PM_RMV_NO_KEY_FAIL = 5511;
 
 // the amount by which we increase the map's capacity each time
 #define LOAD_FACTOR 2
@@ -32,13 +33,31 @@ struct PM_Bucket pm_bk_zero() {
 }
 
 size_t pm_hash(const char *key) {
-    // taken from http://stackoverflow.com/a/7666577/1863564
+    // taken from http://stackoverflow.com/a/7666577
     size_t hash = 5381;
     char c;
     while ((c = *key++) != 0) {
         hash = (hash * 33) ^ c;
     }
     return hash;
+}
+
+// doesn't do any preexistence-checking, just bounds.
+// will produce duplicate keys if not used carefully!
+// but also marginally faster.
+bool pm_raw_add(struct PropMap *pm, const char *key, PM_VALUE_TYPE val) {
+    size_t bucket_idx = pm_hash(key) % pm->bucket_count;
+    struct PM_Bucket *bk = &pm->buckets[bucket_idx];
+    if (bk->count == PM_MAX_BUCKET_DEPTH) return false;
+    bk->items[bk->count] = (struct PM_KeyValPair) {
+            .val = val,
+            .key = key,
+            .key_len = strlen(key) + 1
+    };
+    ++bk->count;
+    if (bk->count == PM_PREF_BUCKET_DEPTH) ++pm->bk_gr_pref;
+    ++pm->item_count;
+    return true;
 }
 
 ERROR pm_new(size_t width, struct PropMap *into) {
@@ -58,28 +77,35 @@ ERROR pm_new(size_t width, struct PropMap *into) {
     return NO_ERROR;
 }
 
-ERROR pm_copy(struct PropMap copying, struct PropMap *into) {
-    size_t width = copying.bucket_count;
-    struct PM_Bucket *buckets = malloc(width * sizeof(struct PM_Bucket));
-    if (!buckets) {
-        return PM_COPY_MALLOC_FAIL;
+ERROR ctno_claim(struct Object *);
+ERROR pm_copy(const struct PropMap copying, struct PropMap *into) {
+    struct PropMap ret;
+    if (pm_new(copying.bucket_count, &ret) != NO_ERROR) {
+        return PM_COPY_CREATE_FAIL;
     }
-    for (size_t i = 0; i < PM_MAX_BUCKET_DEPTH; ++i) {
-        // by the power of C-skull, copy!
-        buckets[i] = copying.buckets[i];
+    for (size_t bidx = 0; bidx < copying.bucket_count; ++bidx) {
+        for (size_t iidx = 0; iidx < copying.buckets[bidx].count; ++iidx) {
+            struct PM_KeyValPair item = copying.buckets[bidx].items[iidx];
+            pm_raw_add(&ret, item.key, item.val);
+        }
     }
-    *into = (struct PropMap) {
-            .bucket_count = width,
-            .bk_gr_pref = 0,
-            .item_count = 0,
-            .buckets = buckets,
-    };
+    *into = ret;
     return NO_ERROR;
 }
 
-ERROR pm_set(struct PropMap *pm, const char *key, PM_VALUE_TYPE val) {
-    size_t key_len = strlen(key);
-    size_t idx = pm_hash(key) % pm->bucket_count;
+ERROR pm_set(struct PropMap *pm, const char *k, PM_VALUE_TYPE val) {
+    size_t key_len = strlen(k) + 1;
+    char *key = malloc(key_len);
+    if (!key) return PM_GET_MALLOC_FAIL;
+    strncpy(key, k, key_len);
+    struct PM_KeyValPair adding_kvp = (struct PM_KeyValPair) {
+            .key = key,
+            .key_len = key_len,
+            .val = val
+    };
+    size_t key_hash_raw = pm_hash(key);
+    
+    size_t idx = key_hash_raw % pm->bucket_count;
     struct PM_Bucket *bucket = &pm->buckets[idx];
     for (size_t i = 0; i < bucket->count; ++i) {
         if (bucket->items[i].key_len == key_len &&
@@ -94,16 +120,12 @@ ERROR pm_set(struct PropMap *pm, const char *key, PM_VALUE_TYPE val) {
             return PM_SET_REHASH_FAIL;
         }
         // since things are in different places now, we have to reorganize
-        idx = pm_hash(key) % pm->bucket_count;
+        idx = key_hash_raw % pm->bucket_count;
         bucket = &pm->buckets[idx];
         // note that we're not searching to see if it exists again, since
         // we already checked if it's in there.
     }
-    bucket->items[bucket->count] = (struct PM_KeyValPair) {
-            .key = key,
-            .key_len = strlen(key),
-            .val = val
-    };
+    bucket->items[bucket->count] = adding_kvp;
     ++bucket->count;
     // == instead of > because we add one at a time and this way
     // it only once (instead of once per additional item!)
@@ -115,7 +137,7 @@ ERROR pm_set(struct PropMap *pm, const char *key, PM_VALUE_TYPE val) {
 ERROR pm_get(const struct PropMap pm, const char *key, PM_VALUE_TYPE *out) {
     if (pm.item_count == 0) return PM_GET_NO_KEY_FAIL;
     size_t idx = pm_hash(key) % pm.bucket_count;
-    size_t key_len = strlen(key);
+    size_t key_len = strlen(key) + 1;
     struct PM_Bucket bucket = pm.buckets[idx];
     for (size_t i = 0; i < bucket.count; ++i) {
         if (bucket.items[i].key_len == key_len &&
@@ -131,7 +153,7 @@ ERROR pm_remove(struct PropMap *pm, const char *finding) {
     if (pm->item_count == 0) return PM_RMV_NO_KEY_FAIL;
     size_t idx = pm_hash(finding) % pm->bucket_count;
     struct PM_Bucket *bucket = &pm->buckets[idx];
-    size_t finding_len = strlen(finding);
+    size_t finding_len = strlen(finding) + 1;
     // this should work as-is for edge cases like empty buckets and found
     // items being at the very end or beginning of their buckets.
     size_t removed;
@@ -155,7 +177,7 @@ ERROR pm_remove(struct PropMap *pm, const char *finding) {
 bool pm_is_key(const struct PropMap pm, const char *key) {
     size_t idx = pm_hash(key) % pm.bucket_count;
     struct PM_Bucket *bucket = &pm.buckets[idx];
-    size_t finding_len = strlen(key);
+    size_t finding_len = strlen(key) + 1;
     for (size_t i = 0; i < bucket->count; ++i) {
         if (bucket->items[i].key_len == finding_len && 
                 strcmp(key, bucket->items[i].key) == 0) {
@@ -173,24 +195,6 @@ bool pm_is_value(const struct PropMap pm, PM_VALUE_TYPE v) {
         }
     }
     return false;
-}
-
-// doesn't do any preexistence-checking, just bounds.
-// will produce duplicate keys if not used carefully!
-// but also marginally faster.
-bool pm_raw_add(struct PropMap *pm, const char *key, PM_VALUE_TYPE val) {
-    size_t bucket_idx = pm_hash(key) % pm->bucket_count;
-    struct PM_Bucket *bk = &pm->buckets[bucket_idx];
-    if (bk->count == PM_MAX_BUCKET_DEPTH) return false;
-    bk->items[bk->count] = (struct PM_KeyValPair) {
-            .val = val,
-            .key = key,
-            .key_len = strlen(key)
-    };
-    ++bk->count;
-    if (bk->count == PM_PREF_BUCKET_DEPTH) ++pm->bk_gr_pref;
-    ++pm->item_count;
-    return true;
 }
 
 ERROR pm_rehash(struct PropMap *pm, size_t new_size) {
