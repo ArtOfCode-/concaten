@@ -1,4 +1,4 @@
-# Concaten v0.5.3
+# Concaten v0.5.4
 
 Concaten is a concatenative, stack-based, strongly but optionally strictly
 typed, hyperdynamic, garbage-collected, interpreted programming language. In
@@ -112,7 +112,7 @@ Major version `0` is pre-completion; some of the parts may be
       based on that.
     * [x] Actually write it.
     * [x] Go through the code to make sure everything abides by it.
-  * [ ] Ensure everything is unit tested - 0.5.4
+  * [x] Ensure everything is unit tested - 0.5.4
     * [x] `StringBuilder`
     * [x] `ctno_copy`
     * [ ] ~~`tst_peek`~~
