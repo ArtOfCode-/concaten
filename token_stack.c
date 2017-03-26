@@ -111,15 +111,6 @@ ERROR tst_pop(struct TokenStack *this, struct Token *ret) {
     return NO_ERROR;
 }
 
-ERROR tst_peek(const struct TokenStack this, struct Token *ret) {
-    if (!this.level_head || !this.level_head->token_head) {
-        return TST_PEEK_EMPTY_FAIL;
-    } else {
-        *ret = this.level_head->token_head->value;
-        return NO_ERROR;
-    }
-}
-
 ERROR tst_push_level(struct TokenStack *this) {
     struct TS_LevelNode *pushing = malloc(sizeof(*pushing));
     if (!pushing) {
