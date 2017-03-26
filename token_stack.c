@@ -32,7 +32,7 @@ bool tst_push_change(struct TokenStack *this,
     if (!this->tracking_changes) {
         return true;
     }
-    struct TS_ChangeNode *pushing = malloc(sizeof(struct TS_ChangeNode));
+    struct TS_ChangeNode *pushing = malloc(sizeof(*pushing));
     if (!pushing) {
         return false;
     }
@@ -58,7 +58,7 @@ ERROR tst_new(const struct Tokenizer this, struct TokenStack *into) {
 
 ERROR tst_push(struct TokenStack *this, const struct Token pushing) {
     if (!this->level_head) tst_push_level(this);
-    struct TS_TokenNode *pushing_node = malloc(sizeof(struct TS_TokenNode));
+    struct TS_TokenNode *pushing_node = malloc(sizeof(*pushing_node));
     if (!pushing_node) {
         return TST_PUSH_MALLOC_FAIL;
     }
@@ -121,7 +121,7 @@ ERROR tst_peek(const struct TokenStack this, struct Token *ret) {
 }
 
 ERROR tst_push_level(struct TokenStack *this) {
-    struct TS_LevelNode *pushing = malloc(sizeof(struct TS_LevelNode));
+    struct TS_LevelNode *pushing = malloc(sizeof(*pushing));
     if (!pushing) {
         return TST_PUSH_LEVEL_MALLOC_FAIL;
     }

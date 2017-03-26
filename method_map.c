@@ -45,7 +45,7 @@ size_t mm_hash(const char *key) {
 }
 
 ERROR mm_new(size_t width, struct MethodMap *into) {
-    struct MM_Bucket *buckets = malloc(width * sizeof(struct MM_Bucket));
+    struct MM_Bucket *buckets = malloc(width * sizeof(*buckets));
     if (!buckets) {
         return MM_CTOR_MALLOC_FAIL;
     }

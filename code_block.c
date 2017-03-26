@@ -1,5 +1,7 @@
-#include <stdlib.h>
 #include "code_block.h"
+
+#include <stdlib.h>
+#include <stdint.h>
 
 const ERROR CB_CTOR_MALLOC_FAIL = 1001;
 const ERROR CB_COPY_MALLOC_FAIL = 1002;
@@ -12,7 +14,7 @@ const ERROR CB_GET_BAD_IDX_FAIL = 1041;
 const ERROR CB_SET_BAD_IDX_FAIL = 1051;
 
 ERROR cb_new(size_t init_cap, struct CodeBlock *ret) {
-    struct Token *mem = malloc(init_cap * sizeof(struct Token));
+    struct Token *mem = malloc(init_cap * sizeof(*mem));
     if (!mem) return CB_CTOR_MALLOC_FAIL;
     *ret = (struct CodeBlock) {
             .cap = init_cap,
@@ -23,7 +25,7 @@ ERROR cb_new(size_t init_cap, struct CodeBlock *ret) {
 }
 
 ERROR cb_copy(const struct CodeBlock from, struct CodeBlock *into) {
-    struct Token *mem = malloc(from.cap * sizeof(struct Token));
+    struct Token *mem = malloc(from.cap * sizeof(*mem));
     if (!mem) return CB_COPY_MALLOC_FAIL;
     for (size_t i = 0; i < from.cap; ++i) {
         mem[i] = from.tokens[i];
@@ -38,11 +40,10 @@ ERROR cb_copy(const struct CodeBlock from, struct CodeBlock *into) {
 
 // non-public method; shouldn't get a public ERROR for itself
 bool cb_expand(struct CodeBlock *cb) {
-    // TODO protect against SIZE_MAX overflow
-    size_t new_cap = cb->cap * 2 * sizeof(struct Token);
-    struct Token *new_mem = realloc(cb->tokens, new_cap);
-    if (!new_mem) return false;
-    cb->tokens = new_mem;
+    if (cb->cap > SIZE_MAX / 2) return false;
+    struct Token *mem = realloc(cb->tokens, cb->cap * 2 * sizeof(*mem));
+    if (!mem) return false;
+    cb->tokens = mem;
     cb->cap *= 2;
     return true;
 }

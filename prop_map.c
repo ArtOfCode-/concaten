@@ -61,7 +61,7 @@ bool pm_raw_add(struct PropMap *pm, const char *key, PM_VALUE_TYPE val) {
 }
 
 ERROR pm_new(size_t width, struct PropMap *into) {
-    struct PM_Bucket *buckets = malloc(width * sizeof(struct PM_Bucket));
+    struct PM_Bucket *buckets = malloc(width * sizeof(*buckets));
     if (!buckets) {
         return PM_CTOR_MALLOC_FAIL;
     }
