@@ -1,4 +1,4 @@
-###Guiding principles
+### Guiding principles
 
 1. Error tracking must be possible. If an error happens, it has to be reported
    to the caller, so the caller can either report the exception up the chain
@@ -27,7 +27,7 @@
     * `void foo_free(Foo *f)` will just silently return immediately if `NULL`
       is passed in.
 
-###Misc. Details
+### Misc. Details
 * Indent with spaces, and spaces only.
 * Indent by 4 * [indent level] spaces (plus any additions)
 * After a `{`, increase the indent level by 1.
@@ -60,3 +60,7 @@
 * Include headers as little as possible -- if `<string.h>` is only needed for
   something's implementation, include it only in the relevant source file, not
   the header.
+* Types should only have their own file if they're used by more than one other
+  type, and aren't intrinsically tied to a certain type. If they don't deserve
+  their own file, they should be forward-declared at most in the header, then
+  defined in the source file, of their associated type.

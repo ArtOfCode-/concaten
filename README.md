@@ -123,7 +123,7 @@ Major version `0` is pre-completion; some of the parts may be
     ...as long as it's possible to do now; i.e. doesn't require work that's
       slated for completion in a later milestone.
   * [ ] Misc. cleanup tasks
-    * [ ] Give every type its own `.h` and `.c`
+    * [ ] Follow the last bullet point of the style guide
     * [ ] Make sure `Object`s aren't accidentally getting passed around by
       value to avoid nasty GC-related bugs later
     * [ ] Ditto for `Tokenizer`s and file handle cleanup
@@ -132,6 +132,8 @@ Major version `0` is pre-completion; some of the parts may be
     * [ ] Condense the error codes and make sure they're named consistently.
     * [ ] Nested error types? (i.e. SOME_ERROR thrown b/c SOME_OTHER_ERROR)
     * [ ] Make sure everything checks return values (where there are any)
+    * [ ] Use a pushable `Tokenizer` in `TokenStack` to make the history bit
+      more accurate.
 
 ### Upcoming milestones
 
