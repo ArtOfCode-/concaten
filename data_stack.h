@@ -5,7 +5,8 @@
 
 #include "error.h"
 
-// linked-list has O(1) push/pop always, and can be copied in O(1) (as long as it's not a deep copy!)
+// linked-list has O(1) push/pop always, and can be copied in O(1)
+// (as long as it's not a deep copy!)
 
 struct DST_Node;
 struct DataStack {

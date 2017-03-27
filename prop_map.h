@@ -5,9 +5,6 @@
 #include <stdbool.h>
 #include "error.h"
 
-// Note: I'm writing this so it can be used with a different type, which is significantly more
-// complex, and that I don't want to spend the time to write just yet. I'm using `int` in its
-// place. These macros are defined so it's easy to switch the types out.
 struct Object;
 typedef struct Object *PM_VALUE_TYPE;
 

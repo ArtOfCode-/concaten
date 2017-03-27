@@ -55,8 +55,9 @@ void test(const struct Spec ts, size_t i) {
         tassert(cnt <= ts.token_count, "%zu: Too many tokens (got %zu)",
                 i, cnt);
         if (ts.types && !tknr_end(t)) {
-            tassert(next.type == ts.types[cnt - 1], "%zu: Wrong type (%s not %s)",
-                    i, tkn_type_name(next.type), tkn_type_name(ts.types[cnt-1]));
+            tassert(next.type == ts.types[cnt - 1],
+                    "%zu: Wrong type (%s not %s)", i,
+                    tkn_type_name(next.type), tkn_type_name(ts.types[cnt-1]));
         }
         tassert(ts.code == err, "%zu: Incorrect code (" EFMT ", not " EFMT ")",
                 i, err, ts.code);

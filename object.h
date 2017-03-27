@@ -17,9 +17,10 @@ struct Object {
         struct LiteralData literal;
     } data;
     bool is_literal;
-    // NB: This intentionally stores a pointer to it, not a copy. That way, we can modify
-    // the methods that every object created from a class has, by modifying the class's
-    // central copy. If the object's specific version is modified, the methods are copied then.
+    // NB: This intentionally stores a pointer to it, not a copy. That way, we
+    // can modify the methods that every object created from a class has, by
+    // modifying the class's central copy. If the object's specific version is
+    // modified, the methods are copied then.
     struct MethodMap *methods;
     size_t refcount;
 };

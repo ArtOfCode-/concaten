@@ -17,7 +17,8 @@ struct TestResult test_prop_map() {
             "failed to initialize val");
     struct Object *ret;
     a_set("foobar", &val);
-    tassert(pm_get(pm, "foobar", &ret) == NO_ERROR, "failed to get expected value");
+    tassert(pm_get(pm, "foobar", &ret) == NO_ERROR,
+            "failed to get expected value");
     a_set("asdf", &val);
     a_set("z", &val);
     a_set("crum", &val);

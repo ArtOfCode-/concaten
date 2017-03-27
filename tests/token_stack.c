@@ -29,14 +29,14 @@ void a_token_push(struct TokenStack *tst, struct Token pushing, ERROR res) {
             pushing.index, pushing.line, !res);
 }
 
-void a_token_pop(struct TokenStack *tst, ERROR expected, size_t index, size_t line) {
+void a_token_pop(struct TokenStack *tst, ERROR expected, size_t i, size_t l) {
     struct Token popped;
     ERROR err = tst_pop(tst, &popped);
     tassert(err == expected, "got unexpected return result");
     if (err == NO_ERROR) {
-        tassert(popped.index == index && popped.line == line,
+        tassert(popped.index == i && popped.line == l,
                 "wrong element popped (%zu %zu, not %zu %zu)",
-                popped.index, popped.line, index, line);
+                popped.index, popped.line, i, l);
         tkn_free(&popped);
     }
 }
