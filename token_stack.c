@@ -20,6 +20,7 @@ void tst_level_node_free(struct TS_LevelNode *this) {
         struct TS_TokenNode *node = this->token_head;
         while (node) {
             struct TS_TokenNode *next = node->next;
+            tkn_free(&next->value);
             free(node);
             node = next;
         }

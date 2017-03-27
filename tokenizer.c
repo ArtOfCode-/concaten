@@ -85,9 +85,7 @@ ERROR tkn_copy(const struct Token from, struct Token *into) {
 
 void tkn_free(struct Token *t) {
     free(t->raw);
-    t->raw = NULL;
     free(t->origin);
-    t->origin = NULL;
 }
 
 ERROR get_next_char_file(struct Tokenizer *from) {
