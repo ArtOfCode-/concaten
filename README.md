@@ -119,12 +119,12 @@ Major version `0` is pre-completion; some of the parts may be
     * Look for unused functions; those indicate obvious non-tests  
       The `mm_`s are listing as uncalled because they're only called through  
         macros. There might be more similar errors elsewhere.
-  * [ ] Go through the Valgrind report and eliminate the memory leaks
+  * [x] Go through the Valgrind report and eliminate the memory leaks - 0.5.5
     * This is gonna take a while. :(
-  * [ ] Everything in the `TODO` comments - 0.5.5  
+  * [ ] Everything in the `TODO` comments - 0.5.6  
     ...as long as it's possible to do now; i.e. doesn't require work that's
       slated for completion in a later milestone.
-  * [ ] Misc. cleanup tasks
+  * [ ] Misc. cleanup tasks - 0.5.7
     * [ ] Follow the last bullet point of the style guide
     * [ ] Make sure `Object`s aren't accidentally getting passed around by
       value to avoid nasty GC-related bugs later
