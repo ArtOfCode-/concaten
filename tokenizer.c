@@ -608,6 +608,7 @@ ERROR tknr_next(struct Tokenizer *from, struct Token *out) {
         if (err != NO_ERROR) goto error_handler;
         next_char = (from)->next_char;
         if ('0' <= next_char && next_char <= '9') {
+            sb_free(&raw);
             return get_number(from, ret, true, out);
         }
     } else if (next_char == 'r') {
