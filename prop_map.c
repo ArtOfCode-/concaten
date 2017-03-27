@@ -215,6 +215,12 @@ ERROR pm_rehash(struct PropMap *pm, size_t new_size) {
 
 void pm_free(struct PropMap *pm) {
     if (pm) {
+        for (size_t bidx = 0; bidx < pm->bucket_count; ++bidx) {
+            struct PM_Bucket bk = pm->buckets[bidx];
+            for (size_t iidx = 0; iidx < bk.count; ++iidx) {
+                free(bk.items[iidx].key);
+            }
+        }
         free(pm->buckets);
         pm->buckets = NULL;
     }
