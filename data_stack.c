@@ -9,6 +9,7 @@ void dst_node_free(struct DST_Node *freeing) {
     if (freeing) {
         --freeing->refcount;
         if (freeing->refcount == 0) {
+            free(freeing);
             dst_node_free(freeing->next);
         }
     }
@@ -40,6 +41,7 @@ ERROR dst_pop(struct DataStack *dst, struct Object **into) {
     if (!dst->head) return DST_POP_EMPTY_FAIL;
     struct Object *ret = dst->head->value;
     struct DST_Node *next = dst->head->next;
+    // claim for top of stack
     if (next) ++next->refcount;
     dst_node_free(dst->head);
     dst->head = next;
@@ -51,7 +53,7 @@ ERROR dst_copy(const struct DataStack copying, struct DataStack *into) {
     struct DataStack ret = (struct DataStack) {
             .head = copying.head
     };
-    ++ret.head->refcount;
+    if (ret.head) ++ret.head->refcount;
     *into = ret;
     return NO_ERROR;
 }
