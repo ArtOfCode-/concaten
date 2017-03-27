@@ -66,11 +66,13 @@ ERROR tkn_copy(const struct Token from, struct Token *into) {
     if (!new_raw) {
         return TKNR_TKN_COPY_MALLOC_RAW_FAIL;
     }
+    strncpy(new_raw, from.raw, from.raw_len);
     char *new_origin = malloc(from.origin_len);
     if (!new_origin) {
         free(new_raw);
         return TKNR_TKN_COPY_MALLOC_ORG_FAIL;
     }
+    strncpy(new_origin, from.origin, from.origin_len);
     *into = (struct Token) {
             .origin_len = from.origin_len,
             .origin = new_origin,
