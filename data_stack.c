@@ -40,7 +40,7 @@ ERROR dst_pop(struct DataStack *dst, struct Object **into) {
     if (!dst->head) return DST_POP_EMPTY_FAIL;
     struct Object *ret = dst->head->value;
     struct DST_Node *next = dst->head->next;
-    ++next->refcount;
+    if (next) ++next->refcount;
     dst_node_free(dst->head);
     dst->head = next;
     if (into) *into = ret;
