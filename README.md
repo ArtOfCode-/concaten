@@ -137,6 +137,7 @@ Major version `0` is pre-completion; some of the parts may be
     * [ ] Use a pushable `Tokenizer` in `TokenStack` to make the history bit
       more accurate.
     * [ ] `tst_peek` is fundamentally broken right now. Make it work.
+    * [ ] Replace `strfoo` with `strnfoo` where available.
 
 ### Upcoming milestones
 
