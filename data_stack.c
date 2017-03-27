@@ -9,8 +9,9 @@ void dst_node_free(struct DST_Node *nd) {
     while (nd) {
         --nd->refcount;
         if (nd->refcount == 0) {
+            struct DST_Node *next = nd->next;
             free(nd);
-            nd = nd->next;
+            nd = next;
         } else {
             break;
         }
