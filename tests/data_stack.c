@@ -1,6 +1,7 @@
 #include "../test.h"
 
 #include "../data_stack.h"
+#include "../object.h"
 
 #define assert_pop_eq(num, what) \
     tassert(dst_pop(&dst##num, &dst##num##_got) == NO_ERROR, \
