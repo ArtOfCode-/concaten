@@ -163,14 +163,17 @@ ERROR tst_restore_state(struct TokenStack *this) {
     while (todo) {
         // errors are determined by the action we're trying to reverse
         switch (todo->type) {
+            struct Token popped;
             case TSCN_TOKEN_POP:
                 if (tst_push(this, todo->data.popped) != NO_ERROR) {
                     return TST_RSTR_POP_FAIL;
                 }
                 break;
             case TSCN_TOKEN_PUSH:
-                if (tst_pop(this, NULL) != NO_ERROR) {
+                if (tst_pop(this, &popped) != NO_ERROR) {
                     return TST_RSTR_PUSH_FAIL;
+                } else {
+                    tkn_free(&popped);
                 }
                 break;
             case TSCN_LEVEL_POP:
