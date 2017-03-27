@@ -138,6 +138,8 @@ Major version `0` is pre-completion; some of the parts may be
       more accurate.
     * [ ] `tst_peek` is fundamentally broken right now. Make it work.
     * [ ] Replace `strfoo` with `strnfoo` where available.
+    * [ ] Ensure that all error codes defined in source files are declared in
+      `error.h`
 
 ### Upcoming milestones
 
