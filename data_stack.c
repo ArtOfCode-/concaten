@@ -32,7 +32,7 @@ ERROR dst_push(struct DataStack *dst, struct Object *pushing) {
             .next = dst->head,
             .value = pushing
     };
-    // head would be claimed then immediately released
+    
     dst->head = val;
     return NO_ERROR;
 }
@@ -44,6 +44,7 @@ ERROR dst_pop(struct DataStack *dst, struct Object **into) {
     // stack is no longer pointing to it; other things might, so it might stay
     dst_node_free(dst->head);
     dst->head = next;
+    ++dst->head->refcount;
     if (into) *into = ret;
     return NO_ERROR;
 }
@@ -64,4 +65,5 @@ void dst_free(struct DataStack *freeing) {
         dst_node_free(cur);
         cur = next;
     }
+    freeing->head = cur;
 }
