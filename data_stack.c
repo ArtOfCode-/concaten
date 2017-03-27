@@ -41,10 +41,9 @@ ERROR dst_pop(struct DataStack *dst, struct Object **into) {
     if (!dst->head) return DST_POP_EMPTY_FAIL;
     struct Object *ret = dst->head->value;
     struct DST_Node *next = dst->head->next;
-    // stack is no longer pointing to it; other things might, so it might stay
     dst_node_free(dst->head);
     dst->head = next;
-    ++dst->head->refcount;
+    if (next) ++dst->head->refcount;
     if (into) *into = ret;
     return NO_ERROR;
 }
