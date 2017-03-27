@@ -1,4 +1,4 @@
-# Concaten v0.5.4
+# Concaten v0.5.6
 
 Concaten is a concatenative, stack-based, strongly but optionally strictly
 typed, hyperdynamic, garbage-collected, interpreted programming language. In
@@ -121,7 +121,7 @@ Major version `0` is pre-completion; some of the parts may be
         macros. There might be more similar errors elsewhere.
   * [x] Go through the Valgrind report and eliminate the memory leaks - 0.5.5
     * This is gonna take a while. :(
-  * [ ] Everything in the `TODO` comments - 0.5.6  
+  * [x] Everything in the `TODO` comments - 0.5.6  
     ...as long as it's possible to do now; i.e. doesn't require work that's
       slated for completion in a later milestone.
   * [ ] Misc. cleanup tasks - 0.5.7
