@@ -107,7 +107,7 @@ ERROR pm_set(struct PropMap *pm, const char *k, PM_VALUE_TYPE val) {
     }
     if (bucket->count == PM_MAX_BUCKET_DEPTH ||
             pm->bk_gr_pref > (pm->bucket_count / 2)) {
-        if (!pm_rehash(pm, pm->bucket_count * LOAD_FACTOR)) {
+        if (pm_rehash(pm, pm->bucket_count * LOAD_FACTOR) != NO_ERROR) {
             return PM_SET_REHASH_FAIL;
         }
         // since things are in different places now, we have to reorganize
@@ -158,13 +158,13 @@ ERROR pm_remove(struct PropMap *pm, const char *finding) {
     for (removed = 0; removed < bucket->count; ++removed) {
         if (bucket->items[removed].key_len == finding_len &&
                 strcmp(finding, bucket->items[removed].key) == 0) {
+            free(bucket->items[removed].key);
             break;
         }
     }
     if (removed == bucket->count) {
         return PM_RMV_NO_KEY_FAIL;
     }
-    free(bucket->items[removed].key);
     for (size_t move = removed + 1; move < bucket->count; ++move) {
         bucket->items[move - 1] = bucket->items[move];
     }
