@@ -5,13 +5,14 @@
 
 const ERROR PM_CTOR_MALLOC_FAIL = 5501;
 const ERROR PM_COPY_CREATE_FAIL = 5502;
-const ERROR PM_NESTED_REHASH_FAIL = 5503;
-const ERROR PM_RH_CREATE_FAIL = 5504;
-const ERROR PM_RH_BAD_SIZE_FAIL = 5505;
-const ERROR PM_SET_REHASH_FAIL = 5508;
-const ERROR PM_SET_MALLOC_FAIL = 5509;
-const ERROR PM_GET_NO_KEY_FAIL = 5510;
-const ERROR PM_RMV_NO_KEY_FAIL = 5511;
+const ERROR PM_COPY_MALLOC_FAIL = 5503;
+const ERROR PM_NESTED_REHASH_FAIL = 5504;
+const ERROR PM_RH_CREATE_FAIL = 5505;
+const ERROR PM_RH_BAD_SIZE_FAIL = 5506;
+const ERROR PM_SET_REHASH_FAIL = 5507;
+const ERROR PM_SET_MALLOC_FAIL = 5508;
+const ERROR PM_GET_NO_KEY_FAIL = 5509;
+const ERROR PM_RMV_NO_KEY_FAIL = 5510;
 
 // the amount by which we increase the map's capacity each time
 #define LOAD_FACTOR 2
@@ -85,7 +86,10 @@ ERROR pm_copy(const struct PropMap copying, struct PropMap *into) {
     for (size_t bidx = 0; bidx < copying.bucket_count; ++bidx) {
         for (size_t iidx = 0; iidx < copying.buckets[bidx].count; ++iidx) {
             struct PM_KeyValPair item = copying.buckets[bidx].items[iidx];
-            pm_raw_add(&ret, item.key, item.val);
+            char *new_key = malloc(item.key_len);
+            if (!new_key) return PM_COPY_MALLOC_FAIL;
+            strncpy(new_key, item.key, item.key_len);
+            pm_raw_add(&ret, new_key, item.val);
         }
     }
     *into = ret;
@@ -222,6 +226,5 @@ void pm_free(struct PropMap *pm) {
             }
         }
         free(pm->buckets);
-        pm->buckets = NULL;
     }
 }
