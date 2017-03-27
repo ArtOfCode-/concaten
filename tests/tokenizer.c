@@ -117,20 +117,20 @@ struct TestResult test_tokenizer() {
                     .token_count = 72
             }
     };
-    size_t test_num = sizeof(tests) / sizeof(tests[0]);
-    for (size_t i = 0; i < test_num; ++i) {
-        test(tests[i], i);
-    }
+//    size_t test_num = sizeof(tests) / sizeof(tests[0]);
+//    for (size_t i = 0; i < test_num; ++i) {
+//        test(tests[i], i);
+//    }
     
-//    test(tests[0], 0);
-//    test(tests[1], 1);
-//    test(tests[2], 2);
-//    test(tests[3], 3);
-//    test(tests[4], 4);
-//    test(tests[5], 5);
-//    test(tests[6], 6);
-//    test(tests[7], 7);
-//    test(tests[8], 8);
-//    test(tests[9], 9);
+    test(tests[0], 0);
+    test(tests[1], 1);
+    test(tests[2], 2);
+    test(tests[3], 3);
+    test(tests[4], 4);
+    test(tests[5], 5);
+    test(tests[6], 6);
+    test(tests[7], 7);
+    test(tests[8], 8);
+    test(tests[9], 9);
     return (struct TestResult) { .successes = successes, .total = total };
 }
