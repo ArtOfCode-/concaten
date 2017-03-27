@@ -7,14 +7,7 @@
 
 // linked-list has O(1) push/pop always, and can be copied in O(1) (as long as it's not a deep copy!)
 
-struct Object;
-struct DST_Node {
-    // we want the contents of _this object_, not necessarily the ones it points to,
-    // to be immutable, with the notable exception of the refcount.
-    struct DST_Node *next;
-    struct Object *value;
-    size_t refcount;
-};
+struct DST_Node;
 struct DataStack {
     struct DST_Node *head;
 };
