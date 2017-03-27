@@ -15,6 +15,33 @@ const ERROR TST_RSTR_PUSH_FAIL = 3012;
 const ERROR TST_RSTR_POP_LEVEL_FAIL = 3013;
 const ERROR TST_RSTR_PUSH_LEVEL_FAIL = 3014;
 
+
+struct TS_TokenNode {
+    struct TS_TokenNode *next;
+    struct Token value;
+};
+
+struct TS_LevelNode {
+    struct TS_LevelNode *next;
+    struct TS_TokenNode *token_head;
+};
+
+enum TSCN_Type {
+    TSCN_TOKEN_PUSH, // We pushed a token. `change.data` is unset.
+    TSCN_TOKEN_POP, // We popped a token. `change.data.popped` is set.
+    TSCN_LEVEL_PUSH, // We pushed a level. `change.data` is unset.
+    TSCN_LEVEL_POP // We popped a level. `change.data.popped_head` is set.
+};
+
+struct TS_ChangeNode {
+    struct TS_ChangeNode *prev;
+    enum TSCN_Type type;
+    union {
+        struct Token popped;//type == TSCN_TOKEN_POP
+        struct TS_TokenNode *popped_head;//type == TSCN_LEVEL_POP
+    } data;
+};
+
 void tst_level_node_free(struct TS_LevelNode *this) {
     if (this) {
         struct TS_TokenNode *node = this->token_head;
