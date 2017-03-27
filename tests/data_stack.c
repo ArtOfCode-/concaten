@@ -20,19 +20,16 @@ struct TestResult test_data_stack() {
     struct Object *dst1_got;
     tassert(dst_new(&dst1) == NO_ERROR, "failed to init datastack");
     long val = 12;
-    struct Object foo;
+    struct Object foo, bar, baz, wuf;
     tassert(ctno_literal(&val, sizeof(long), NULL, &foo) == NO_ERROR,
             "failed to initialize foo");
     ++val;
-    struct Object bar;
     tassert(ctno_literal(&val, sizeof(long), NULL, &bar) == NO_ERROR,
             "failed to initialize bar");
     ++val;
-    struct Object baz;
     tassert(ctno_literal(&val, sizeof(long), NULL, &baz) == NO_ERROR,
             "failed to initialize baz");
     ++val;
-    struct Object wuf;
     tassert(ctno_literal(&val, sizeof(long), NULL, &wuf) == NO_ERROR,
             "failed to initialize wuf");
     ++val;
