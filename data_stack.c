@@ -5,7 +5,6 @@
 const ERROR DST_PUSH_MALLOC_FAIL = 2001;
 const ERROR DST_POP_EMPTY_FAIL   = 2002;
 
-struct Object;
 struct DST_Node {
     // we want the contents of _this object_, not necessarily the ones it points to,
     // to be immutable, with the notable exception of the refcount.

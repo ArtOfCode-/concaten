@@ -12,6 +12,7 @@ struct DataStack {
     struct DST_Node *head;
 };
 
+struct Object;
 ERROR dst_new(struct DataStack *);
 ERROR dst_copy(const struct DataStack, struct DataStack *);
 ERROR dst_push(struct DataStack *, struct Object *);
