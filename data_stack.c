@@ -9,7 +9,6 @@ void dst_node_free(struct DST_Node *freeing) {
     if (freeing) {
         --freeing->refcount;
         if (freeing->refcount == 0) {
-            ctno_free(freeing->value);
             dst_node_free(freeing->next);
         }
     }
@@ -32,7 +31,7 @@ ERROR dst_push(struct DataStack *dst, struct Object *pushing) {
             .next = dst->head,
             .value = pushing
     };
-    
+    // claim, then immediately free, current head
     dst->head = val;
     return NO_ERROR;
 }
@@ -43,7 +42,7 @@ ERROR dst_pop(struct DataStack *dst, struct Object **into) {
     struct DST_Node *next = dst->head->next;
     dst_node_free(dst->head);
     dst->head = next;
-    if (next) ++dst->head->refcount;
+    if (next) ++next->refcount;
     if (into) *into = ret;
     return NO_ERROR;
 }

@@ -39,6 +39,8 @@ struct TestResult test_data_stack() {
     tassert(dst_push(&dst1, &bar) == NO_ERROR, "failed to push");
     tassert(dst_push(&dst1, &baz) == NO_ERROR, "failed to push");
     tassert(dst_push(&dst1, &wuf) == NO_ERROR, "failed to push");
+    tassert(dst_push(&dst1, &baz) == NO_ERROR, "failed to push");
+    assert_pop_eq(1, baz);
     struct DataStack dst2;
     tassert(dst_copy(dst1, &dst2) == NO_ERROR, "failed to copy");
     assert_pop_eq(2, wuf);
@@ -61,6 +63,10 @@ struct TestResult test_data_stack() {
     assert_no_pop(1);
     dst_free(&dst1);
     dst_free(&dst2);
+    ctno_free(&foo);
+    ctno_free(&bar);
+    ctno_free(&baz);
+    ctno_free(&wuf);
     
     return (struct TestResult) { .successes = successes, .total = total };
 }
