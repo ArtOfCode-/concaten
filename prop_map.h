@@ -17,7 +17,7 @@ typedef struct Object *PM_VALUE_TYPE;
 #define PM_PREF_BUCKET_DEPTH 4
 
 struct PM_KeyValPair {
-    const char *key;
+    char *key;
     size_t key_len;
     PM_VALUE_TYPE val;
 };

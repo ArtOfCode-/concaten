@@ -45,7 +45,7 @@ size_t pm_hash(const char *key) {
 // doesn't do any preexistence-checking, just bounds.
 // will produce duplicate keys if not used carefully!
 // but also marginally faster.
-bool pm_raw_add(struct PropMap *pm, const char *key, PM_VALUE_TYPE val) {
+bool pm_raw_add(struct PropMap *pm, char *key, PM_VALUE_TYPE val) {
     size_t bucket_idx = pm_hash(key) % pm->bucket_count;
     struct PM_Bucket *bk = &pm->buckets[bucket_idx];
     if (bk->count == PM_MAX_BUCKET_DEPTH) return false;
@@ -165,6 +165,7 @@ ERROR pm_remove(struct PropMap *pm, const char *finding) {
     if (removed == bucket->count) {
         return PM_RMV_NO_KEY_FAIL;
     }
+    free(bucket->items[removed].key);
     for (size_t move = removed + 1; move < bucket->count; ++move) {
         bucket->items[move - 1] = bucket->items[move];
     }
