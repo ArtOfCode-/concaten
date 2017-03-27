@@ -200,6 +200,7 @@ void tst_free(struct TokenStack *this) {
             struct TS_TokenNode *inner = change->data.popped_head;
             while (inner) {
                 struct TS_TokenNode *next = inner->next;
+                tkn_free(&inner->value);
                 free(inner);
                 inner = next;
             }
