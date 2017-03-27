@@ -36,4 +36,7 @@ ERROR ctno_get_prop(const struct Object, const char *, struct Object *);
 ERROR ctno_claim(struct Object *);
 void ctno_free(struct Object *);
 
+struct Token;
+ERROR tkn_value(const struct Token, struct Object **);
+
 #endif //CONCATEN_CTN_OBJECT_H

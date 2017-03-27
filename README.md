@@ -125,10 +125,10 @@ Major version `0` is pre-completion; some of the parts may be
     ...as long as it's possible to do now; i.e. doesn't require work that's
       slated for completion in a later milestone.
   * [ ] Misc. cleanup tasks - 0.5.7
-    * [ ] Follow the last bullet point of the style guide
-    * [ ] Make sure `Object`s aren't accidentally getting passed around by
-      value to avoid nasty GC-related bugs later
-    * [ ] Ditto for `Tokenizer`s and file handle cleanup
+    * [x] Follow the last bullet point of the style guide
+    * [x] Make sure `Object`s aren't accidentally getting passed around by
+      (non-const) )value to avoid nasty GC-related bugs later
+    * [x] Ditto for `Tokenizer`s and file handle cleanup
     * [ ] Implement that one Token -> Object method (forgot to do this in
       0.1)
     * [ ] Condense the error codes and make sure they're named consistently.
