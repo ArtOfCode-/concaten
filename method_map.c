@@ -39,7 +39,7 @@ size_t mm_hash(const char *key) {
     size_t hash = 5381;
     char c;
     while ((c = *key++) != 0) {
-        hash = (hash << 5 + hash) ^ c;
+        hash = ((hash << 5) + hash) ^ c;
     }
     return hash;
 }
