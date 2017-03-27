@@ -3,15 +3,15 @@ project(concaten C)
 
 set(CMAKE_C_STANDARD 11)
 
-set(NORMAL_FLAGS "${CMAKE_C_FLAGS} -Wall -Wextra -Werror -pedantic")
+set(NORMAL_FLAGS "${CMAKE_C_FLAGS} -Wall -Wextra -Werror -pedantic -O3")
 set(NORMAL_LIBS)
 
 set(TEST_FLAGS "")
 set(TEST_LIBS)
 
 # to enable ASan, add -fsanitize=address -fno-omit-frame-pointer and asan lib
-set(PROFILE_FLAGS "-static -g")
-set(PROFILE_LIBS)
+set(PROFILE_FLAGS "-static -g -O0")
+set(PROFILE_LIBS profiler)
 
 set(NORMAL_SRCS
         tokenizer.c stringbuilder.c method_map.c prop_map.c object.c
