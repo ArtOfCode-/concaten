@@ -9,8 +9,8 @@ const ERROR PM_NESTED_REHASH_FAIL = 5503;
 const ERROR PM_RH_CREATE_FAIL = 5504;
 const ERROR PM_RH_BAD_SIZE_FAIL = 5505;
 const ERROR PM_SET_REHASH_FAIL = 5508;
-const ERROR PM_GET_NO_KEY_FAIL = 5509;
-const ERROR PM_GET_MALLOC_FAIL = 5510;
+const ERROR PM_SET_MALLOC_FAIL = 5509;
+const ERROR PM_GET_NO_KEY_FAIL = 5510;
 const ERROR PM_RMV_NO_KEY_FAIL = 5511;
 
 // the amount by which we increase the map's capacity each time
@@ -94,21 +94,13 @@ ERROR pm_copy(const struct PropMap copying, struct PropMap *into) {
 
 ERROR pm_set(struct PropMap *pm, const char *k, PM_VALUE_TYPE val) {
     size_t key_len = strlen(k) + 1;
-    char *key = malloc(key_len);
-    if (!key) return PM_GET_MALLOC_FAIL;
-    strncpy(key, k, key_len);
-    struct PM_KeyValPair adding_kvp = (struct PM_KeyValPair) {
-            .key = key,
-            .key_len = key_len,
-            .val = val
-    };
-    size_t key_hash_raw = pm_hash(key);
+    size_t key_hash_raw = pm_hash(k);
     
     size_t idx = key_hash_raw % pm->bucket_count;
     struct PM_Bucket *bucket = &pm->buckets[idx];
     for (size_t i = 0; i < bucket->count; ++i) {
         if (bucket->items[i].key_len == key_len &&
-                strcmp(key, bucket->items[i].key) == 0) {
+                strcmp(k, bucket->items[i].key) == 0) {
             bucket->items[i].val = val;
             return NO_ERROR;
         }
@@ -124,7 +116,14 @@ ERROR pm_set(struct PropMap *pm, const char *k, PM_VALUE_TYPE val) {
         // note that we're not searching to see if it exists again, since
         // we already checked if it's in there.
     }
-    bucket->items[bucket->count] = adding_kvp;
+    char *key = malloc(key_len);
+    if (!key) return PM_SET_MALLOC_FAIL;
+    strncpy(key, k, key_len);
+    bucket->items[bucket->count] = (struct PM_KeyValPair) {
+            .key = key,
+            .key_len = key_len,
+            .val = val
+    };
     ++bucket->count;
     // == instead of > because we add one at a time and this way
     // it only once (instead of once per additional item!)
