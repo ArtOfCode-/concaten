@@ -5,12 +5,14 @@
 const ERROR DST_PUSH_MALLOC_FAIL = 2001;
 const ERROR DST_POP_EMPTY_FAIL   = 2002;
 
-void dst_node_free(struct DST_Node *freeing) {
-    if (freeing) {
-        --freeing->refcount;
-        if (freeing->refcount == 0) {
-            free(freeing);
-            dst_node_free(freeing->next);
+void dst_node_free(struct DST_Node *nd) {
+    while (nd) {
+        --nd->refcount;
+        if (nd->refcount == 0) {
+            free(nd);
+            nd = nd->next;
+        } else {
+            break;
         }
     }
 }
@@ -38,7 +40,9 @@ ERROR dst_push(struct DataStack *dst, struct Object *pushing) {
 }
 
 ERROR dst_pop(struct DataStack *dst, struct Object **into) {
-    if (!dst->head) return DST_POP_EMPTY_FAIL;
+    if (!dst->head) {
+        return DST_POP_EMPTY_FAIL;
+    }
     struct Object *ret = dst->head->value;
     struct DST_Node *next = dst->head->next;
     // claim for top of stack
@@ -49,21 +53,21 @@ ERROR dst_pop(struct DataStack *dst, struct Object **into) {
     return NO_ERROR;
 }
 
-ERROR dst_copy(const struct DataStack copying, struct DataStack *into) {
+ERROR dst_copy(const struct DataStack dst, struct DataStack *into) {
     struct DataStack ret = (struct DataStack) {
-            .head = copying.head
+            .head = dst.head
     };
     if (ret.head) ++ret.head->refcount;
     *into = ret;
     return NO_ERROR;
 }
 
-void dst_free(struct DataStack *freeing) {
-    struct DST_Node *cur = freeing->head;
+void dst_free(struct DataStack *dst) {
+    struct DST_Node *cur = dst->head;
     while (cur) {
         struct DST_Node *next = cur->next;
         dst_node_free(cur);
         cur = next;
     }
-    freeing->head = cur;
+    dst->head = cur;
 }

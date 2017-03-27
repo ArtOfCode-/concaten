@@ -13,7 +13,18 @@
     tassert(dst_pop(&dst##num, NULL) == DST_POP_EMPTY_FAIL, \
             str(__LINE__) ": " str(num) " got bad result")
 
+#include <stdio.h>
+void dbg_print(const struct DST_Node *printing, const char *operation) {
+    printf("%15s: ", operation);
+    while (printing) {
+        printf("%zu-%p ", printing->refcount, (void *) printing);
+        printing = printing->next;
+    }
+    puts("(null)");
+}
+
 struct TestResult test_data_stack() {
+    puts("");
     size_t successes = 0, total = 0;
     struct DataStack dst1;
     struct Object *dst2_got;
