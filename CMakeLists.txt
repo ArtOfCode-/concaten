@@ -2,7 +2,6 @@ cmake_minimum_required(VERSION 3.6)
 project(concaten C)
 
 set(CMAKE_C_STANDARD 11)
-set(CMAKE_VERBOSE_MAKEFILE ON)
 
 set(NORMAL_FLAGS "${CMAKE_C_FLAGS} -Wall -Wextra -Werror -pedantic -O3")
 set(NORMAL_LIBS)
