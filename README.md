@@ -163,6 +163,11 @@ Major version `0` is pre-completion; some of the parts may be
     * [x] Ditto for `Tokenizer`s and file handle cleanup
     * [ ] Implement that one Token -> Object method (forgot to do this in
       0.1)
+    * [ ] Implement `ctno_eq`
+      * Test for `ctno_eq` of all properties in dynamics
+      * Test for equality of pointed-to data in literals
+        * Probably needs to store the type after all; this will be much
+          simpler after the `ctno_mk` functions are created
     * [ ] Condense the error codes and make sure they're named consistently.
     * [ ] Nested error types? (i.e. SOME_ERROR thrown b/c SOME_OTHER_ERROR)
     * [ ] Make sure everything checks return values (where there are any)
@@ -188,6 +193,7 @@ Major version `0` is pre-completion; some of the parts may be
 * [ ] Minimal standard library - 0.9  
   Words like `if`, `{`, and `puts` so we can play with the language at all.
   * When designing/adding arrays, add the same methods to `CodeBlock`
+  * Including the functions to create an 
 * [ ] Misc. required updates as needed
   * [ ] Thorough code review  
     Finding places where the code is needlessly complicated, duplicated, or
@@ -202,19 +208,19 @@ Major version `0` is pre-completion; some of the parts may be
   * Beta testing?
     Hand out the interpreter as it is to as many people as possible, get them
       to play with the language and try to break it.
-* [ ] Command-line options - 0.10  
-  Definitely at least `-e`; take inspiration from Ruby and Python.  
-  These should mostly be minor variations on the existing main method.
 * [ ] Documentation - 1.0  
   Including demo code, a detailed up-to-date list of every default global word
     (like `if`) and what they do, as well as a brief overview of how Concaten
     works, how to install it, and what the command-line arguments are.  
   In theory, mostly done (because of the spec), but in practice, it probably
     should be rewritten.
-* [ ] Debug mode - 1.1  
+* [ ] Command-line options - 1.1  
+  Definitely at least `-e`; take inspiration from Ruby and Python.  
+  These should mostly be minor variations on the existing main method.
+* [ ] Debug mode - 1.2  
   Allows breakpoints (w/ `breakpoint`?) and stops execution when exception is
     thrown outside of a `try`.
-* [ ] User-created libraries - 1.2  
+* [ ] User-created libraries - 1.3  
   `namespace` word that uses some Concaten magic to let people define their
     own modules. This is in part to encourage other people to write ~~my code
     for me~~ extensions to Concaten, and in part to set up the framework for
