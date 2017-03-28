@@ -9,6 +9,8 @@ const ERROR TTO_UNKNOWN_TYPE_FAIL = 9001;
 const ERROR TTO_NOT_IMPLEMENTED_FAIL = 9002;
 const ERROR TTO_CREATE_OBJ_FAIL = 9003;
 const ERROR TTO_STRING_ESCAPE_FAIL = 9004;
+const ERROR TTO_ESCAPE_END_FAIL = 9005;
+const ERROR TTO_MALLOC_FAIL = 9006;
 
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wunused-parameter"
@@ -16,24 +18,41 @@ ERROR tkn_value_word(const struct Token from, struct Object **into) {
     return TTO_WORDS_VALUELESS_FAIL;
 }
 
-char *tto_escape_string(char **escape_in_place, size_t val_len) {
+ERROR tto_escape_string(char **escape_in_place, size_t val_len) {
     char *ret = malloc(val_len);
-    if (!ret) return NULL;
+    if (!ret) return TTO_MALLOC_FAIL;
     char *ret_pos = ret;
-    char *end = *escape_in_place + val_len;
+    char *const end = *escape_in_place + val_len;
     for (char *pos = *escape_in_place; pos < end; ++pos, ++ret_pos) {
         if (*pos == '\\') {
-            return; // TODO this bit
+            // TODO this bit
+            ++pos;
+            switch (*pos) {
+                case 'b': *ret_pos = '\b'; break;
+                case 'a': *ret_pos = '\a'; break;
+                case 't': *ret_pos = '\t'; break;
+                case 'n': *ret_pos = '\n'; break;
+                case 'r': *ret_pos = '\r'; break;
+                case 'f': *ret_pos = '\f'; break;
+                case 'v': *ret_pos = '\v'; break;
+                case '0': *ret_pos = '\0'; break;
+                case 'e': *ret_pos = '\x1B'; break;
+                case 'x':
+                    // TODO this bit
+                default:
+                    *ret_pos = *pos;
+            }
         } else {
             *ret_pos = *pos;
         }
     }
     char *new_ret = realloc(ret, ret_pos - ret);
     if (!new_ret) {
-        return ret;
+        *escape_in_place = ret;
     } else {
-        return new_ret;
+        *escape_in_place = new_ret;
     }
+    return NO_ERROR;
 }
 ERROR tkn_value_string(const struct Token from, struct Object **into) {
     size_t val_len = from.raw_len - 2;
