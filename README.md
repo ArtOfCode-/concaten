@@ -50,10 +50,42 @@ For an example of how the language will probably look, see `test.ctn`.
   specced out, actual usage might reveal things that I didn't consider, and
   therefore need to add in, remove, or change.
 
-If you want to contribute, awesome! Be sure to check out `CODE_STYLE.md` and
-`CONTRIBUTING.md`; they sketch out how I'd like the code to look and what the
-process (roughly) looks like, so that I can keep things as organized as they
-can be.
+---
+
+If you want to contribute code, awesome! Be sure to check out `CODE_STYLE.md`.
+
+If you don't feel like contributing code, but want to help, run this command,
+which should work on any shell with `git`, `cmake`, and `make` installed:
+
+    git clone https://github.com/nic-hartley/concaten.git -b dev && \
+    cd concaten && cmake . && make && ./tester
+
+Then send me the output (presumably, you can get to me somehow; I doubt you
+found this on your own). 
+
+If everything succeeds, the output will look something like this:
+
+    Testing code_block...       42 succeeded in   37 us.
+    Testing data_stack...       43 succeeded in   18 us.
+    Testing method_map...       46 succeeded in   52 us.
+    Testing object...           38 succeeded in   69 us.
+    Testing prop_map...         37 succeeded in   39 us.
+    Testing stringbuilder...    24 succeeded in   22 us.
+    Testing token_stack...     106 succeeded in  576 us.
+    Testing tokenizer...        28 succeeded in  426 us.
+    Done with all tests
+
+If it failed at any stage, you'll see something like this in the middle:
+
+    /path/to/dir/tests/foo.c:123: Failed something-or-other
+    1 failed in 12 us.
+
+And no further tests will be run. If it fails to compile, you'll see GCC
+errors; please report those, too.
+
+If you get a segfault, that's especially important. Please try to track it
+down; since I don't have unlimited access to your machine, I can't really find
+the bug.
 
 ---
 
