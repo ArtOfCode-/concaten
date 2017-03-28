@@ -18,6 +18,7 @@ const ERROR TTO_ESCAPE_BAD_HEX_FAIL = 9007;
 ERROR tkn_value_word(const struct Token from, struct Object **into) {
     return TTO_WORDS_VALUELESS_FAIL;
 }
+#pragma GCC diagnostic pop
 
 int tto_hexchar_to_val(const char c) {
     switch (c) {
@@ -124,6 +125,9 @@ ERROR tkn_value_string(const struct Token from, struct Object **into) {
     free(str_val);
     return NO_ERROR;
 }
+
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wunused-parameter"
 ERROR tkn_value_regex(const struct Token from, struct Object **into) {
     // this isn't implemented in this version
     return TTO_NOT_IMPLEMENTED_FAIL;
