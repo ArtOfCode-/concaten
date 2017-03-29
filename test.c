@@ -35,5 +35,5 @@ int main() {
     test(stringbuilder);
     test(token_stack);
     test(tokenizer);
-    puts("Done with all tests");
+    puts("Done with all tests. Completed with no errors.");
 }
