@@ -20,7 +20,7 @@ ERROR tkn_value_word(const struct Token from, struct Object **into) {
 }
 #pragma GCC diagnostic pop
 
-int tto_hexchar_to_val(const char c) {
+char tto_hexchar_to_val(const char c) {
     switch (c) {
         case '0': return 0;
         case '1': return 1;
@@ -38,7 +38,7 @@ int tto_hexchar_to_val(const char c) {
         case 'd': case 'D': return 13;
         case 'e': case 'E': return 14;
         case 'f': case 'F': return 15;
-        default: return -1;
+        default: return 16;
     }
 }
 ERROR tto_escape_hex(const char **pos, char **ret_pos, const char *const end) {
@@ -50,7 +50,7 @@ ERROR tto_escape_hex(const char **pos, char **ret_pos, const char *const end) {
         return TTO_ESCAPE_END_FAIL;
     }
     t = tto_hexchar_to_val(**pos);
-    if (t == -1) {
+    if (t > 15) {
         return TTO_ESCAPE_BAD_HEX_FAIL;
     }
     x_val |= t << 4;
@@ -59,7 +59,7 @@ ERROR tto_escape_hex(const char **pos, char **ret_pos, const char *const end) {
         return TTO_ESCAPE_END_FAIL;
     }
     t = tto_hexchar_to_val(**pos);
-    if (t == -1) {
+    if (t > 15) {
         return TTO_ESCAPE_BAD_HEX_FAIL;
     }
     x_val |= t;
@@ -71,10 +71,14 @@ ERROR tto_escape_string(const char *const str, size_t val_len, char **out) {
     char *ret = malloc(val_len);
     if (!ret) return TTO_MALLOC_FAIL;
     char *ret_pos = ret;
-    const char *const end = str + val_len;
-    for (const char *pos = str; pos < end; ++pos, ++ret_pos) {
+    const char *const end_null = str + val_len - 1;
+    for (const char *pos = str; pos < end_null; ++pos, ++ret_pos) {
         if (*pos == '\\') {
             ++pos;
+            if (pos == end_null) {
+                err = TTO_ESCAPE_END_FAIL;
+                goto error_handler;
+            }
             switch (*pos) {
                 case '0': *ret_pos = '\0'; break;
                 case 'a': *ret_pos = '\a'; break;
@@ -86,7 +90,7 @@ ERROR tto_escape_string(const char *const str, size_t val_len, char **out) {
                 case 't': *ret_pos = '\t'; break;
                 case 'v': *ret_pos = '\v'; break;
                 case 'x':
-                    err = tto_escape_hex(&pos, &ret_pos, end);
+                    err = tto_escape_hex(&pos, &ret_pos, end_null);
                     if (err != NO_ERROR) goto error_handler;
                     break;
                 default:
