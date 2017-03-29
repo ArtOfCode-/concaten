@@ -3,10 +3,10 @@ project(concaten C)
 
 set(CMAKE_C_STANDARD 11)
 
-set(NORMAL_FLAGS "${CMAKE_C_FLAGS} -Wall -Wextra -Werror -pedantic -O3")
+set(NORMAL_FLAGS "-Wall -Wextra -Werror -pedantic -O3 -std=c11")
 set(NORMAL_LIBS)
 
-set(TEST_FLAGS " -g -O0")
+set(TEST_FLAGS "-g -O0")
 set(TEST_LIBS)
 
 # to enable ASan, add -fsanitize=address -fno-omit-frame-pointer and asan lib
