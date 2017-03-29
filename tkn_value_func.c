@@ -18,7 +18,7 @@ const ERROR TTO_INVALID_NUM_FAIL = 9008;
 
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wunused-parameter"
-ERROR tkn_value_word(const struct Token from, struct Object **into) {
+ERROR tkn_value_word(const struct Token from, struct Object *into) {
     return TTO_WORDS_VALUELESS_FAIL;
 }
 #pragma GCC diagnostic pop
@@ -116,7 +116,7 @@ error_handler:;
     free(ret);
     return err;
 }
-ERROR tkn_value_string(const struct Token from, struct Object **into) {
+ERROR tkn_value_string(const struct Token from, struct Object *into) {
     size_t val_len = from.raw_len - 2;
     char *str_val = malloc(val_len);
     strncpy(str_val, from.raw + 1, val_len);
@@ -125,17 +125,14 @@ ERROR tkn_value_string(const struct Token from, struct Object **into) {
     if (tto_escape_string(str_val, val_len, &escaped) != NO_ERROR) {
         return TTO_STRING_ESCAPE_FAIL;
     }
-    if (ctno_literal(str_val, val_len, NULL, *into) != NO_ERROR) {
-        free(str_val);
-        return TTO_CREATE_OBJ_FAIL;
-    }
+    ERROR err = ctno_literal(str_val, val_len, NULL, *into);
     free(str_val);
-    return NO_ERROR;
+    return err;
 }
 
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wunused-parameter"
-ERROR tkn_value_integer(const struct Token from, struct Object **into) {
+ERROR tkn_value_integer(const struct Token from, struct Object *into) {
     int b = 10;
     char *raw = from.raw;
     bool neg = raw[0] == '-';
@@ -157,6 +154,7 @@ ERROR tkn_value_integer(const struct Token from, struct Object **into) {
     }
     if (b != 10) raw += 2;
     char *num_end;
+    errno = 0;
     signed long long val = strtoll(raw, &num_end, b);
     if (num_end != from.raw + from.raw_len) {
         return TTO_INVALID_NUM_FAIL;
@@ -165,27 +163,27 @@ ERROR tkn_value_integer(const struct Token from, struct Object **into) {
         return TTO_INVALID_NUM_FAIL;
     }
     if (neg) val *= -1;
-    if (val)
+    ERROR err = ctno_literal(&val, sizeof(val), NULL, into)
     
+    return err;
+    // TODO Fail to compile until this is done
+}
+ERROR tkn_value_real(const struct Token from, struct Object *into) {
     return TTO_NOT_IMPLEMENTED_FAIL;
     // TODO Fail to compile until this is done
 }
-ERROR tkn_value_real(const struct Token from, struct Object **into) {
-    return TTO_NOT_IMPLEMENTED_FAIL;
-    // TODO Fail to compile until this is done
-}
-ERROR tkn_value_identifier(const struct Token from, struct Object **into) {
+ERROR tkn_value_identifier(const struct Token from, struct Object *into) {
     return TTO_NOT_IMPLEMENTED_FAIL;
     // TODO Fail to compile until this is done
 }
 
-ERROR tkn_value_regex(const struct Token from, struct Object **into) {
+ERROR tkn_value_regex(const struct Token from, struct Object *into) {
     // this isn't implemented in this version, sadly :(
     return TTO_NOT_IMPLEMENTED_FAIL;
 }
 #pragma GCC diagnostic pop
 
-ERROR tkn_value(const struct Token from, struct Object **into) {
+ERROR tkn_value(const struct Token from, struct Object *into) {
     switch (from.type) {
         case TKN_WORD:
             return tkn_value_word(from, into);

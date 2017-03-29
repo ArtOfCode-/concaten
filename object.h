@@ -31,8 +31,8 @@ ERROR ctno_copy(const struct Object, struct Object *);
 ERROR ctno_set_prop(struct Object *, const char *, struct Object *);
 ERROR ctno_get_prop(const struct Object, const char *, struct Object *);
 
-ERROR ctno_new_integral(signed long long val, struct Object *);
-ERROR ctno_new_flpoint(double val, struct Object *);
+// ERROR ctno_new_integral(signed long long val, struct Object *);
+// ERROR ctno_new_flpoint(double val, struct Object *);
 // etc.
 
 #define ctno_to(ctno, type) \
@@ -41,6 +41,6 @@ ERROR ctno_claim(struct Object *);
 void ctno_free(struct Object *);
 
 struct Token;
-ERROR tkn_value(const struct Token, struct Object **);
+ERROR tkn_value(const struct Token, struct Object *);
 
 #endif //CONCATEN_CTN_OBJECT_H
