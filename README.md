@@ -89,10 +89,12 @@ the bug.
 
 ---
 
-**A note about versions**: My format is `major.milestone`, where each is
-  the number for the most recently finished. For example, version `1.1` just
-  completed the first task of milestone 2 of verison 1. Note that, despite the
-  superficial similarity, versions are not numbers: `1.10` comes after `1.9`.
+**A note about versions**: My format is `major.milestone.submilestone`, where
+  each is the number for the most recently finished. For example, version
+  `1.1.1` just completed the first task of milestone 2 of verison 1. Note that,
+  despite the superficial similarity, versions are not numbers: `1.10` comes
+  after `1.9`. A "submilestone" is a piece that's big enough to warrant its
+  own marker, but not big enough to warrant its own milestone.
 
 Major version `0` is pre-completion; some of the parts may be
   done, but not all of it. Major version `1` is the first completed version of
