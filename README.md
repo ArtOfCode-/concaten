@@ -71,7 +71,7 @@ If everything succeeds, the output will look something like this:
     Testing object...           38 succeeded in   69 us.
     Testing prop_map...         37 succeeded in   39 us.
     Testing stringbuilder...    24 succeeded in   22 us.
-    Testing token_stack...     106 succeeded in  576 us.
+    Testing token_stack...     106 succeeded in   12 us.
     Testing tokenizer...        28 succeeded in  426 us.
     Done with all tests
 
@@ -193,7 +193,7 @@ Major version `0` is pre-completion; some of the parts may be
 * [ ] Minimal standard library - 0.9  
   Words like `if`, `{`, and `puts` so we can play with the language at all.
   * When designing/adding arrays, add the same methods to `CodeBlock`
-  * Including the functions to create an 
+  * Including the functions to create an object of each literal type
 * [ ] Misc. required updates as needed
   * [ ] Thorough code review  
     Finding places where the code is needlessly complicated, duplicated, or
