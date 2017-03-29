@@ -37,18 +37,18 @@ struct TestResult test_data_stack() {
     struct Object *dst2_got;
     struct Object *dst1_got;
     tassert(dst_new(&dst1) == NO_ERROR, "failed to init datastack");
-    long val = 12;
+    signed long long val = 12;
     struct Object foo, bar, baz, wuf;
-    tassert(ctno_literal(&val, sizeof(long), NULL, &foo) == NO_ERROR,
+    tassert(ctno_literal(&val, sizeof(signed long long), NULL, &foo) == NO_ERROR,
             "failed to initialize foo");
     ++val;
-    tassert(ctno_literal(&val, sizeof(long), NULL, &bar) == NO_ERROR,
+    tassert(ctno_literal(&val, sizeof(signed long long), NULL, &bar) == NO_ERROR,
             "failed to initialize bar");
     ++val;
-    tassert(ctno_literal(&val, sizeof(long), NULL, &baz) == NO_ERROR,
+    tassert(ctno_literal(&val, sizeof(signed long long), NULL, &baz) == NO_ERROR,
             "failed to initialize baz");
     ++val;
-    tassert(ctno_literal(&val, sizeof(long), NULL, &wuf) == NO_ERROR,
+    tassert(ctno_literal(&val, sizeof(signed long long), NULL, &wuf) == NO_ERROR,
             "failed to initialize wuf");
     ++val;
     tassert(dst_push(&dst1, &foo) == NO_ERROR, "failed to push");

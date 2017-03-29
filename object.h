@@ -31,7 +31,7 @@ ERROR ctno_copy(const struct Object, struct Object *);
 ERROR ctno_set_prop(struct Object *, const char *, struct Object *);
 ERROR ctno_get_prop(const struct Object, const char *, struct Object *);
 
-ERROR ctno_new_integral(long val, struct Object *);
+ERROR ctno_new_integral(signed long long val, struct Object *);
 ERROR ctno_new_flpoint(double val, struct Object *);
 // etc.
 
