@@ -125,7 +125,7 @@ ERROR tkn_value_string(const struct Token from, struct Object *into) {
     if (tto_escape_string(str_val, val_len, &escaped) != NO_ERROR) {
         return TTO_STRING_ESCAPE_FAIL;
     }
-    ERROR err = ctno_literal(str_val, val_len, NULL, *into);
+    ERROR err = ctno_literal(str_val, val_len, NULL, into);
     free(str_val);
     return err;
 }
@@ -163,7 +163,7 @@ ERROR tkn_value_integer(const struct Token from, struct Object *into) {
         return TTO_INVALID_NUM_FAIL;
     }
     if (neg) val *= -1;
-    ERROR err = ctno_literal(&val, sizeof(val), NULL, into)
+    ERROR err = ctno_literal(&val, sizeof(val), NULL, into);
     
     return err;
     // TODO Fail to compile until this is done
