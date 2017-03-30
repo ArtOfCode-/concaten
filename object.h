@@ -31,9 +31,17 @@ ERROR ctno_copy(const struct Object, struct Object *);
 ERROR ctno_set_prop(struct Object *, const char *, struct Object *);
 ERROR ctno_get_prop(const struct Object, const char *, struct Object *);
 
-// ERROR ctno_new_integral(signed long long val, struct Object *);
-// ERROR ctno_new_flpoint(double val, struct Object *);
-// etc.
+// TODO create literal "constructors" for:
+// signed long long
+// signed double
+// char */size_t (or separate `string` struct?)
+// DataStack
+// TokenStack
+// CodeBlock
+// List
+// Map
+// StringBuilder
+// etc. etc.
 
 #define ctno_to(ctno, type) \
     ((ctno).is_literal ? ((type *) (ctno).data.literal.value) : NULL)
@@ -42,6 +50,6 @@ void ctno_free(struct Object *);
 
 struct Token;
 // consumes the Token, no output to out param if error
-ERROR tkn_value(const struct Token, struct Object *);
+ERROR tkn_value(struct Token *, struct Object *);
 
 #endif //CONCATEN_CTN_OBJECT_H
