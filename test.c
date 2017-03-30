@@ -25,6 +25,9 @@ bool do_test(struct TestResult (*testf)(), const char *test_name) {
     if (do_test(test_##module_name, #module_name "...")) ++idx; \
     else return idx;
 
+#define to_test(module_name) \
+    puts("Tests planned but not written for " #module_name)
+
 int main() {
     size_t idx = 0;
     test(code_block);
@@ -35,5 +38,9 @@ int main() {
     test(stringbuilder);
     test(token_stack);
     test(tokenizer);
+    to_test(tkn_value);
+    to_test(runnable);
+    to_test(scope_stack);
+    to_test(standard_lib);
     puts("Done with all tests. Completed with no errors.");
 }
