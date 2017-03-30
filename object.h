@@ -41,6 +41,7 @@ ERROR ctno_claim(struct Object *);
 void ctno_free(struct Object *);
 
 struct Token;
+// consumes the Token, no output to out param if error
 ERROR tkn_value(const struct Token, struct Object *);
 
 #endif //CONCATEN_CTN_OBJECT_H

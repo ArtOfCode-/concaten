@@ -9,12 +9,13 @@
 const ERROR TTO_WORDS_VALUELESS_FAIL = 9000;
 const ERROR TTO_UNKNOWN_TYPE_FAIL = 9001;
 const ERROR TTO_NOT_IMPLEMENTED_FAIL = 9002;
-const ERROR TTO_CREATE_OBJ_FAIL = 9003;
-const ERROR TTO_STRING_ESCAPE_FAIL = 9004;
-const ERROR TTO_ESCAPE_END_FAIL = 9005;
-const ERROR TTO_MALLOC_FAIL = 9006;
-const ERROR TTO_ESCAPE_BAD_HEX_FAIL = 9007;
-const ERROR TTO_INVALID_NUM_FAIL = 9008;
+const ERROR TTO_STRING_ESCAPE_FAIL = 9003;
+const ERROR TTO_ESCAPE_END_FAIL = 9004;
+const ERROR TTO_MALLOC_FAIL = 9005;
+const ERROR TTO_ESCAPE_BAD_HEX_FAIL = 9006;
+const ERROR TTO_OUT_OF_RANGE_FAIL = 9007;
+const ERROR TTO_INVALID_BASE_FAIL = 9008;
+const ERROR TTO_INVALID_DIGIT_FAIL = 9009;
 
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wunused-parameter"
@@ -135,10 +136,13 @@ ERROR tkn_value_string(const struct Token from, struct Object *into) {
 ERROR tkn_value_integer(const struct Token from, struct Object *into) {
     int b = 10;
     char *raw = from.raw;
+    size_t len = from.raw_len;
     bool neg = raw[0] == '-';
-    if (neg || raw[0] == '+') ++raw;
-    if (raw[0] == '0' && from.raw_len > 2) {
-        switch (from.raw[1]) {
+    if (neg || raw[0] == '+') {
+        ++raw;
+    }
+    if (raw[0] == '0' && len > 2) {
+        switch (raw[1]) {
             case 'x':
                 b = 16;
                 break;
@@ -149,32 +153,41 @@ ERROR tkn_value_integer(const struct Token from, struct Object *into) {
                 b = 2;
                 break;
             default:
-                return TTO_INVALID_NUM_FAIL;
+                return TTO_INVALID_BASE_FAIL;
         }
     }
-    if (b != 10) raw += 2;
+    if (b != 10) {
+        len -= 2;
+        raw += 2;
+    }
+    if (neg) {
+        // no length mod because we "forgot" to account for it before
+        --raw;
+        // this is safe because we're guaranteed to have advanced by
+        // at least one, so retreating by one is fine
+        *raw = '-';
+    }
     char *num_end;
     errno = 0;
     signed long long val = strtoll(raw, &num_end, b);
-    if (num_end != from.raw + from.raw_len) {
-        return TTO_INVALID_NUM_FAIL;
-    }
     if ((val == LLONG_MAX || val == LLONG_MIN) && errno == ERANGE) {
-        return TTO_INVALID_NUM_FAIL;
+        return TTO_OUT_OF_RANGE_FAIL;
     }
-    if (neg) val *= -1;
+    if (num_end != raw + len - 1) {
+        return TTO_INVALID_DIGIT_FAIL;
+    }
     ERROR err = ctno_literal(&val, sizeof(val), NULL, into);
     
     return err;
-    // TODO Fail to compile until this is done
+    // TODO Finish this method
 }
 ERROR tkn_value_real(const struct Token from, struct Object *into) {
     return TTO_NOT_IMPLEMENTED_FAIL;
-    // TODO Fail to compile until this is done
+    // TODO Finish this method
 }
 ERROR tkn_value_identifier(const struct Token from, struct Object *into) {
     return TTO_NOT_IMPLEMENTED_FAIL;
-    // TODO Fail to compile until this is done
+    // TODO Finish this method
 }
 
 ERROR tkn_value_regex(const struct Token from, struct Object *into) {

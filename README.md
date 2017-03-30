@@ -154,7 +154,7 @@ Major version `0` is pre-completion; some of the parts may be
       The `mm_`s are listing as uncalled because they're only called through  
         macros. There might be more similar errors elsewhere.
   * [x] Go through the Valgrind report and eliminate the memory leaks - 0.5.5
-    * This is gonna take a while. :(
+    * ~~This is gonna take a while. :(~~ It didn't!
   * [x] Everything in the `TODO` comments - 0.5.6  
     ...as long as it's possible to do now; i.e. doesn't require work that's
       slated for completion in a later milestone.
@@ -168,8 +168,8 @@ Major version `0` is pre-completion; some of the parts may be
     * [ ] Implement `ctno_eq`
       * Test for `ctno_eq` of all properties in dynamics
       * Test for equality of pointed-to data in literals
-        * Probably needs to store the type after all; this will be much
-          simpler after the `ctno_mk` functions are created
+        * Probably needs to store the type after all; coordinating that will
+          be much simpler after the `ctno_mk_` family is created
     * [ ] Condense the error codes and make sure they're named consistently.
     * [ ] Nested error types? (i.e. SOME_ERROR thrown b/c SOME_OTHER_ERROR)
     * [ ] Make sure everything checks return values (where there are any)
