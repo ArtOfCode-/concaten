@@ -2,6 +2,7 @@
 #include <string.h>
 #include <limits.h>
 #include <errno.h>
+#include <math.h>
 #include "error.h"
 #include "tokenizer.h"
 #include "object.h"
@@ -16,10 +17,11 @@ const ERROR TTO_ESCAPE_BAD_HEX_FAIL = 9006;
 const ERROR TTO_OUT_OF_RANGE_FAIL = 9007;
 const ERROR TTO_INVALID_BASE_FAIL = 9008;
 const ERROR TTO_INVALID_DIGIT_FAIL = 9009;
+const ERROR TTO_FLP_CONVERT_FAIL = 9010;
 
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wunused-parameter"
-ERROR tkn_value_word(const struct Token from, struct Object *into) {
+ERROR tkn_value_word(struct Token *from, struct Object *into) {
     return TTO_WORDS_VALUELESS_FAIL;
 }
 #pragma GCC diagnostic pop
@@ -117,26 +119,26 @@ error_handler:;
     free(ret);
     return err;
 }
-ERROR tkn_value_string(const struct Token from, struct Object *into) {
-    size_t val_len = from.raw_len - 2;
-    char *str_val = malloc(val_len);
-    strncpy(str_val, from.raw + 1, val_len);
-    str_val[val_len] = '\0';
+ERROR tkn_value_string(struct Token *from, struct Object *into) {
+    size_t val_len = from->raw_len - 2;
+    ++from->raw;
+    from->raw[val_len] = '\0';
     char *escaped;
-    if (tto_escape_string(str_val, val_len, &escaped) != NO_ERROR) {
+    if (tto_escape_string(from->raw, val_len, &escaped) != NO_ERROR) {
         return TTO_STRING_ESCAPE_FAIL;
     }
-    ERROR err = ctno_literal(str_val, val_len, NULL, into);
-    free(str_val);
+    ERROR err = ctno_literal(from->raw, val_len, NULL, into);
+    --from->raw;
+    tkn_free(from);
     return err;
 }
 
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wunused-parameter"
-ERROR tkn_value_integer(const struct Token from, struct Object *into) {
+ERROR tkn_value_integer(struct Token *from, struct Object *into) {
     int b = 10;
-    char *raw = from.raw;
-    size_t len = from.raw_len;
+    char *raw = from->raw;
+    size_t len = from->raw_len;
     bool neg = raw[0] == '-';
     if (neg || raw[0] == '+') {
         ++raw;
@@ -177,27 +179,36 @@ ERROR tkn_value_integer(const struct Token from, struct Object *into) {
         return TTO_INVALID_DIGIT_FAIL;
     }
     ERROR err = ctno_literal(&val, sizeof(val), NULL, into);
-    
+    tkn_free(from);
     return err;
-    // TODO Finish this method
 }
-ERROR tkn_value_real(const struct Token from, struct Object *into) {
-    return TTO_NOT_IMPLEMENTED_FAIL;
-    // TODO Finish this method
+ERROR tkn_value_real(struct Token *from, struct Object *into) {
+    char *end;
+    errno = 0;
+    double val = strtod(from->raw, &end);
+    if ((val == 0 || val == HUGE_VAL) && errno != 0) {
+        return TTO_FLP_CONVERT_FAIL;
+    }
+    if (end != from->raw + from->raw_len - 1) {
+        return TTO_INVALID_DIGIT_FAIL;
+    }
+    ERROR err = ctno_literal(&val, sizeof(val), NULL, into);
+    tkn_free(from);
+    return err;
 }
-ERROR tkn_value_identifier(const struct Token from, struct Object *into) {
-    return TTO_NOT_IMPLEMENTED_FAIL;
+ERROR tkn_value_identifier(struct Token *from, struct Object *into) {
     // TODO Finish this method
+    return TTO_NOT_IMPLEMENTED_FAIL;
 }
 
-ERROR tkn_value_regex(const struct Token from, struct Object *into) {
+ERROR tkn_value_regex(struct Token *from, struct Object *into) {
     // this isn't implemented in this version, sadly :(
     return TTO_NOT_IMPLEMENTED_FAIL;
 }
 #pragma GCC diagnostic pop
 
-ERROR tkn_value(const struct Token from, struct Object *into) {
-    switch (from.type) {
+ERROR tkn_value(struct Token *from, struct Object *into) {
+    switch (from->type) {
         case TKN_WORD:
             return tkn_value_word(from, into);
         case TKN_STRING:
