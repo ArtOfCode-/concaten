@@ -41,7 +41,7 @@ ERROR ctno_get_prop(const struct Object, const char *, struct Object *);
 // List
 // Map
 // StringBuilder
-// etc. etc.
+// and so on for every type implemented in C (as opposed to Concaten)
 
 #define ctno_to(ctno, type) \
     ((ctno).is_literal ? ((type *) (ctno).data.literal.value) : NULL)
