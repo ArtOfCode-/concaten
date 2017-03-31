@@ -163,13 +163,14 @@ Major version `0` is pre-completion; some of the parts may be
     * [x] Make sure `Object`s aren't accidentally getting passed around by
       (non-const) )value to avoid nasty GC-related bugs later
     * [x] Ditto for `Tokenizer`s and file handle cleanup
-    * [ ] Implement that one Token -> Object method (forgot to do this in
+    * [x] Implement that one Token -> Object method (forgot to do this in
       0.1)
     * [ ] Implement `ctno_eq`
       * Test for `ctno_eq` of all properties in dynamics
       * Test for equality of pointed-to data in literals
         * Probably needs to store the type after all; coordinating that will
           be much simpler after the `ctno_mk_` family is created
+    * [ ] Start `ctno_mk_` family (i.e. make them, but no methods for now)
     * [ ] Condense the error codes and make sure they're named consistently.
     * [ ] Nested error types? (i.e. SOME_ERROR thrown b/c SOME_OTHER_ERROR)
     * [ ] Make sure everything checks return values (where there are any)
@@ -195,7 +196,7 @@ Major version `0` is pre-completion; some of the parts may be
 * [ ] Minimal standard library - 0.9  
   Words like `if`, `{`, and `puts` so we can play with the language at all.
   * When designing/adding arrays, add the same methods to `CodeBlock`
-  * Including the functions to create an object of each literal type
+  * Add methods to `ctno_mk_` family
 * [ ] Misc. required updates as needed
   * [ ] Thorough code review  
     Finding places where the code is needlessly complicated, duplicated, or
@@ -234,6 +235,7 @@ Major version `0` is pre-completion; some of the parts may be
   * String manipulation
   * Math
   * Regex (that'll be a lot of effort)
+    * Support for regex literals is latent in tokenizer; use that!
   * GUI (ditto)
 * [ ] Multithreading/thread safety - 2.0  
   This is going to require something close to a complete rewrite, to make sure

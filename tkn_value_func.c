@@ -133,8 +133,6 @@ ERROR tkn_value_string(struct Token *from, struct Object *into) {
     return err;
 }
 
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Wunused-parameter"
 ERROR tkn_value_integer(struct Token *from, struct Object *into) {
     int b = 10;
     char *raw = from->raw;
@@ -197,12 +195,15 @@ ERROR tkn_value_real(struct Token *from, struct Object *into) {
     return err;
 }
 ERROR tkn_value_identifier(struct Token *from, struct Object *into) {
-    // TODO Finish this method
-    return TTO_NOT_IMPLEMENTED_FAIL;
+    ERROR err = ctno_literal(from->raw + 1, from->raw_len - 1, NULL, into);
+    tkn_free(from);
+    return err;
 }
 
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wunused-parameter"
 ERROR tkn_value_regex(struct Token *from, struct Object *into) {
-    // this isn't implemented in this version, sadly :(
+    // this isn't implemented in this version
     return TTO_NOT_IMPLEMENTED_FAIL;
 }
 #pragma GCC diagnostic pop
