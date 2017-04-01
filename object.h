@@ -51,11 +51,6 @@ ERROR ctno_copy(const struct Object, struct Object *);
 ERROR ctno_set_prop(struct Object *, const char *, struct Object *);
 ERROR ctno_get_prop(const struct Object, const char *, struct Object *);
 
-// TODO define these
-#define X(f, t) ctno_mk_##f(t from);
-all_types_X
-#undef X
-
 #define ctno_to(ctno, type) \
     ((ctno).is_literal ? ((type *) (ctno).data.literal.value) : NULL)
 ERROR ctno_claim(struct Object *);
