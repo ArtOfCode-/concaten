@@ -6,8 +6,27 @@
 #include "prop_map.h"
 #include "method_map.h"
 
+#define all_types_X \
+    X(Integral, signed long long) \
+    X(Real, signed double) \
+    X(Boolean, bool) \
+    X(DataStack, struct DataStack) \
+    X(TokenStack, struct TokenStack) \
+//    X(Runnable, struct Runnable) \
+//    X(ScopeStack, struct ScopeStack) \
+//    X(List, struct List) \
+//    X(Map, struct Map) \
+//    X(Regex, struct Regex)
+
+#define X(Special, _) LTL_##Special, // of type _
+enum LiteralType {
+    all_types_X
+};
+#undef X
+
 struct LiteralData {
     size_t size;
+    enum LiteralType type;
     void *value;
 };
 
@@ -25,23 +44,17 @@ struct Object {
     size_t refcount;
 };
 
-ERROR ctno_literal(const void *, size_t, struct MethodMap *, struct Object *);
+ERROR ctno_literal(const void *, size_t, enum LiteralType, struct MethodMap *,
+                   struct Object *);
 ERROR ctno_dynamic(const struct PropMap, struct MethodMap *, struct Object *);
 ERROR ctno_copy(const struct Object, struct Object *);
 ERROR ctno_set_prop(struct Object *, const char *, struct Object *);
 ERROR ctno_get_prop(const struct Object, const char *, struct Object *);
 
-// TODO create literal "constructors" for:
-// signed long long
-// signed double
-// char */size_t (or separate `string` struct?)
-// DataStack
-// TokenStack
-// CodeBlock
-// List
-// Map
-// StringBuilder
-// and so on for every type implemented in C (as opposed to Concaten)
+// TODO define these
+#define X(f, t) ctno_mk_##f(t from);
+all_types_X
+#undef X
 
 #define ctno_to(ctno, type) \
     ((ctno).is_literal ? ((type *) (ctno).data.literal.value) : NULL)
