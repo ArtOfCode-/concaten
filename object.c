@@ -85,6 +85,37 @@ ERROR ctno_copy(const struct Object copying, struct Object *into) {
     return NO_ERROR;
 }
 
+bool ctno_eq(const struct Object lhs, const struct Object rhs) {
+    if (lhs.is_literal != rhs.is_literal) {
+        return false;
+    } else if (lhs.is_literal) {
+        const struct LiteralData ld = lhs.data.literal;
+        const struct LiteralData rd = rhs.data.literal;
+        return ld.type == rd.type && ld.size == rd.size &&
+               memcmp(ld.value, rd.value, ld.size) == 0;
+    } else {
+        const struct PropMap lp = lhs.data.properties;
+        const struct PropMap rp = rhs.data.properties;
+        if (lp.bucket_count != rp.bucket_count ||
+                lp.item_count != rp.item_count) {
+            return false;
+        }
+        for (size_t bidx = 0; bidx < lp.bucket_count; ++bidx) {
+            const struct PM_Bucket lpb = lp.buckets[bidx];
+            const struct PM_Bucket rpb = rp.buckets[bidx];
+            if (lpb.count != rpb.count) return false;
+            for (size_t iidx = 0; iidx < lpb.count; ++iidx) {
+                struct PM_KeyValPair li = lpb.items[iidx];
+                struct PM_KeyValPair ri = rpb.items[iidx];
+                if (li.key_len != ri.key_len ||
+                        strncmp(li.key, ri.key, li.key_len) != 0 ||
+                        !ctno_eq(*li.val, *ri.val)) return false;
+            }
+        }
+        return true;
+    }
+}
+
 bool check_for_cycles(struct Object *checking, struct Object *in) {
     if (in->is_literal) return false;
     if (checking == in) return true;

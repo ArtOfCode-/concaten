@@ -166,11 +166,8 @@ Major version `0` is pre-completion; some of the parts may be
     * [x] Implement that one Token -> Object method (forgot to do this in
       0.1)
     * [ ] Implement `ctno_eq`
-      * Test for `ctno_eq` of all properties in dynamics
-      * Test for equality of pointed-to data in literals
-        * Probably needs to store the type after all; coordinating that will
-          be much simpler after the `ctno_mk_` family is created
-      * Hide `ctno_literal`; it should only be used by `ctno_mk_`
+      * [x] Write the code
+      * [ ] Test it all together
     * [ ] Start `ctno_mk_` family (i.e. make them, but no methods for now)
     * [ ] Condense the error codes and make sure they're named consistently.
     * [ ] Nested error types? (i.e. SOME_ERROR thrown b/c SOME_OTHER_ERROR)

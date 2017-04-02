@@ -54,11 +54,13 @@ ERROR ctno_literal(const void *, size_t, enum LiteralType, struct MethodMap *,
                    struct Object *);
 ERROR ctno_dynamic(const struct PropMap, struct MethodMap *, struct Object *);
 ERROR ctno_copy(const struct Object, struct Object *);
+bool ctno_eq(const struct Object, const struct Object);
 ERROR ctno_set_prop(struct Object *, const char *, struct Object *);
 ERROR ctno_get_prop(const struct Object, const char *, struct Object *);
-
 #define ctno_to(ctno, type) \
-    ((ctno).is_literal ? ((type *) (ctno).data.literal.value) : NULL)
+    (((ctno).is_literal && (ctno).data.literal.type == LTL_##type) \
+        ? ((type *) (ctno).data.literal.value) \
+        : NULL)
 ERROR ctno_claim(struct Object *);
 void ctno_free(struct Object *);
 
