@@ -21,34 +21,28 @@ struct DST_Node {
     tassert(dst_pop(&dst##num, NULL) == DST_POP_EMPTY_FAIL, \
             str(__LINE__) ": " str(num) " got bad result")
 
-#include <stdio.h>
-void dbg_print(const struct DST_Node *printing, const char *operation) {
-    printf("%15s: ", operation);
-    while (printing) {
-        printf("%zu-%p ", printing->refcount, (void *) printing);
-        printing = printing->next;
-    }
-    puts("(null)");
-}
-
 struct TestResult test_data_stack() {
     size_t successes = 0, total = 0;
     struct DataStack dst1;
     struct Object *dst2_got;
     struct Object *dst1_got;
     tassert(dst_new(&dst1) == NO_ERROR, "failed to init datastack");
-    signed long long val = 12;
+    Integral val = 12;
     struct Object foo, bar, baz, wuf;
-    tassert(ctno_literal(&val, sizeof(signed long long), NULL, &foo) == NO_ERROR,
+    tassert(ctno_literal(&val, sizeof(val), LTL_integral, NULL, &foo) ==
+                    NO_ERROR,
             "failed to initialize foo");
     ++val;
-    tassert(ctno_literal(&val, sizeof(signed long long), NULL, &bar) == NO_ERROR,
+    tassert(ctno_literal(&val, sizeof(val), LTL_integral, NULL, &bar) ==
+                    NO_ERROR,
             "failed to initialize bar");
     ++val;
-    tassert(ctno_literal(&val, sizeof(signed long long), NULL, &baz) == NO_ERROR,
+    tassert(ctno_literal(&val, sizeof(val), LTL_integral, NULL, &baz) ==
+                    NO_ERROR,
             "failed to initialize baz");
     ++val;
-    tassert(ctno_literal(&val, sizeof(signed long long), NULL, &wuf) == NO_ERROR,
+    tassert(ctno_literal(&val, sizeof(val), LTL_integral, NULL, &wuf) ==
+                    NO_ERROR,
             "failed to initialize wuf");
     ++val;
     tassert(dst_push(&dst1, &foo) == NO_ERROR, "failed to push");

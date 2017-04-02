@@ -19,7 +19,8 @@ const ERROR CTNO_SET_PM_GET_FAIL = 5013;
 const ERROR CTNO_CLAIM_MAX_REFCOUNT = 5014;
 
 ERROR ctno_literal(const void *data, const size_t data_size,
-                   struct MethodMap *meths, struct Object *into) {
+                   enum LiteralType type, struct MethodMap *meths,
+                   struct Object *into) {
     void *new_data = malloc(data_size);
     if (!new_data) {
         return CTNO_CTOR_MALLOC_FAIL;
@@ -28,7 +29,8 @@ ERROR ctno_literal(const void *data, const size_t data_size,
     *into = (struct Object) {
             .data.literal = (struct LiteralData) {
                     .size = data_size,
-                    .value = new_data
+                    .value = new_data,
+                    .type = type
             },
             .is_literal = true,
             .methods = meths,

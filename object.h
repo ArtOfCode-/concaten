@@ -6,22 +6,26 @@
 #include "prop_map.h"
 #include "method_map.h"
 
+typedef signed long long Integral;
+typedef double Real;
+typedef bool Boolean;
+
 #define all_types_X \
-    X(Integral, signed long long) \
-    X(Real, signed double) \
-    X(Boolean, bool) \
-    X(DataStack, struct DataStack) \
-    X(TokenStack, struct TokenStack) \
-    X(String, struct StringBuilder) \
-//    X(Runnable, struct Runnable) \
-//    X(ScopeStack, struct ScopeStack) \
-//    X(List, struct List) \
-//    X(Map, struct Map) \
-//    X(Regex, struct Regex)
+    X(integral, Integral) \
+    X(real, signed Real) \
+    X(boolean, bool) \
+    X(dataStack, struct DataStack) \
+    X(tokenStack, struct TokenStack) \
+//    X(runnable, struct Runnable)
+//    X(scopeStack, struct ScopeStack)
+//    X(list, struct List)
+//    X(map, struct Map)
+//    X(regex, struct Regex)
 
 #define X(Special, _) LTL_##Special, // of type _
 enum LiteralType {
     all_types_X
+    LTL_string
 };
 #undef X
 
@@ -29,6 +33,7 @@ struct LiteralData {
     size_t size;
     enum LiteralType type;
     void *value;
+    void (*val_free)(void *);
 };
 
 struct Object {

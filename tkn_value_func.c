@@ -127,7 +127,7 @@ ERROR tkn_value_string(struct Token *from, struct Object *into) {
     if (tto_escape_string(from->raw, val_len, &escaped) != NO_ERROR) {
         return TTO_STRING_ESCAPE_FAIL;
     }
-    ERROR err = ctno_literal(from->raw, val_len, NULL, into);
+    ERROR err = ctno_literal(from->raw, val_len, LTL_string, NULL, into);
     --from->raw;
     tkn_free(from);
     return err;
@@ -169,33 +169,34 @@ ERROR tkn_value_integer(struct Token *from, struct Object *into) {
     }
     char *num_end;
     errno = 0;
-    signed long long val = strtoll(raw, &num_end, b);
+    Integral val = strtoll(raw, &num_end, b);
     if ((val == LLONG_MAX || val == LLONG_MIN) && errno == ERANGE) {
         return TTO_OUT_OF_RANGE_FAIL;
     }
     if (num_end != raw + len - 1) {
         return TTO_INVALID_DIGIT_FAIL;
     }
-    ERROR err = ctno_literal(&val, sizeof(val), NULL, into);
+    ERROR err = ctno_literal(&val, sizeof(val), LTL_integral, NULL, into);
     tkn_free(from);
     return err;
 }
 ERROR tkn_value_real(struct Token *from, struct Object *into) {
     char *end;
     errno = 0;
-    double val = strtod(from->raw, &end);
+    Real val = strtod(from->raw, &end);
     if ((val == 0 || val == HUGE_VAL) && errno != 0) {
         return TTO_FLP_CONVERT_FAIL;
     }
     if (end != from->raw + from->raw_len - 1) {
         return TTO_INVALID_DIGIT_FAIL;
     }
-    ERROR err = ctno_literal(&val, sizeof(val), NULL, into);
+    ERROR err = ctno_literal(&val, sizeof(val), LTL_real, NULL, into);
     tkn_free(from);
     return err;
 }
 ERROR tkn_value_identifier(struct Token *from, struct Object *into) {
-    ERROR err = ctno_literal(from->raw + 1, from->raw_len - 1, NULL, into);
+    ERROR err = ctno_literal(from->raw + 1, from->raw_len - 1, LTL_string,
+                             NULL, into);
     tkn_free(from);
     return err;
 }
