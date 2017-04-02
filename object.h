@@ -12,6 +12,7 @@
     X(Boolean, bool) \
     X(DataStack, struct DataStack) \
     X(TokenStack, struct TokenStack) \
+    X(String, struct StringBuilder) \
 //    X(Runnable, struct Runnable) \
 //    X(ScopeStack, struct ScopeStack) \
 //    X(List, struct List) \
