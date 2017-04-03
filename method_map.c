@@ -34,7 +34,7 @@ size_t mm_hash(const char *key) {
 ERROR mm_new(size_t width, struct MethodMap *into) {
     struct MM_Bucket *buckets = malloc(width * sizeof(*buckets));
     if (!buckets) {
-        return MM_CTOR_MALLOC_FAIL;
+        return ERROR(MM_CTOR_MALLOC_FAIL, NULL);
     }
     for (size_t i = 0; i < width; ++i) {
         buckets[i] = mm_bk_zero();
@@ -52,8 +52,7 @@ ERROR mm_new(size_t width, struct MethodMap *into) {
 ERROR mm_claim(struct MethodMap *mm) {
     // TODO Remove this check in prod.
     // in test, I don't care about methods, so I set them to NULL
-    // in prod, every object must have methods; if it doesn't, it
-    // should fail.
+    // in prod, every object must have methods; if it doesn't, it should fail.
     if (mm == NULL) return NO_ERROR;
     ++mm->refcount;
     return NO_ERROR;
@@ -72,7 +71,7 @@ ERROR mm_set(struct MethodMap *mm, const char *key, MM_VALUE_TYPE f) {
     }
     if (bucket->count == MM_MAX_BUCKET_DEPTH ||
         mm->bk_gr_pref > (mm->bucket_count / 2)) {
-        if (mm_rehash(mm, mm->bucket_count * LOAD_FACTOR) != NO_ERROR) {
+        if (FAILED(mm_rehash(mm, mm->bucket_count * LOAD_FACTOR))) {
             return MM_SET_REHASH_FAIL;
         }
         // since things are in different places now, we have to reorganize
