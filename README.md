@@ -165,10 +165,9 @@ Major version `0` is pre-completion; some of the parts may be
     * [x] Ditto for `Tokenizer`s and file handle cleanup
     * [x] Implement that one Token -> Object method (forgot to do this in
       0.1)
-    * [ ] Implement `ctno_eq`
-      * [x] Write the code
-      * [ ] Test it all together
-    * [ ] Start `ctno_mk_` family (i.e. make them, but no methods for now)
+    * [x] Implement `ctno_eq`
+    * [ ] ~~Start `ctno_mk_` family (i.e. make them, but no methods for now)~~
+      * Deferred until standard library (i.e. back where it was)
     * [ ] Condense the error codes and make sure they're named consistently.
     * [ ] Nested error types? (i.e. SOME_ERROR thrown b/c SOME_OTHER_ERROR)
     * [ ] Make sure everything checks return values (where there are any)
@@ -194,7 +193,7 @@ Major version `0` is pre-completion; some of the parts may be
 * [ ] Minimal standard library - 0.9  
   Words like `if`, `{`, and `puts` so we can play with the language at all.
   * When designing/adding arrays, add the same methods to `CodeBlock`
-  * Add methods to `ctno_mk_` family
+  * If necessary, create `ctno_mk_` family to automatically create things
 * [ ] Misc. required updates as needed
   * [ ] Thorough code review  
     Finding places where the code is needlessly complicated, duplicated, or

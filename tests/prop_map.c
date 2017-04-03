@@ -11,7 +11,7 @@ struct TestResult test_prop_map() {
     struct PropMap pm;
     tassert(pm_new(8, &pm) == NO_ERROR, "failed to initialize");
     tassert(pm.item_count == 0, "why are there items wtf");
-    Integral num = 1;
+    integral num = 1;
     struct Object val;
     tassert(ctno_literal(&num, sizeof(num), LTL_integral, NULL, &val) ==
                     NO_ERROR,

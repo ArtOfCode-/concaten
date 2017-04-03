@@ -27,7 +27,7 @@ struct TestResult test_data_stack() {
     struct Object *dst2_got;
     struct Object *dst1_got;
     tassert(dst_new(&dst1) == NO_ERROR, "failed to init datastack");
-    Integral val = 12;
+    integral val = 12;
     struct Object foo, bar, baz, wuf;
     tassert(ctno_literal(&val, sizeof(val), LTL_integral, NULL, &foo) ==
                     NO_ERROR,

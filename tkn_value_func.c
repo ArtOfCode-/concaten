@@ -169,7 +169,7 @@ ERROR tkn_value_integer(struct Token *from, struct Object *into) {
     }
     char *num_end;
     errno = 0;
-    Integral val = strtoll(raw, &num_end, b);
+    integral val = strtoll(raw, &num_end, b);
     if ((val == LLONG_MAX || val == LLONG_MIN) && errno == ERANGE) {
         return TTO_OUT_OF_RANGE_FAIL;
     }
@@ -183,7 +183,7 @@ ERROR tkn_value_integer(struct Token *from, struct Object *into) {
 ERROR tkn_value_real(struct Token *from, struct Object *into) {
     char *end;
     errno = 0;
-    Real val = strtod(from->raw, &end);
+    real val = strtod(from->raw, &end);
     if ((val == 0 || val == HUGE_VAL) && errno != 0) {
         return TTO_FLP_CONVERT_FAIL;
     }

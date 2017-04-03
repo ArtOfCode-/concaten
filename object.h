@@ -6,9 +6,8 @@
 #include "prop_map.h"
 #include "method_map.h"
 
-typedef signed long long Integral;
-typedef double Real;
-typedef bool Boolean;
+typedef signed long long integral;
+typedef double real;
 
 #define all_types_X \
     X(integral, Integral) \
@@ -25,7 +24,8 @@ typedef bool Boolean;
 #define X(Special, _) LTL_##Special, // of type _
 enum LiteralType {
     all_types_X
-    LTL_string
+    LTL_string,
+    LTL_char = LTL_string
 };
 #undef X
 
@@ -57,9 +57,9 @@ ERROR ctno_copy(const struct Object, struct Object *);
 bool ctno_eq(const struct Object, const struct Object);
 ERROR ctno_set_prop(struct Object *, const char *, struct Object *);
 ERROR ctno_get_prop(const struct Object, const char *, struct Object *);
-#define ctno_to(ctno, type) \
-    (((ctno).is_literal && (ctno).data.literal.type == LTL_##type) \
-        ? ((type *) (ctno).data.literal.value) \
+#define ctno_to(ctno, _t) \
+    (((ctno).is_literal && (ctno).data.literal.type == LTL_##_t) \
+        ? ((_t *) (ctno).data.literal.value) \
         : NULL)
 ERROR ctno_claim(struct Object *);
 void ctno_free(struct Object *);
