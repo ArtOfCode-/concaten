@@ -26,5 +26,6 @@ struct TestResult test_object();
 struct TestResult test_data_stack();
 struct TestResult test_token_stack();
 struct TestResult test_code_block();
+struct TestResult test_tkn_value();
 
 #endif //CONCATEN_TESTS_H

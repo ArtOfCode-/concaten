@@ -25,7 +25,8 @@ typedef double real;
 enum LiteralType {
     all_types_X
     LTL_string,
-    LTL_char = LTL_string
+    LTL_char = LTL_string,
+    LTL_identifier
 };
 #undef X
 

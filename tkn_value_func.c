@@ -115,7 +115,7 @@ ERROR tkn_value_string(struct Token *from, struct Object *into) {
     if (tto_escape_string(from->raw, val_len, &escaped) != NO_ERROR) {
         return TTO_STRING_ESCAPE_FAIL;
     }
-    ERROR err = ctno_literal(from->raw, val_len, LTL_string, NULL, into);
+    ERROR err = ctno_literal(escaped, val_len, LTL_string, NULL, into);
     --from->raw;
     tkn_free(from);
     return err;
@@ -183,7 +183,7 @@ ERROR tkn_value_real(struct Token *from, struct Object *into) {
     return err;
 }
 ERROR tkn_value_identifier(struct Token *from, struct Object *into) {
-    ERROR err = ctno_literal(from->raw + 1, from->raw_len - 1, LTL_string,
+    ERROR err = ctno_literal(from->raw + 1, from->raw_len - 1, LTL_identifier,
                              NULL, into);
     tkn_free(from);
     return err;

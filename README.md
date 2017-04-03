@@ -163,8 +163,7 @@ Major version `0` is pre-completion; some of the parts may be
     * [x] Make sure `Object`s aren't accidentally getting passed around by
       (non-const) )value to avoid nasty GC-related bugs later
     * [x] Ditto for `Tokenizer`s and file handle cleanup
-    * [x] Implement that one Token -> Object method (forgot to do this in
-      0.1)
+    * [x] Implement that one Token -> Object method
     * [x] Implement `ctno_eq`
     * [ ] ~~Start `ctno_mk_` family (i.e. make them, but no methods for now)~~
       * Deferred until standard library (i.e. back where it was)

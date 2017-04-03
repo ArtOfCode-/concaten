@@ -38,7 +38,7 @@ int main() {
     test(stringbuilder);
     test(token_stack);
     test(tokenizer);
-    to_test(tkn_value);
+    test(tkn_value);
     to_test(runnable);
     to_test(scope_stack);
     to_test(standard_lib);
