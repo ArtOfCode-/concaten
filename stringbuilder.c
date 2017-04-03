@@ -3,12 +3,6 @@
 #include <stdint.h>
 #include "stringbuilder.h"
 
-const ERROR SB_CTOR_BAD_CAP_FAIL       = 7011;
-const ERROR SB_CTOR_MALLOC_FAIL        = 7012;
-const ERROR SB_APND_MULT_OVERFLOW_FAIL = 7021;
-const ERROR SB_APND_MALLOC_FAIL        = 7022;
-const ERROR SB_TS_REALLOC_FAIL         = 7031;
-
 ERROR sb_new(size_t init_cap, struct StringBuilder *into) {
     if (init_cap == 0) {
         return SB_CTOR_BAD_CAP_FAIL;

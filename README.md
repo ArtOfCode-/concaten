@@ -168,13 +168,13 @@ Major version `0` is pre-completion; some of the parts may be
     * [x] Implement `ctno_eq`
     * [ ] ~~Start `ctno_mk_` family (i.e. make them, but no methods for now)~~
       * Deferred until standard library (i.e. back where it was)
-    * [ ] Condense the error codes and make sure they're named consistently.
+    * [x] Condense the error codes and make sure they're named consistently.
     * [ ] Nested error types? (i.e. SOME_ERROR thrown b/c SOME_OTHER_ERROR)
     * [ ] Make sure everything checks return values (where there are any)
     * [ ] Use a pushable `Tokenizer` in `TokenStack` to make the history bit
       more accurate.
     * [ ] `tst_peek` is fundamentally broken right now. Make it work.
-    * [ ] Replace `strfoo` with `strnfoo` where available.
+    * [x] Replace `strfoo` with `strnfoo` where available.
     * [ ] Ensure that all error codes defined in source files are declared in
       `error.h`
 

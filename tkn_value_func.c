@@ -7,18 +7,6 @@
 #include "tokenizer.h"
 #include "object.h"
 
-const ERROR TTO_WORDS_VALUELESS_FAIL = 9000;
-const ERROR TTO_UNKNOWN_TYPE_FAIL = 9001;
-const ERROR TTO_NOT_IMPLEMENTED_FAIL = 9002;
-const ERROR TTO_STRING_ESCAPE_FAIL = 9003;
-const ERROR TTO_ESCAPE_END_FAIL = 9004;
-const ERROR TTO_MALLOC_FAIL = 9005;
-const ERROR TTO_ESCAPE_BAD_HEX_FAIL = 9006;
-const ERROR TTO_OUT_OF_RANGE_FAIL = 9007;
-const ERROR TTO_INVALID_BASE_FAIL = 9008;
-const ERROR TTO_INVALID_DIGIT_FAIL = 9009;
-const ERROR TTO_FLP_CONVERT_FAIL = 9010;
-
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wunused-parameter"
 ERROR tkn_value_word(struct Token *from, struct Object *into) {

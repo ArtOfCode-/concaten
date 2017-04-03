@@ -6,28 +6,6 @@
 #include "tokenizer.h"
 #include "stringbuilder.h"
 
-const ERROR TKNR_CTOR_STR_MALLOC_FAIL       = 8111;
-const ERROR TKNR_CTOR_STR_BAD_STRLEN_FAIL   = 8112;
-const ERROR TKNR_CTOR_STR_NULL_ARG_FAIL     = 8113;
-const ERROR TKNR_CTOR_FILE_MALLOC_FAIL      = 8121;
-const ERROR TKNR_CTOR_FILE_BAD_STRLEN_FAIL  = 8122;
-const ERROR TKNR_CTOR_FILE_NULL_ARG_FAIL    = 8123;
-const ERROR TKNR_CTOR_FILE_FOPEN_FAIL       = 8124;
-const ERROR TKNR_FILE_READ_FAIL             = 8210;
-const ERROR TKNR_FILE_READ_EOF_FAIL         = 8211;
-const ERROR TKNR_STRING_READ_EOS_FAIL       = 8221;
-const ERROR TKNR_NT_MALLOC_FAIL             = 8301;
-const ERROR TKNR_NT_NEW_SB_FAIL             = 8302;
-const ERROR TKNR_NT_SB_FREE_COPY_FAIL       = 8303;
-const ERROR TKNR_NT_INPUT_END_FAIL          = 8304;
-const ERROR TKNR_SYN_NO_SEPARATION_FAIL     = 8501;
-const ERROR TKNR_SYN_UNEXPECTED_END_FAIL    = 8502;
-const ERROR TKNR_SYN_STR_MULTILINE_FAIL     = 8511;
-const ERROR TKNR_SYN_NUM_ILLEGAL_DIGIT_FAIL = 8521;
-const ERROR TKNR_SYN_RGX_BAD_FLAG_FAIL      = 8531;
-const ERROR TKNR_TKN_COPY_MALLOC_RAW_FAIL   = 8601;
-const ERROR TKNR_TKN_COPY_MALLOC_ORG_FAIL   = 8601;
-
 struct Token tkn_empty(size_t line, size_t index) {
     return (struct Token) {
             .type = TKN_UNKNOWN,
@@ -167,7 +145,7 @@ ERROR tknr_from_string(const char *mem, const char *origin,
     if (!mem_c) {
         return TKNR_CTOR_STR_MALLOC_FAIL;
     }
-    strcpy(mem_c, mem);
+    strncpy(mem_c, mem, mem_len + 1);
     ret.source.string = (struct StringSource) {
             .begin = mem_c,
             .end = mem_c + mem_len + 1,
@@ -175,12 +153,12 @@ ERROR tknr_from_string(const char *mem, const char *origin,
     };
     
     // location
-    char *origin_c = malloc(origin_len * sizeof(char) + 1);
+    char *origin_c = malloc(origin_len + 1);
     if (!origin_c) {
         free(ret.source.string.begin);
         return TKNR_CTOR_STR_MALLOC_FAIL;
     }
-    strcpy(origin_c, origin);
+    strncpy(origin_c, origin, origin_len + 1);
     ret.origin = origin_c;
     
     ERROR err = skip_char(&ret);
@@ -228,7 +206,7 @@ ERROR tknr_from_filepath(const char *path, struct Tokenizer *into) {
         fclose(fptr);
         return TKNR_CTOR_FILE_MALLOC_FAIL;
     }
-    strcpy(path_c, path);
+    strncpy(path_c, path, path_len + 1);
     ret.origin = path_c;
     
     struct FileSource *fs = &ret.source.file;
@@ -589,7 +567,7 @@ ERROR tknr_next(struct Tokenizer *from, struct Token *out) {
         err = TKNR_NT_MALLOC_FAIL;
         goto error_handler;
     }
-    strcpy(ret.origin, from->origin);
+    strncpy(ret.origin, from->origin, from->origin_len);
     char next_char = (from)->next_char;
     if (next_char == '"') { // single-line string
         return get_string(from, ret, out);

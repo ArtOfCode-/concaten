@@ -3,21 +3,6 @@
 #include <string.h>
 #include "object.h"
 
-const ERROR CTNO_CTOR_MALLOC_FAIL = 5001;
-const ERROR CTNO_CTOR_PM_COPY_FAIL = 5002;
-const ERROR CTNO_COPY_PROPS_FAIL = 5003;
-const ERROR CTNO_COPY_DATA_FAIL = 5004;
-const ERROR CTNO_COPY_CLAIM_FAIL = 5005;
-const ERROR CTNO_GET_NO_KEY_FAIL = 5006;
-const ERROR CTNO_GET_LITERAL_FAIL = 5007;
-const ERROR CTNO_GET_PM_GET_FAIL = 5008;
-const ERROR CTNO_SET_LITERAL_FAIL = 5009;
-const ERROR CTNO_SET_CYCLE_FAIL = 5010;
-const ERROR CTNO_SET_ADD_FAIL = 5011;
-const ERROR CTNO_SET_CLAIM_FAIL = 5012;
-const ERROR CTNO_SET_PM_GET_FAIL = 5013;
-const ERROR CTNO_CLAIM_MAX_REFCOUNT = 5014;
-
 ERROR ctno_literal(const void *data, const size_t data_size,
                    enum LiteralType type, struct MethodMap *meths,
                    struct Object *into) {

@@ -3,17 +3,6 @@
 #include <stdlib.h>
 #include <string.h>
 
-const ERROR PM_CTOR_MALLOC_FAIL = 5501;
-const ERROR PM_COPY_CREATE_FAIL = 5502;
-const ERROR PM_COPY_MALLOC_FAIL = 5503;
-const ERROR PM_NESTED_REHASH_FAIL = 5504;
-const ERROR PM_RH_CREATE_FAIL = 5505;
-const ERROR PM_RH_BAD_SIZE_FAIL = 5506;
-const ERROR PM_SET_REHASH_FAIL = 5507;
-const ERROR PM_SET_MALLOC_FAIL = 5508;
-const ERROR PM_GET_NO_KEY_FAIL = 5509;
-const ERROR PM_RMV_NO_KEY_FAIL = 5510;
-
 // the amount by which we increase the map's capacity each time
 #define LOAD_FACTOR 2
 
@@ -104,7 +93,7 @@ ERROR pm_set(struct PropMap *pm, const char *k, PM_VALUE_TYPE val) {
     struct PM_Bucket *bucket = &pm->buckets[idx];
     for (size_t i = 0; i < bucket->count; ++i) {
         if (bucket->items[i].key_len == key_len &&
-                strcmp(k, bucket->items[i].key) == 0) {
+                strncmp(k, bucket->items[i].key, key_len) == 0) {
             bucket->items[i].val = val;
             return NO_ERROR;
         }
@@ -143,7 +132,7 @@ ERROR pm_get(const struct PropMap pm, const char *key, PM_VALUE_TYPE *out) {
     struct PM_Bucket bucket = pm.buckets[idx];
     for (size_t i = 0; i < bucket.count; ++i) {
         if (bucket.items[i].key_len == key_len &&
-                strcmp(bucket.items[i].key, key) == 0) {
+                strncmp(bucket.items[i].key, key, key_len) == 0) {
             *out = bucket.items[i].val;
             return NO_ERROR;
         }
@@ -151,17 +140,17 @@ ERROR pm_get(const struct PropMap pm, const char *key, PM_VALUE_TYPE *out) {
     return PM_GET_NO_KEY_FAIL;
 }
 
-ERROR pm_remove(struct PropMap *pm, const char *finding) {
+ERROR pm_remove(struct PropMap *pm, const char *key) {
     if (pm->item_count == 0) return PM_RMV_NO_KEY_FAIL;
-    size_t idx = pm_hash(finding) % pm->bucket_count;
+    size_t idx = pm_hash(key) % pm->bucket_count;
     struct PM_Bucket *bucket = &pm->buckets[idx];
-    size_t finding_len = strlen(finding) + 1;
+    size_t key_len = strlen(key) + 1;
     // this should work as-is for edge cases like empty buckets and found
     // items being at the very end or beginning of their buckets.
     size_t removed;
     for (removed = 0; removed < bucket->count; ++removed) {
-        if (bucket->items[removed].key_len == finding_len &&
-                strcmp(finding, bucket->items[removed].key) == 0) {
+        if (bucket->items[removed].key_len == key_len &&
+                strncmp(key, bucket->items[removed].key, key_len) == 0) {
             free(bucket->items[removed].key);
             break;
         }
@@ -180,10 +169,10 @@ ERROR pm_remove(struct PropMap *pm, const char *finding) {
 bool pm_is_key(const struct PropMap pm, const char *key) {
     size_t idx = pm_hash(key) % pm.bucket_count;
     struct PM_Bucket *bucket = &pm.buckets[idx];
-    size_t finding_len = strlen(key) + 1;
+    size_t key_len = strlen(key) + 1;
     for (size_t i = 0; i < bucket->count; ++i) {
-        if (bucket->items[i].key_len == finding_len && 
-                strcmp(key, bucket->items[i].key) == 0) {
+        if (bucket->items[i].key_len == key_len && 
+                strncmp(key, bucket->items[i].key, key_len) == 0) {
             return true;
         }
     }

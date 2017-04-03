@@ -3,19 +3,6 @@
 #include <stdlib.h>
 #include <string.h>
 
-//const ERROR METHOD_MAP_FAIL = 5750
-  const ERROR MM_CTOR_MALLOC_FAIL = 5751;
-  const ERROR MM_NESTED_REHASH_FAIL = 5752;
-//const ERROR MM_REHASH_FAIL = 5760;
-  const ERROR MM_RH_CREATE_FAIL = 5761;
-  const ERROR MM_RH_BAD_SIZE_FAIL = 5762;
-//const ERROR MM_SET_FAIL = 5770;
-  const ERROR MM_SET_REHASH_FAIL = 5771;
-//const ERROR MM_GET_FAIL = 5780;
-  const ERROR MM_GET_NO_KEY_FAIL = 5781;
-//const ERROR MM_REMOVE_FAIL = 5790;
-  const ERROR MM_RMV_NO_KEY_FAIL = 5791;
-
 #define LOAD_FACTOR 2
 
 struct MM_KeyValPair mm_kvp_zero() {
@@ -78,7 +65,7 @@ ERROR mm_set(struct MethodMap *mm, const char *key, MM_VALUE_TYPE f) {
     struct MM_Bucket *bucket = &mm->buckets[idx];
     for (size_t i = 0; i < bucket->count; ++i) {
         if (bucket->items[i].key_len == key_len &&
-            strcmp(key, bucket->items[i].key) == 0) {
+            strncmp(key, bucket->items[i].key, key_len) == 0) {
             bucket->items[i].func = f;
             return NO_ERROR;
         }
@@ -114,7 +101,7 @@ ERROR mm_get(const struct MethodMap mm, const char *key, MM_VALUE_TYPE *out) {
     struct MM_Bucket bucket = mm.buckets[idx];
     for (size_t i = 0; i < bucket.count; ++i) {
         if (bucket.items[i].key_len == key_len &&
-            strcmp(bucket.items[i].key, key) == 0) {
+            strncmp(bucket.items[i].key, key, key_len) == 0) {
             *out = bucket.items[i].func;
             return NO_ERROR;
         }
@@ -132,7 +119,7 @@ ERROR mm_remove(struct MethodMap *mm, const char *finding) {
     size_t removed;
     for (removed = 0; removed < bucket->count; ++removed) {
         if (bucket->items[removed].key_len == finding_len &&
-            strcmp(finding, bucket->items[removed].key) == 0) {
+            strncmp(finding, bucket->items[removed].key, finding_len) == 0) {
             break;
         }
     }
@@ -150,10 +137,10 @@ ERROR mm_remove(struct MethodMap *mm, const char *finding) {
 bool mm_is_key(const struct MethodMap mm, const char *key) {
     size_t idx = mm_hash(key) % mm.bucket_count;
     struct MM_Bucket *bucket = &mm.buckets[idx];
-    size_t finding_len = strlen(key);
+    size_t key_len = strlen(key);
     for (size_t i = 0; i < bucket->count; ++i) {
-        if (bucket->items[i].key_len == finding_len &&
-            strcmp(key, bucket->items[i].key) == 0) {
+        if (bucket->items[i].key_len == key_len &&
+            strncmp(key, bucket->items[i].key, key_len) == 0) {
             return true;
         }
     }
