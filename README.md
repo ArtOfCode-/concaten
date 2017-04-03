@@ -214,6 +214,9 @@ Major version `0` is pre-completion; some of the parts may be
     works, how to install it, and what the command-line arguments are.  
   In theory, mostly done (because of the spec), but in practice, it probably
     should be rewritten.
+* ***Take a break.*** You just wrote an entire programming language. Give it a
+  week or two, play with it a little, but don't start working on the next bits.
+  Bugfixes only.
 * [ ] Command-line options - 1.1  
   Definitely at least `-e`; take inspiration from Ruby and Python.  
   These should mostly be minor variations on the existing main method.
@@ -232,7 +235,7 @@ Major version `0` is pre-completion; some of the parts may be
   * String manipulation
   * Math
   * Regex (that'll be a lot of effort)
-    * Support for regex literals is latent in tokenizer; use that!
+    * Optionally, use an external library, integrated with this.
   * GUI (ditto)
 * [ ] Multithreading/thread safety - 2.0  
   This is going to require something close to a complete rewrite, to make sure
