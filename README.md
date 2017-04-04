@@ -169,6 +169,9 @@ Major version `0` is pre-completion; some of the parts may be
       * Deferred until standard library (i.e. back where it was)
     * [x] Condense the error codes and make sure they're named consistently.
     * [ ] Nested error types? (i.e. SOME_ERROR thrown b/c SOME_OTHER_ERROR)
+      * Some work done, but it's a massive change -- would it be worth just...
+        not doing this? I don't think I need stacktraces for the interior code,
+        since if necessary I can just convert it
     * [ ] Make sure everything checks return values (where there are any)
     * [ ] Use a pushable `Tokenizer` in `TokenStack` to make the history bit
       more accurate.

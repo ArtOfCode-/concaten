@@ -28,7 +28,7 @@ struct TestResult test_code_block() {
     // test_o basic appending
     tassert(!NOS_FAILED(cb_append(&test_o, TOKEN)), "failed to append");
     // test_o basic get
-    a_get(o, 0, 28, 1);
+    a_get(o, 0, 29, 1);
     // get to the point where we resize
     tassert(!NOS_FAILED(cb_append(&test_o, TOKEN)), "failed to append");
     tassert(!NOS_FAILED(cb_append(&test_o, TOKEN)), "failed to append");
@@ -51,15 +51,15 @@ struct TestResult test_code_block() {
             "removed from bad position");
     tassert(prev_err.errcode == CB_RMV_BAD_IDX_FAIL, "wrong error code");
     // get again
-    a_get(o, 0, 28, 1);
+    a_get(o, 0, 29, 1);
     // testing copy
     struct CodeBlock test_c;
     tassert(!NOS_FAILED(cb_copy(test_o, &test_c)), "failed to copy");
-    a_get(c, 0, 28, 1);
+    a_get(c, 0, 29, 1);
     tassert(!NOS_FAILED(cb_prepend(&test_c, TOKEN)), "failed to prepend");
-    a_get(c, 0, 57, 6);
+    a_get(c, 0, 59, 6);
     // make sure the copy doesn't affect the original
-    a_get(o, 0, 28, 1);
+    a_get(o, 0, 29, 1);
     cb_free(&test_c);
     // bad get
     tassert(FAILED(cb_get(test_o, 7, &res)),
@@ -67,21 +67,21 @@ struct TestResult test_code_block() {
     tassert(prev_err.errcode == CB_GET_BAD_IDX_FAIL, "wrong error code");
     // insert in middle
     tassert(!NOS_FAILED(cb_insert(&test_o, 2, TOKEN)), "failed to insert");
-    a_get(o, 2, 66, 7);
+    a_get(o, 2, 69, 7);
     // bad insert
     tassert(FAILED(cb_insert(&test_o, 9, TOKEN)),
             "successfully inserted in bad pos");
     tassert(prev_err.errcode == CB_INST_BAD_IDX_FAIL, "wrong error code");
     // basic prepend
     tassert(!NOS_FAILED(cb_prepend(&test_o, TOKEN)), "failed to insert");
-    a_get(o, 0, 72, 9);
+    a_get(o, 0, 76, 9);
     // set
     tassert(!NOS_FAILED(cb_set(&test_o, 1, TOKEN)), "failed to set");
     // suddenly, insert! (intentionally in the middle of the `set` test_o)
     tassert(!NOS_FAILED(cb_insert(&test_o, 3, TOKEN)), "failed to insert");
-    a_get(o, 3, 77, 11);
+    a_get(o, 3, 81, 11);
     // finish the set test_o
-    a_get(o, 1, 75, 10);
+    a_get(o, 1, 79, 10);
     cb_free(&test_o);
     
     return (struct TestResult) { .successes = successes, .total = total };
