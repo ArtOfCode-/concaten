@@ -53,7 +53,7 @@ bool pm_raw_add(struct PropMap *pm, char *key, PM_VALUE_TYPE val) {
 ERROR pm_new(size_t width, struct PropMap *into) {
     struct PM_Bucket *buckets = malloc(width * sizeof(*buckets));
     if (!buckets) {
-        return PM_CTOR_MALLOC_FAIL;
+        THROW(PM_CTOR_MALLOC_FAIL);
     }
     for (size_t i = 0; i < PM_MAX_BUCKET_DEPTH; ++i) {
         buckets[i] = pm_bk_zero();
@@ -69,14 +69,15 @@ ERROR pm_new(size_t width, struct PropMap *into) {
 
 ERROR pm_copy(const struct PropMap copying, struct PropMap *into) {
     struct PropMap ret;
-    if (pm_new(copying.bucket_count, &ret) != NO_ERROR) {
-        return PM_COPY_CREATE_FAIL;
+    ERROR prev_err;
+    if (FAILED(pm_new(copying.bucket_count, &ret))) {
+        RETHROW(PM_COPY_CREATE_FAIL);
     }
     for (size_t bidx = 0; bidx < copying.bucket_count; ++bidx) {
         for (size_t iidx = 0; iidx < copying.buckets[bidx].count; ++iidx) {
             struct PM_KeyValPair item = copying.buckets[bidx].items[iidx];
             char *new_key = malloc(item.key_len);
-            if (!new_key) return PM_COPY_MALLOC_FAIL;
+            if (!new_key) THROW(PM_COPY_MALLOC_FAIL);
             strncpy(new_key, item.key, item.key_len);
             pm_raw_add(&ret, new_key, item.val);
         }
@@ -86,6 +87,8 @@ ERROR pm_copy(const struct PropMap copying, struct PropMap *into) {
 }
 
 ERROR pm_set(struct PropMap *pm, const char *k, PM_VALUE_TYPE val) {
+    ERROR prev_err;
+    
     size_t key_len = strlen(k) + 1;
     size_t key_hash_raw = pm_hash(k);
     
@@ -100,8 +103,8 @@ ERROR pm_set(struct PropMap *pm, const char *k, PM_VALUE_TYPE val) {
     }
     if (bucket->count == PM_MAX_BUCKET_DEPTH ||
             pm->bk_gr_pref > (pm->bucket_count / 2)) {
-        if (pm_rehash(pm, pm->bucket_count * LOAD_FACTOR) != NO_ERROR) {
-            return PM_SET_REHASH_FAIL;
+        if (FAILED(pm_rehash(pm, pm->bucket_count * LOAD_FACTOR))) {
+            RETHROW(PM_SET_REHASH_FAIL);
         }
         // since things are in different places now, we have to reorganize
         idx = key_hash_raw % pm->bucket_count;
@@ -110,7 +113,7 @@ ERROR pm_set(struct PropMap *pm, const char *k, PM_VALUE_TYPE val) {
         // we already checked if it's in there.
     }
     char *key = malloc(key_len);
-    if (!key) return PM_SET_MALLOC_FAIL;
+    if (!key) THROW(PM_SET_MALLOC_FAIL);
     strncpy(key, k, key_len);
     bucket->items[bucket->count] = (struct PM_KeyValPair) {
             .key = key,
@@ -126,7 +129,7 @@ ERROR pm_set(struct PropMap *pm, const char *k, PM_VALUE_TYPE val) {
 }
 
 ERROR pm_get(const struct PropMap pm, const char *key, PM_VALUE_TYPE *out) {
-    if (pm.item_count == 0) return PM_GET_NO_KEY_FAIL;
+    if (pm.item_count == 0) THROW(PM_GET_NO_KEY_FAIL);
     size_t idx = pm_hash(key) % pm.bucket_count;
     size_t key_len = strlen(key) + 1;
     struct PM_Bucket bucket = pm.buckets[idx];
@@ -137,11 +140,11 @@ ERROR pm_get(const struct PropMap pm, const char *key, PM_VALUE_TYPE *out) {
             return NO_ERROR;
         }
     }
-    return PM_GET_NO_KEY_FAIL;
+    THROW(PM_GET_NO_KEY_FAIL);
 }
 
 ERROR pm_remove(struct PropMap *pm, const char *key) {
-    if (pm->item_count == 0) return PM_RMV_NO_KEY_FAIL;
+    if (pm->item_count == 0) THROW(PM_RMV_NO_KEY_FAIL);
     size_t idx = pm_hash(key) % pm->bucket_count;
     struct PM_Bucket *bucket = &pm->buckets[idx];
     size_t key_len = strlen(key) + 1;
@@ -156,7 +159,7 @@ ERROR pm_remove(struct PropMap *pm, const char *key) {
         }
     }
     if (removed == bucket->count) {
-        return PM_RMV_NO_KEY_FAIL;
+        THROW(PM_RMV_NO_KEY_FAIL);
     }
     for (size_t move = removed + 1; move < bucket->count; ++move) {
         bucket->items[move - 1] = bucket->items[move];
@@ -190,14 +193,15 @@ bool pm_is_value(const struct PropMap pm, PM_VALUE_TYPE v) {
 }
 
 ERROR pm_rehash(struct PropMap *pm, size_t new_size) {
-    if (new_size < pm->bucket_count) return PM_RH_BAD_SIZE_FAIL;
+    ERROR prev_err;
+    if (new_size < pm->bucket_count) THROW(PM_RH_BAD_SIZE_FAIL);
     struct PropMap new;
-    if (pm_new(new_size, &new) != NO_ERROR) return PM_RH_CREATE_FAIL;
+    if (FAILED(pm_new(new_size, &new))) RETHROW(PM_RH_CREATE_FAIL);
     for (size_t bucket_idx = 0; bucket_idx < pm->bucket_count; ++bucket_idx) {
         struct PM_Bucket bk = pm->buckets[bucket_idx];
         for (size_t i = 0; i < bk.count; ++i) {
             if (!pm_raw_add(&new, bk.items[i].key, bk.items[i].val)) {
-                return PM_NESTED_REHASH_FAIL;
+                THROW(PM_NESTED_REHASH_FAIL);
             }
         }
     }

@@ -12,56 +12,57 @@ struct DST_Node {
 };
 
 #define assert_pop_eq(num, what) \
-    tassert(dst_pop(&dst##num, &dst##num##_got) == NO_ERROR, \
+    tassert(!NOS_FAILED(dst_pop(&dst##num, &dst##num##_got)), \
             "failed to pop"); \
     tassert(dst##num##_got == &what, \
             str(__LINE__) ": " str(num) " got bad result")
 
 #define assert_no_pop(num) \
-    tassert(dst_pop(&dst##num, NULL) == DST_POP_EMPTY_FAIL, \
-            str(__LINE__) ": " str(num) " got bad result")
+    tassert(FAILED(dst_pop(&dst##num, NULL)), "got impossibly"); \
+    tassert(prev_err.errcode == DST_POP_EMPTY_FAIL, "wrong error code");
 
 struct TestResult test_data_stack() {
+    ERROR prev_err;
     size_t successes = 0, total = 0;
     struct DataStack dst1;
     struct Object *dst2_got;
     struct Object *dst1_got;
-    tassert(dst_new(&dst1) == NO_ERROR, "failed to init datastack");
+    tassert(!NOS_FAILED(dst_new(&dst1)), "failed to init datastack");
     integral val = 12;
     struct Object foo, bar, baz, wuf;
-    tassert(ctno_literal(&val, sizeof(val), LTL_integral, NULL, &foo) ==
-                    NO_ERROR,
+    tassert(!NOS_FAILED(
+            ctno_literal(&val, sizeof(val), LTL_integral, NULL, &foo)),
             "failed to initialize foo");
     ++val;
-    tassert(ctno_literal(&val, sizeof(val), LTL_integral, NULL, &bar) ==
-                    NO_ERROR,
+    tassert(!NOS_FAILED(
+            ctno_literal(&val, sizeof(val), LTL_integral, NULL, &bar)),
             "failed to initialize bar");
     ++val;
-    tassert(ctno_literal(&val, sizeof(val), LTL_integral, NULL, &baz) ==
-                    NO_ERROR,
+    tassert(!NOS_FAILED(
+            ctno_literal(&val, sizeof(val), LTL_integral, NULL, &baz)),
             "failed to initialize baz");
     ++val;
-    tassert(ctno_literal(&val, sizeof(val), LTL_integral, NULL, &wuf) ==
-                    NO_ERROR,
+    tassert(!NOS_FAILED(
+            ctno_literal(&val, sizeof(val), LTL_integral, NULL, &wuf)),
             "failed to initialize wuf");
     ++val;
-    tassert(dst_push(&dst1, &foo) == NO_ERROR, "failed to push");
-    tassert(dst_push(&dst1, &bar) == NO_ERROR, "failed to push");
-    tassert(dst_push(&dst1, &baz) == NO_ERROR, "failed to push");
-    tassert(dst_push(&dst1, &wuf) == NO_ERROR, "failed to push");
-    tassert(dst_push(&dst1, &baz) == NO_ERROR, "failed to push");
+    tassert(!NOS_FAILED(dst_push(&dst1, &foo)), "failed to push");
+    tassert(!NOS_FAILED(dst_push(&dst1, &bar)), "failed to push");
+    tassert(!NOS_FAILED(dst_push(&dst1, &baz)), "failed to push");
+    tassert(!NOS_FAILED(dst_push(&dst1, &wuf)), "failed to push");
+    tassert(!NOS_FAILED(dst_push(&dst1, &baz)), "failed to push");
     assert_pop_eq(1, baz);
     struct DataStack dst2;
-    tassert(dst_copy(dst1, &dst2) == NO_ERROR, "failed to copy");
+    tassert(!NOS_FAILED(dst_copy(dst1, &dst2)), "failed to copy");
     assert_pop_eq(2, wuf);
     assert_pop_eq(2, baz);
     assert_pop_eq(2, bar);
-    tassert(dst_push(&dst2, &wuf) == NO_ERROR, "failed to push");
-    tassert(dst_push(&dst2, &baz) == NO_ERROR, "failed to push");
+    tassert(!NOS_FAILED(dst_push(&dst2, &wuf)), "failed to push");
+    tassert(!NOS_FAILED(dst_push(&dst2, &baz)), "failed to push");
     assert_pop_eq(2, baz);
-    tassert(dst_push(&dst1, &foo) == NO_ERROR, "failed to push");
+    tassert(!NOS_FAILED(dst_push(&dst1, &foo)), "failed to push");
     assert_pop_eq(2, wuf);
-    tassert(dst_push(&dst1, &bar) == NO_ERROR, "failed to push");
+    tassert(!NOS_FAILED(dst_push(&dst1, &bar)), "failed to push");
     assert_pop_eq(2, foo);
     assert_no_pop(2);
     assert_pop_eq(1, bar);

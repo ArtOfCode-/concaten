@@ -31,7 +31,7 @@ ERROR dst_new(struct DataStack *into) {
 ERROR dst_push(struct DataStack *dst, struct Object *pushing) {
     struct DST_Node *val = malloc(sizeof(*val));
     if (!val) {
-        return DST_PUSH_MALLOC_FAIL;
+        return ERROR(DST_PUSH_MALLOC_FAIL, NULL);
     }
     *val = (struct DST_Node) {
             .refcount = 1, // claimed for the stack by default
@@ -45,7 +45,7 @@ ERROR dst_push(struct DataStack *dst, struct Object *pushing) {
 
 ERROR dst_pop(struct DataStack *dst, struct Object **into) {
     if (!dst->head) {
-        return DST_POP_EMPTY_FAIL;
+        return ERROR(DST_POP_EMPTY_FAIL, NULL);
     }
     struct Object *ret = dst->head->value;
     struct DST_Node *next = dst->head->next;

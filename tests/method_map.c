@@ -27,7 +27,7 @@ test_f(18)
 test_f(19)
 
 #define a_set(key, value) \
-    tassert(mm_set(&mm, key, value) == NO_ERROR, "assignment failed");
+    tassert(!NOS_FAILED(mm_set(&mm, key, value)), "assignment failed");
 #define a_is_key(key) \
     tassert(mm_is_key(mm, key), key " isn't a key!")
 #define a_not_key(key) \
@@ -37,12 +37,12 @@ test_f(19)
 #define a_not_val(val) \
     tassert(!mm_is_value(mm, val), str(val) " is a value!")
 #define a_get_val(key, expect) \
-    tassert(mm_get(mm, key, &val) == NO_ERROR, "failed to get for " key); \
+    tassert(!NOS_FAILED(mm_get(mm, key, &val)), "failed to get for " key); \
     tassert(val == expect, "unexpected value for " key)
 #define a_no_get_val(key) \
-    tassert(mm_get(mm, key, &val) != NO_ERROR, "successfully got for " key)
+    tassert(NOS_FAILED(mm_get(mm, key, &val)), "successfully got for " key)
 #define a_remove(key) \
-    tassert(mm_remove(&mm, key) == NO_ERROR, "failed to remove")
+    tassert(!NOS_FAILED(mm_remove(&mm, key)), "failed to remove")
 
 struct TestResult test_method_map() {
     size_t successes = 0, total = 0;
@@ -50,7 +50,7 @@ struct TestResult test_method_map() {
     // ...eventually. I hate the pigeonhole principle.
     struct MethodMap mm;
     MM_VALUE_TYPE val;
-    tassert(mm_new(2, &mm) == NO_ERROR, "failed to initialize");
+    tassert(!NOS_FAILED(mm_new(2, &mm)), "failed to initialize");
     a_set("first", f0);
     a_set("second", f1);
     a_set("third", f2);

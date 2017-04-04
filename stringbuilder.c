@@ -5,11 +5,11 @@
 
 ERROR sb_new(size_t init_cap, struct StringBuilder *into) {
     if (init_cap == 0) {
-        return SB_CTOR_BAD_CAP_FAIL;
+        return ERROR(SB_CTOR_BAD_CAP_FAIL, NULL);
     }
     char *mem = malloc(init_cap);
     if (!mem) {
-        return SB_CTOR_MALLOC_FAIL;
+        return ERROR(SB_CTOR_MALLOC_FAIL, NULL);
     }
     into->mem = mem;
     into->mem[0] = 0;
@@ -26,11 +26,11 @@ bool mult_overflows(size_t a, size_t b) {
 ERROR sb_append(struct StringBuilder *to, char c) {
     if (to->count + 1 == to->cap) {
         if (mult_overflows(to->cap, LOAD_FACTOR)) {
-            return SB_APND_MULT_OVERFLOW_FAIL;
+            return ERROR(SB_APND_MULT_OVERFLOW_FAIL, NULL);
         }
         char *new_mem = realloc(to->mem, to->cap * LOAD_FACTOR);
         if (!new_mem) {
-            return SB_APND_MALLOC_FAIL;
+            return ERROR(SB_APND_MALLOC_FAIL, NULL);
         }
         to->mem = new_mem;
         to->cap *= LOAD_FACTOR;
@@ -44,7 +44,7 @@ ERROR sb_append(struct StringBuilder *to, char c) {
 ERROR sb_into_string(struct StringBuilder *sb, char **into) {
     char *ret = realloc(sb->mem, sb->count + 1);
     if (!ret) {
-        return SB_TS_REALLOC_FAIL;
+        return ERROR(SB_TS_REALLOC_FAIL, NULL);
     }
     ret[sb->count] = 0;
     *sb = (struct StringBuilder) {

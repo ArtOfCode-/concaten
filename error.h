@@ -4,19 +4,26 @@
 typedef unsigned int ERROR_VAL;
 #define EFMT "%u"
 typedef struct ERROR {
-    const char *const file;
-    const size_t line;
-    const ERROR_VAL  errcode;
-    struct ERROR *cause;
+    const char *file;
+    size_t line;
+    ERROR_VAL errcode;
+    const struct ERROR *cause;
 } ERROR;
 
 static const ERROR NO_ERROR = { NULL, 0, 0, NULL };
-#define ERROR_SETUP ERROR prev_err;
-#define FAILED(err) (prev_err = err).errcode
+#define FAILED(err) (prev_err = (err)).errcode
+#define NOS_FAILED(err) (err).errcode
 #define ERROR(_code, _from) (ERROR) { \
     .cause = _from, .errcode = _code, \
     .file = __FILE__, .line = __LINE__, \
 }
+#define CLTHROW(_code) do { \
+    prev_err = ERROR(_code, NULL); \
+    goto error_handler; \
+} while (0)
+#define THROW(_code) return ERROR(_code, NULL)
+const ERROR *err_save(const ERROR);
+#define RETHROW(_code) return ERROR(_code, err_save(prev_err))
 
 /*-------------------*
  | Core class errors |
@@ -24,6 +31,7 @@ static const ERROR NO_ERROR = { NULL, 0, 0, NULL };
 
 // General errors (0-999)
 static const ERROR_VAL USER_DEFINED_ERROR_TYPE = 1;
+static const ERROR_VAL ERROR_SAVE_FAIL = 2;
 
 static const ERROR_VAL CB_CTOR_MALLOC_FAIL = 101;
 static const ERROR_VAL CB_COPY_MALLOC_FAIL = 102;
@@ -81,6 +89,7 @@ static const ERROR_VAL MM_RH_BAD_SIZE_FAIL = 574;
 static const ERROR_VAL MM_SET_REHASH_FAIL = 575;
 static const ERROR_VAL MM_GET_NO_KEY_FAIL = 576;
 static const ERROR_VAL MM_RMV_NO_KEY_FAIL = 577;
+static const ERROR_VAL MM_REHASH_FAIL = 578;
 static const ERROR_VAL SB_CTOR_BAD_CAP_FAIL = 711;
 static const ERROR_VAL SB_CTOR_MALLOC_FAIL = 712;
 static const ERROR_VAL SB_APND_MULT_OVERFLOW_FAIL = 721;
@@ -107,6 +116,12 @@ static const ERROR_VAL TKNR_SYN_NUM_ILLEGAL_DIGIT_FAIL = 818;
 static const ERROR_VAL TKNR_SYN_RGX_BAD_FLAG_FAIL = 819;
 static const ERROR_VAL TKNR_TKN_COPY_MALLOC_RAW_FAIL = 820;
 static const ERROR_VAL TKNR_TKN_COPY_MALLOC_ORG_FAIL = 821;
+static const ERROR_VAL TKNR_CTOR_STR_SKIP_CHAR_FAIL = 822;
+static const ERROR_VAL TKNR_ADD_WHILE_IN_RANGES_FAIL = 823;
+static const ERROR_VAL TKNR_GET_STRING_FAIL = 824;
+static const ERROR_VAL TKNR_GET_REGEX_FAIL = 825;
+static const ERROR_VAL TKNR_NEXT_FAIL = 826;
+static const ERROR_VAL TKNR_SKIP_CHAR_FAIL = 827;
 static const ERROR_VAL TTO_WORDS_VALUELESS_FAIL = 900;
 static const ERROR_VAL TTO_UNKNOWN_TYPE_FAIL = 901;
 static const ERROR_VAL TTO_NOT_IMPLEMENTED_FAIL = 902;
@@ -118,5 +133,6 @@ static const ERROR_VAL TTO_OUT_OF_RANGE_FAIL = 907;
 static const ERROR_VAL TTO_INVALID_BASE_FAIL = 908;
 static const ERROR_VAL TTO_INVALID_DIGIT_FAIL = 909;
 static const ERROR_VAL TTO_FLP_CONVERT_FAIL = 910;
+static const ERROR_VAL TTO_STRING_VALUE_FAIL = 911;
 
 #endif //CONCATEN_ERROR_H

@@ -8,7 +8,7 @@ ERROR ctno_literal(const void *data, const size_t data_size,
                    struct Object *into) {
     void *new_data = malloc(data_size);
     if (!new_data) {
-        return CTNO_CTOR_MALLOC_FAIL;
+        THROW(CTNO_CTOR_MALLOC_FAIL);
     }
     memcpy(new_data, data, data_size);
     *into = (struct Object) {
@@ -26,8 +26,9 @@ ERROR ctno_literal(const void *data, const size_t data_size,
 
 ERROR ctno_dynamic(struct PropMap pm, struct MethodMap *methods,
                    struct Object *into) {
+    ERROR prev_err;
     struct PropMap copy;
-    if (pm_copy(pm, &copy) != NO_ERROR) return CTNO_CTOR_PM_COPY_FAIL;
+    if (FAILED(pm_copy(pm, &copy))) RETHROW(CTNO_CTOR_PM_COPY_FAIL);
     *into = (struct Object) {
             .data.properties = copy,
             .is_literal = false,
@@ -38,7 +39,8 @@ ERROR ctno_dynamic(struct PropMap pm, struct MethodMap *methods,
 }
 
 ERROR ctno_copy(const struct Object copying, struct Object *into) {
-    if (mm_claim(copying.methods) != NO_ERROR) return CTNO_COPY_CLAIM_FAIL;
+    ERROR prev_err;
+    if (FAILED(mm_claim(copying.methods))) RETHROW(CTNO_COPY_CLAIM_FAIL);
     struct Object ret = (struct Object) {
             .is_literal = copying.is_literal,
             .methods = copying.methods,
@@ -47,20 +49,20 @@ ERROR ctno_copy(const struct Object copying, struct Object *into) {
     if (copying.is_literal) {
         const size_t width = copying.data.literal.size;
         void *d_c = malloc(width);
-        if (!d_c) return CTNO_COPY_DATA_FAIL;
+        if (!d_c) THROW(CTNO_COPY_DATA_FAIL);
         memcpy(d_c, copying.data.literal.value, width);
         ret.data.literal.size = width;
         ret.data.literal.value = d_c;
     } else {
         struct PropMap pm_c;
-        if (pm_copy(copying.data.properties, &pm_c) != NO_ERROR) {
-            return CTNO_COPY_PROPS_FAIL;
+        if (FAILED(pm_copy(copying.data.properties, &pm_c))) {
+            RETHROW(CTNO_COPY_PROPS_FAIL);
         }
         for (size_t bidx = 0; bidx < pm_c.bucket_count; ++bidx) {
             struct PM_Bucket *bk = &pm_c.buckets[bidx];
             for (size_t iidx = 0; iidx < bk->count; ++iidx) {
-                if (ctno_claim(bk->items[iidx].val) != NO_ERROR) {
-                    return CTNO_COPY_CLAIM_FAIL;
+                if (FAILED(ctno_claim(bk->items[iidx].val))) {
+                    RETHROW(CTNO_COPY_CLAIM_FAIL);
                 }
             }
         }
@@ -117,18 +119,19 @@ bool check_for_cycles(struct Object *checking, struct Object *in) {
 
 ERROR ctno_set_prop(struct Object *to, const char *key,
                    struct Object *adding) {
-    if (to->is_literal) return CTNO_SET_LITERAL_FAIL;
+    ERROR prev_err;
+    if (to->is_literal) THROW(CTNO_SET_LITERAL_FAIL);
     struct Object *old;
     ERROR err = pm_get(to->data.properties, key, &old);
-    if (err != NO_ERROR && err != PM_GET_NO_KEY_FAIL) {
-        return CTNO_SET_PM_GET_FAIL;
+    if (FAILED(err)) {
+        RETHROW(CTNO_SET_PM_GET_FAIL);
     } else {
         old = NULL;
     }
-    if (check_for_cycles(to, adding)) return CTNO_SET_CYCLE_FAIL;
-    if (ctno_claim(adding) != NO_ERROR) return CTNO_SET_CLAIM_FAIL;
-    if (pm_set(&to->data.properties, key, adding) != NO_ERROR) {
-        return CTNO_SET_ADD_FAIL;
+    if (check_for_cycles(to, adding)) THROW(CTNO_SET_CYCLE_FAIL);
+    if (FAILED(ctno_claim(adding))) RETHROW(CTNO_SET_CLAIM_FAIL);
+    if (FAILED(pm_set(&to->data.properties, key, adding))) {
+        RETHROW(CTNO_SET_ADD_FAIL);
     }
     ctno_free(old);
     return NO_ERROR;
@@ -136,14 +139,14 @@ ERROR ctno_set_prop(struct Object *to, const char *key,
 
 ERROR ctno_get_prop(const struct Object to, const char *key,
                     struct Object *into) {
-    if (to.is_literal) return CTNO_GET_LITERAL_FAIL;
+    ERROR prev_err;
+    if (to.is_literal) THROW(CTNO_GET_LITERAL_FAIL);
     struct Object *got;
-    ERROR err = pm_get(to.data.properties, key, &got);
-    if (err != NO_ERROR) {
-        if (err != PM_GET_NO_KEY_FAIL) {
-            return CTNO_GET_PM_GET_FAIL;
+    if (FAILED(pm_get(to.data.properties, key, &got))) {
+        if (prev_err.errcode == PM_GET_NO_KEY_FAIL) {
+            RETHROW(CTNO_GET_NO_KEY_FAIL);
         } else {
-            return CTNO_GET_NO_KEY_FAIL;
+            RETHROW(CTNO_GET_PM_GET_FAIL);
         }
     }
     *into = *got;
@@ -151,7 +154,7 @@ ERROR ctno_get_prop(const struct Object to, const char *key,
 }
 
 ERROR ctno_claim(struct Object *claiming) {
-    if (claiming->refcount == SIZE_MAX) return CTNO_CLAIM_MAX_REFCOUNT;
+    if (claiming->refcount == SIZE_MAX) THROW(CTNO_CLAIM_MAX_REFCOUNT);
     ++claiming->refcount;
     return NO_ERROR;
 }
