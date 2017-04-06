@@ -1,15 +1,19 @@
+# Fibonacci sequence
 { int -> n
     { 1 } else
+    # We're doing the recursive version
     { n 1 - fib n 2 - fib + } then
     { n > 2 } if
 } :fib defun
 
-1 fib *puts
-2 fib *puts
-123 fib *puts
+# testing it!
+1 fib puts*
+2 fib puts*
+123 fib puts*
 
+# Map
 [[ "foo" 12 ][ "asdf" 91 ][ "cuckoo clock" 8 ]]
-dup *puts
-# 50
+dup puts*
+# Token 50 (was the puts*)
 { "%d is the rating of %s" format puts } each
-[ "a" "bc" "def" "ghij" "klmno" "pqrstu" "vwxyz" ] { length < 3 } select *puts
+[ "a" "bc" "def" "ghij" "klmno" "pqrstu" "vwxyz" ] { length < 3 } select puts*

@@ -1,10 +1,18 @@
 #include "token_stack.h"
 
+struct PushableTokenizer ptknr_new(const struct Tokenizer from) {
+    return (struct PushableTokenizer) {
+            .head = NULL,
+            .tknr = from
+    };
+}
+
 void tst_level_node_free(struct TS_LevelNode *this) {
     if (this) {
         struct TS_TokenNode *node = this->token_head;
         while (node) {
             struct TS_TokenNode *next = node->next;
+            tkn_free(&node->value);
             free(node);
             node = next;
         }
@@ -17,7 +25,7 @@ bool tst_push_change(struct TokenStack *this,
     if (!this->tracking_changes) {
         return true;
     }
-    struct TS_ChangeNode *pushing = malloc(sizeof(struct TS_ChangeNode));
+    struct TS_ChangeNode *pushing = malloc(sizeof(*pushing));
     if (!pushing) {
         return false;
     }
@@ -30,25 +38,28 @@ bool tst_push_change(struct TokenStack *this,
     return true;
 }
 
-struct TokenStack tst_new(const struct Tokenizer this) {
-    struct TokenStack ret = {
+ERROR tst_new(const struct Tokenizer this, struct TokenStack *into) {
+    *into = (struct TokenStack) {
             .level_head = NULL,
-            .tknr = this,
+            .ptknr = ptknr_new(this),
             .tracking_changes = false,
             .latest_change = NULL,
     };
-    tst_push_level(&ret);
-    return ret;
+    tst_push_level(into);
+    return NO_ERROR;
 }
 
-bool tst_push(struct TokenStack *this, const struct Token pushing) {
+ERROR tst_push(struct TokenStack *this, const struct Token pushing) {
     if (!this->level_head) tst_push_level(this);
-    struct TS_TokenNode *pushing_node = malloc(sizeof(struct TS_TokenNode));
-    if (!pushing_node || !tst_push_change(this, (struct TS_ChangeNode) {
+    struct TS_TokenNode *pushing_node = malloc(sizeof(*pushing_node));
+    if (!pushing_node) {
+        return TST_PUSH_MALLOC_FAIL;
+    }
+    if (!tst_push_change(this, (struct TS_ChangeNode) {
             .type = TSCN_TOKEN_PUSH
     })) {
         free(pushing_node);
-        return false;
+        return TST_PUSH_SAVE_FAIL;
     }
     struct TS_LevelNode *level_head = this->level_head;
     *pushing_node = (struct TS_TokenNode) {
@@ -56,10 +67,10 @@ bool tst_push(struct TokenStack *this, const struct Token pushing) {
             .next = level_head->token_head
     };
     level_head->token_head = pushing_node;
-    return true;
+    return NO_ERROR;
 }
 
-bool tst_pop(struct TokenStack *this, struct Token *ret) {
+ERROR tst_pop(struct TokenStack *this, struct Token *ret) {
     struct Token ret_val;
     struct TS_LevelNode *level = this->level_head;
     while (level && !level->token_head) {
@@ -70,51 +81,85 @@ bool tst_pop(struct TokenStack *this, struct Token *ret) {
     this->level_head = level;
     if (level) {
         ret_val = level->token_head->value;
-        struct TS_TokenNode *next = level->token_head->next;
-        free(level->token_head);
-        level->token_head = next;
+        struct TS_TokenNode *old = level->token_head;
+        level->token_head = old->next;
+        free(old);
+    } else if (this->ptknr.head) {
+        ret_val = this->ptknr.head->value;
+        struct TS_TokenNode *old = this->ptknr.head;
+        this->ptknr.head = old->next;
+        free(old);
     } else {
-        if (!tknr_next(&this->tknr, &ret_val)) {
-            return false;
+        if (tknr_next(&this->ptknr.tknr, &ret_val) != NO_ERROR) {
+            return TST_POP_EMPTY_FAIL;
         }
     }
+    if (this->tracking_changes) {
+        struct Token copy;
+        if (tkn_copy(ret_val, &copy) != NO_ERROR) {
+            return TST_POP_SAVE_FAIL;
+        }
+        if (!tst_push_change(this, (struct TS_ChangeNode) {
+                .type = level ? TSCN_TOKEN_POP : TSCN_TOKEN_NEXT,
+                .data.popped = copy
+        })) {
+            return TST_POP_SAVE_FAIL;
+        }
+    }
+    *ret = ret_val;
+    return NO_ERROR;
+}
+
+ERROR tst_peek(struct TokenStack *this, struct Token *out) {
+    struct TS_LevelNode *cur = this->level_head;
+    while (cur && !cur->token_head) cur = cur->next;
+    if (cur) { // then we broke because cur->token_head != NULL
+        *out = cur->token_head->value;
+        return NO_ERROR;
+    }
+    // well, guess we have nothing but empty layers, you monster.
+    if (this->ptknr.head) {
+        *out = this->ptknr.head->value;
+        return NO_ERROR;
+    }
+    struct TS_TokenNode *new_head = malloc(sizeof(*new_head));
+    if (!new_head) {
+        return TST_PEEK_MALLOC_FAIL;
+    }
+    struct Token ret;
+    if (tknr_next(&this->ptknr.tknr, &ret) != NO_ERROR) {
+        return TST_PEEK_EMPTY_FAIL;
+    }
+    *new_head = (struct TS_TokenNode) {
+            .value = ret,
+            .next = this->ptknr.head
+    };
+    this->ptknr.head = new_head;
+    *out = ret;
+    return NO_ERROR;
+}
+
+ERROR tst_push_level(struct TokenStack *this) {
+    struct TS_LevelNode *pushing = malloc(sizeof(*pushing));
+    if (!pushing) {
+        return TST_PUSH_LEVEL_MALLOC_FAIL;
+    }
     if (!tst_push_change(this, (struct TS_ChangeNode) {
-            .type = TSCN_TOKEN_POP, .data.popped = ret_val
+            .type = TSCN_LEVEL_PUSH
     })) {
-        return false;
-    }
-    if (ret) *ret = ret_val;
-    return true;
-}
-
-bool tst_peek(const struct TokenStack this, struct Token *ret) {
-    if (!this.level_head || !this.level_head->token_head) {
-        return false;
-    } else {
-        *ret = this.level_head->token_head->value;
-        return true;
-    }
-}
-
-bool tst_push_level(struct TokenStack *this) {
-    struct TS_LevelNode *pushing = malloc(sizeof(struct TS_LevelNode));
-    if (!pushing ||
-            !tst_push_change(this, (struct TS_ChangeNode) {
-                    .type = TSCN_LEVEL_PUSH
-            })) {
         free(pushing);
-        return false;
+        return TST_PUSH_LEVEL_SAVE_FAIL;
     }
     *pushing = (struct TS_LevelNode) {
             .token_head = NULL,
             .next = this->level_head
     };
     this->level_head = pushing;
-    return true;
+    return NO_ERROR;
 }
 
-bool tst_pop_level(struct TokenStack *this) {
-    if (!this->level_head) return false;
+ERROR tst_pop_level(struct TokenStack *this) {
+    if (!this->level_head) return TST_POP_LEVEL_EMPTY_FAIL;
     struct TS_LevelNode *old_head = this->level_head;
     this->level_head = old_head->next;
     if (this->tracking_changes) {
@@ -123,38 +168,60 @@ bool tst_pop_level(struct TokenStack *this) {
                 .data.popped_head = old_head->token_head
         })) {
             this->level_head = old_head;
-            return false;
+            return TST_POP_LEVEL_SAVE_FAIL;
         }
         free(old_head); // NOT the one that frees the children under it
-        return true;
+        return NO_ERROR;
     } else {
         tst_level_node_free(old_head);
-        return true;
+        return NO_ERROR;
     }
 }
 
-void tst_save_state(struct TokenStack *this) {
+ERROR tst_save_state(struct TokenStack *this) {
     this->tracking_changes = true;
+    return NO_ERROR;
 }
 
-bool tst_restore_state(struct TokenStack *this) {
-    if (!this->tracking_changes) return false;
+ERROR tst_restore_state(struct TokenStack *this) {
+    if (!this->tracking_changes) return TST_RSTR_NOT_SAVING_FAIL;
     this->tracking_changes = false;
     struct TS_ChangeNode *todo = this->latest_change;
     while (todo) {
+        // errors are determined by the action we're trying to reverse
         switch (todo->type) {
-            case TSCN_TOKEN_PUSH:
-                if (!tst_pop(this, NULL)) return false;
-                break;
+            struct Token popped;
+            struct TS_TokenNode *new_head;
             case TSCN_TOKEN_POP:
-                if (!tst_push(this, todo->data.popped)) return false;
+                if (tst_push(this, todo->data.popped) != NO_ERROR) {
+                    return TST_RSTR_POP_FAIL;
+                }
                 break;
-            case TSCN_LEVEL_PUSH:
-                if (!tst_pop_level(this)) return false;
+            case TSCN_TOKEN_PUSH:
+                if (tst_pop(this, &popped) != NO_ERROR) {
+                    return TST_RSTR_PUSH_FAIL;
+                } else {
+                    tkn_free(&popped);
+                }
+                break;
+            case TSCN_TOKEN_NEXT:
+                new_head = malloc(sizeof(*new_head));
+                *new_head = (struct TS_TokenNode) {
+                        .next = this->ptknr.head,
+                        .value = todo->data.popped
+                };
+                this->ptknr.head = new_head;
                 break;
             case TSCN_LEVEL_POP:
-                if (!tst_push_level(this)) return false;
+                if (tst_push_level(this) != NO_ERROR) {
+                    return TST_RSTR_POP_LEVEL_FAIL;
+                }
                 this->level_head->token_head = todo->data.popped_head;
+                break;
+            case TSCN_LEVEL_PUSH:
+                if (tst_pop_level(this) != NO_ERROR) {
+                    return TST_RSTR_PUSH_LEVEL_FAIL;
+                }
                 break;
         }
         struct TS_ChangeNode *next = todo->prev;
@@ -162,7 +229,7 @@ bool tst_restore_state(struct TokenStack *this) {
         todo = next;
     }
     this->latest_change = NULL;
-    return true;
+    return NO_ERROR;
 }
 
 void tst_free(struct TokenStack *this) {
@@ -173,6 +240,7 @@ void tst_free(struct TokenStack *this) {
             struct TS_TokenNode *inner = change->data.popped_head;
             while (inner) {
                 struct TS_TokenNode *next = inner->next;
+                tkn_free(&inner->value);
                 free(inner);
                 inner = next;
             }

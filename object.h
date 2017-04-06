@@ -1,29 +1,40 @@
 #ifndef CONCATEN_CTN_OBJECT_H
 #define CONCATEN_CTN_OBJECT_H
 
+#include "error.h"
+
 #include "prop_map.h"
 #include "method_map.h"
 
-// C has no RTTI, so we do this s**t
-enum TypeId {
-    TID_long,
-    TID_double,
-    TID_char, // AKA string (stores series of chars :P)
-    TID_bool,
-    TID_MethodMap,
-    TID_CodeBlock,
-    TID_DataStack,
-    TID_TokenStack,
-    // TODO ScopeStack,
-    // TODO List,
-    // TODO Map,
-    
+typedef signed long long integral;
+typedef double real;
+
+#define all_types_X \
+    X(integral, Integral) \
+    X(real, signed Real) \
+    X(boolean, bool) \
+    X(dataStack, struct DataStack) \
+    X(tokenStack, struct TokenStack) \
+//    X(runnable, struct Runnable)
+//    X(scopeStack, struct ScopeStack)
+//    X(list, struct List)
+//    X(map, struct Map)
+//    X(regex, struct Regex)
+
+#define X(Special, _) LTL_##Special, // of type _
+enum LiteralType {
+    all_types_X
+    LTL_string,
+    LTL_char = LTL_string,
+    LTL_identifier
 };
+#undef X
 
 struct LiteralData {
     size_t size;
+    enum LiteralType type;
     void *value;
-    enum TypeId type_id;
+    void (*val_free)(void *);
 };
 
 struct Object {
@@ -32,34 +43,30 @@ struct Object {
         struct LiteralData literal;
     } data;
     bool is_literal;
-    // NB: This intentionally stores a pointer to it, not a copy. That way, we can modify
-    // the methods that every object created from a class has, by modifying the class's
-    // central copy. If the object's specific version is modified, the methods are copied then.
+    // NB: This intentionally stores a pointer to it, not a copy. That way, we
+    // can modify the methods that every object created from a class has, by
+    // modifying the class's central copy. If the object's specific version is
+    // modified, the methods are copied then.
     struct MethodMap *methods;
     size_t refcount;
-    
-    int error;
 };
 
-struct Object ctno_literal(const void *, size_t, enum TypeId id,
-                           struct MethodMap *);
-struct Object ctno_dynamic(const struct PropMap, struct MethodMap *);
-struct Object ctno_copy(const struct Object);
-// ctno_mk_* methods for every literal type; might be defined elsewhere
-bool ctno_set_prop(struct Object *, const char *, struct Object *);
-struct Object *ctno_get_prop(const struct Object, const char *);
-// this has to be a macro so we get type-correct stuff done :/
-#define ctno_to(ctno, type) \
-    ((ctno).is_literal ? \
-        ((ctno).data.literal.type_id == TID_##type ? \
-            ((type *) (ctno).data.literal.value) \
-        : NULL) \
-    : NULL)
-struct Object *ctno_claim(struct Object *);
+ERROR ctno_literal(const void *, size_t, enum LiteralType, struct MethodMap *,
+                   struct Object *);
+ERROR ctno_dynamic(const struct PropMap, struct MethodMap *, struct Object *);
+ERROR ctno_copy(const struct Object, struct Object *);
+bool ctno_eq(const struct Object, const struct Object);
+ERROR ctno_set_prop(struct Object *, const char *, struct Object *);
+ERROR ctno_get_prop(const struct Object, const char *, struct Object *);
+#define ctno_to(ctno, _t) \
+    (((ctno).is_literal && (ctno).data.literal.type == LTL_##_t) \
+        ? ((_t *) (ctno).data.literal.value) \
+        : NULL)
+ERROR ctno_claim(struct Object *);
 void ctno_free(struct Object *);
 
-// with reference to tokenizer.h
 struct Token;
-struct Object tkn_value(struct Token);
+// consumes the Token, no output to out param if error
+ERROR tkn_value(struct Token *, struct Object *);
 
 #endif //CONCATEN_CTN_OBJECT_H

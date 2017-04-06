@@ -5,6 +5,8 @@
 #include <stdbool.h>
 #include <stdio.h>
 
+#include "error.h"
+
 #ifndef BUF_SIZE
 # define BUF_SIZE 256
 #endif
@@ -33,7 +35,6 @@ struct Tokenizer {
     char *origin;
     size_t origin_len;
     size_t line, index;
-    int error;
     
     bool just_started;
 };
@@ -51,16 +52,15 @@ struct Token {
     enum TokenType type;
 };
 
-struct Token tkn_empty(size_t line, size_t index);
-char *tkn_type_name(int);
+const char *tkn_type_name(enum TokenType);
+ERROR tkn_copy(const struct Token, struct Token *);
 void tkn_free(struct Token *);
 // object_t tkn_value(Token) // defined in object.h
 
-struct Tokenizer tknr_from_string(const char *, const char *origin);
-struct Tokenizer tknr_from_filepath(const char *path);
-bool tknr_next(struct Tokenizer *, struct Token *);
-char *tknr_err_to_string(int);
-bool tknr_end(struct Tokenizer *);
+ERROR tknr_from_string(const char *, const char *origin, struct Tokenizer *);
+ERROR tknr_from_filepath(const char *path, struct Tokenizer *);
+ERROR tknr_next(struct Tokenizer *, struct Token *);
+bool tknr_end(const struct Tokenizer);
 void tknr_free(struct Tokenizer *);
 
 #endif // ndef CONCATEN_TOKENIZER_H

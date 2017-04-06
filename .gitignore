@@ -19,3 +19,5 @@ tester_profile
 concaten_profile
 *.txt
 !CMakeLists.txt
+
+random_test.c

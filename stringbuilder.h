@@ -4,15 +4,16 @@
 #include <stddef.h>
 #include <stdbool.h>
 
+#include "error.h"
+
 struct StringBuilder {
     char *mem;
     size_t count;
     size_t cap;
 };
-struct StringBuilder sb_new();
-bool sb_init(struct StringBuilder *, size_t);
-bool sb_append(struct StringBuilder *, char);
-char *sb_into_string(struct StringBuilder);
-void sb_free(struct StringBuilder*);
+ERROR sb_new(size_t, struct StringBuilder *);
+ERROR sb_append(struct StringBuilder *, char);
+ERROR sb_into_string(struct StringBuilder *, char **);
+void sb_free(struct StringBuilder *);
 
 #endif //CONCATEN_STRINGBUILDER_H

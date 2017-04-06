@@ -1,58 +1,104 @@
+#include <stdint.h>
 #include <stdlib.h>
 #include <string.h>
 #include "object.h"
-#include "tokenizer.h"
 
-struct Object ctno_literal(const void *data, const size_t data_size,
-                           enum TypeId id, struct MethodMap *meths) {
+ERROR ctno_literal(const void *data, const size_t data_size,
+                   enum LiteralType type, struct MethodMap *meths,
+                   struct Object *into) {
     void *new_data = malloc(data_size);
     if (!new_data) {
-        return (struct Object) { .error = 1 };
+        return CTNO_CTOR_MALLOC_FAIL;
     }
     memcpy(new_data, data, data_size);
-    return (struct Object) {
+    *into = (struct Object) {
             .data.literal = (struct LiteralData) {
                     .size = data_size,
-                    .type_id = id,
-                    .value = new_data
+                    .value = new_data,
+                    .type = type
             },
             .is_literal = true,
             .methods = meths,
-            .error = 0,
             .refcount = 1
     };
+    return NO_ERROR;
 }
 
-struct Object ctno_dynamic(struct PropMap pm, struct MethodMap *methods) {
-    struct PropMap copy = pm_copy(pm);
-    return (struct Object) {
+ERROR ctno_dynamic(struct PropMap pm, struct MethodMap *methods,
+                   struct Object *into) {
+    struct PropMap copy;
+    if (pm_copy(pm, &copy) != NO_ERROR) return CTNO_CTOR_PM_COPY_FAIL;
+    *into = (struct Object) {
             .data.properties = copy,
             .is_literal = false,
             .methods = methods,
-            .error = 0,
             .refcount = 1
     };
+    return NO_ERROR;
 }
 
-struct Object ctno_copy(struct Object copying) {
-    if (copying.error) return (struct Object) { .error = 1 };
+ERROR ctno_copy(const struct Object copying, struct Object *into) {
+    if (mm_claim(copying.methods) != NO_ERROR) return CTNO_COPY_CLAIM_FAIL;
     struct Object ret = (struct Object) {
-            .error = 0,
             .is_literal = copying.is_literal,
-            .methods = mm_claim(copying.methods),
-            .refcount = 0
+            .methods = copying.methods,
+            .refcount = 1
     };
     if (copying.is_literal) {
         const size_t width = copying.data.literal.size;
         void *d_c = malloc(width);
-        if (!d_c) return (struct Object) { .error = 1 };
+        if (!d_c) return CTNO_COPY_DATA_FAIL;
+        memcpy(d_c, copying.data.literal.value, width);
         ret.data.literal.size = width;
         ret.data.literal.value = d_c;
     } else {
-        struct PropMap pm_c = pm_copy(copying.data.properties);
+        struct PropMap pm_c;
+        if (pm_copy(copying.data.properties, &pm_c) != NO_ERROR) {
+            return CTNO_COPY_PROPS_FAIL;
+        }
+        for (size_t bidx = 0; bidx < pm_c.bucket_count; ++bidx) {
+            struct PM_Bucket *bk = &pm_c.buckets[bidx];
+            for (size_t iidx = 0; iidx < bk->count; ++iidx) {
+                if (ctno_claim(bk->items[iidx].val) != NO_ERROR) {
+                    return CTNO_COPY_CLAIM_FAIL;
+                }
+            }
+        }
         ret.data.properties = pm_c;
     }
-    return ret;
+    *into = ret;
+    return NO_ERROR;
+}
+
+bool ctno_eq(const struct Object lhs, const struct Object rhs) {
+    if (lhs.is_literal != rhs.is_literal) {
+        return false;
+    } else if (lhs.is_literal) {
+        const struct LiteralData ld = lhs.data.literal;
+        const struct LiteralData rd = rhs.data.literal;
+        return ld.type == rd.type && ld.size == rd.size &&
+               memcmp(ld.value, rd.value, ld.size) == 0;
+    } else {
+        const struct PropMap lp = lhs.data.properties;
+        const struct PropMap rp = rhs.data.properties;
+        if (lp.bucket_count != rp.bucket_count ||
+                lp.item_count != rp.item_count) {
+            return false;
+        }
+        for (size_t bidx = 0; bidx < lp.bucket_count; ++bidx) {
+            const struct PM_Bucket lpb = lp.buckets[bidx];
+            const struct PM_Bucket rpb = rp.buckets[bidx];
+            if (lpb.count != rpb.count) return false;
+            for (size_t iidx = 0; iidx < lpb.count; ++iidx) {
+                struct PM_KeyValPair li = lpb.items[iidx];
+                struct PM_KeyValPair ri = rpb.items[iidx];
+                if (li.key_len != ri.key_len ||
+                        strncmp(li.key, ri.key, li.key_len) != 0 ||
+                        !ctno_eq(*li.val, *ri.val)) return false;
+            }
+        }
+        return true;
+    }
 }
 
 bool check_for_cycles(struct Object *checking, struct Object *in) {
@@ -69,26 +115,45 @@ bool check_for_cycles(struct Object *checking, struct Object *in) {
     return false;
 }
 
-bool ctno_set_prop(struct Object *to, const char *key,
+ERROR ctno_set_prop(struct Object *to, const char *key,
                    struct Object *adding) {
-    if (!to || !adding || !key) return false;
-    if (to->is_literal) return false;
-    struct Object *old = pm_get(to->data.properties, key);
-    if (check_for_cycles(to, adding)) return false;
-    if (!pm_set(&to->data.properties, key, adding)) return false;
-    ctno_claim(adding);
+    if (to->is_literal) return CTNO_SET_LITERAL_FAIL;
+    struct Object *old;
+    ERROR err = pm_get(to->data.properties, key, &old);
+    if (err != NO_ERROR && err != PM_GET_NO_KEY_FAIL) {
+        return CTNO_SET_PM_GET_FAIL;
+    } else {
+        old = NULL;
+    }
+    if (check_for_cycles(to, adding)) return CTNO_SET_CYCLE_FAIL;
+    if (ctno_claim(adding) != NO_ERROR) return CTNO_SET_CLAIM_FAIL;
+    if (pm_set(&to->data.properties, key, adding) != NO_ERROR) {
+        return CTNO_SET_ADD_FAIL;
+    }
     ctno_free(old);
-    return true;
+    return NO_ERROR;
 }
 
-struct Object *ctno_get_prop(const struct Object to, const char *key) {
-    if (to.is_literal) return NULL;
-    return pm_get(to.data.properties, key);
+ERROR ctno_get_prop(const struct Object to, const char *key,
+                    struct Object *into) {
+    if (to.is_literal) return CTNO_GET_LITERAL_FAIL;
+    struct Object *got;
+    ERROR err = pm_get(to.data.properties, key, &got);
+    if (err != NO_ERROR) {
+        if (err != PM_GET_NO_KEY_FAIL) {
+            return CTNO_GET_PM_GET_FAIL;
+        } else {
+            return CTNO_GET_NO_KEY_FAIL;
+        }
+    }
+    *into = *got;
+    return NO_ERROR;
 }
 
-struct Object *ctno_claim(struct Object *claiming) {
+ERROR ctno_claim(struct Object *claiming) {
+    if (claiming->refcount == SIZE_MAX) return CTNO_CLAIM_MAX_REFCOUNT;
     ++claiming->refcount;
-    return claiming;
+    return NO_ERROR;
 }
 
 void ctno_free(struct Object *freeing) {
@@ -112,9 +177,4 @@ void ctno_free(struct Object *freeing) {
             }
         }
     }
-}
-
-struct Object tkn_value(struct Token tkn) {
-    // TODO this thing's body
-    return (struct Object) { .error = 1 };
 }

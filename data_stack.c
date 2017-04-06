@@ -2,72 +2,76 @@
 
 #include <stdlib.h>
 
-void dst_node_claim(struct DST_Node *claiming) {
-    ++claiming->refcount;
-}
+struct DST_Node {
+    struct DST_Node *next;
+    struct Object *value;
+    size_t refcount;
+};
 
-void dst_node_free(struct DST_Node *freeing) {
-    if (freeing) {
-        --freeing->refcount;
-        if (freeing->refcount == 0) {
-            ctno_free(freeing->value);
-            dst_node_free(freeing->next);
+void dst_node_free(struct DST_Node *nd) {
+    while (nd) {
+        --nd->refcount;
+        if (nd->refcount == 0) {
+            struct DST_Node *next = nd->next;
+            free(nd);
+            nd = next;
+        } else {
+            break;
         }
     }
 }
 
-struct DST_Node dst_node_init(struct Object *value, struct DST_Node *next) {
-    dst_node_claim(next);
-    return (struct DST_Node) {
-            .value = ctno_claim(value),
-            .next = next,
-            .refcount = 0
-    };
-}
-
-struct DataStack dst_new() {
-    return (struct DataStack) {
+ERROR dst_new(struct DataStack *into) {
+    *into = (struct DataStack) {
             .head = NULL
     };
+    return NO_ERROR;
 }
 
-bool dst_push(struct DataStack *dst, struct Object *pushing) {
+ERROR dst_push(struct DataStack *dst, struct Object *pushing) {
     struct DST_Node *val = malloc(sizeof(*val));
     if (!val) {
-        return false;
+        return DST_PUSH_MALLOC_FAIL;
     }
     *val = (struct DST_Node) {
             .refcount = 1, // claimed for the stack by default
             .next = dst->head,
             .value = pushing
     };
-    // head would be claimed then immediately released
+    // claim, then immediately free, current head
     dst->head = val;
-    return true;
+    return NO_ERROR;
 }
 
-struct Object *dst_pop(struct DataStack *dst) {
-    if (!dst->head) return NULL;
+ERROR dst_pop(struct DataStack *dst, struct Object **into) {
+    if (!dst->head) {
+        return DST_POP_EMPTY_FAIL;
+    }
     struct Object *ret = dst->head->value;
     struct DST_Node *next = dst->head->next;
-    // stack is no longer pointing to it; other things might, so it might stay
+    // claim for top of stack
+    if (next) ++next->refcount;
     dst_node_free(dst->head);
     dst->head = next;
-    return ret;
+    if (into) *into = ret;
+    return NO_ERROR;
 }
 
-struct DataStack dst_copy(const struct DataStack copying) {
+ERROR dst_copy(const struct DataStack dst, struct DataStack *into) {
     struct DataStack ret = (struct DataStack) {
-            .head = copying.head
+            .head = dst.head
     };
-    ++ret.head->refcount;
-    return ret;
+    if (ret.head) ++ret.head->refcount;
+    *into = ret;
+    return NO_ERROR;
 }
 
-void dst_free(struct DataStack *freeing) {
-    struct DST_Node *cur = freeing->head;
+void dst_free(struct DataStack *dst) {
+    struct DST_Node *cur = dst->head;
     while (cur) {
+        struct DST_Node *next = cur->next;
         dst_node_free(cur);
-        cur = cur->next;
+        cur = next;
     }
+    dst->head = cur;
 }

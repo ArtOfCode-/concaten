@@ -15,7 +15,13 @@ struct TS_LevelNode {
     struct TS_TokenNode *token_head;
 };
 
-enum TSCN_Type { TSCN_TOKEN_POP, TSCN_TOKEN_PUSH, TSCN_LEVEL_PUSH, TSCN_LEVEL_POP };
+enum TSCN_Type {
+    TSCN_TOKEN_PUSH, // We pushed a token. `change.data` is unset.
+    TSCN_TOKEN_POP, // We popped a token. `change.data.popped` is set.
+    TSCN_TOKEN_NEXT, // We read in a token. `change.data.popped` is set.
+    TSCN_LEVEL_PUSH, // We pushed a level. `change.data` is unset.
+    TSCN_LEVEL_POP // We popped a level. `change.data.popped_head` is set.
+};
 
 struct TS_ChangeNode {
     struct TS_ChangeNode *prev;
@@ -26,21 +32,27 @@ struct TS_ChangeNode {
     } data;
 };
 
+struct PushableTokenizer {
+    struct Tokenizer tknr;
+    struct TS_TokenNode *head;
+};
+
+struct PushableTokenizer;
 struct TokenStack {
     struct TS_LevelNode *level_head;
-    struct Tokenizer tknr;
+    struct PushableTokenizer ptknr;
     struct TS_ChangeNode *latest_change;
     bool tracking_changes;
 };
 
-struct TokenStack tst_new(const struct Tokenizer);
-bool tst_push(struct TokenStack *, const struct Token);
-bool tst_pop(struct TokenStack *, struct Token *);
-bool tst_peek(const struct TokenStack, struct Token *);
-bool tst_push_level(struct TokenStack *);
-bool tst_pop_level(struct TokenStack *);
-void tst_save_state(struct TokenStack *);
-bool tst_restore_state(struct TokenStack *);
+ERROR tst_new(const struct Tokenizer, struct TokenStack *);
+ERROR tst_push(struct TokenStack *, const struct Token);
+ERROR tst_pop(struct TokenStack *, struct Token *);
+ERROR tst_peek(struct TokenStack *, struct Token *);
+ERROR tst_push_level(struct TokenStack *);
+ERROR tst_pop_level(struct TokenStack *);
+ERROR tst_save_state(struct TokenStack *);
+ERROR tst_restore_state(struct TokenStack *);
 void tst_free(struct TokenStack *);
 
 #endif //CONCATEN_TOKEN_STACK_H
