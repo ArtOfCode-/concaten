@@ -1,4 +1,4 @@
-# Concaten v0.5.6
+# Concaten v0.5.7
 
 Concaten is a concatenative, stack-based, strongly but optionally strictly
 typed, hyperdynamic, garbage-collected, interpreted programming language. In
@@ -105,88 +105,31 @@ Major version `0` is pre-completion; some of the parts may be
 
 ### Current milestone
 
-#### Intermediary refactor - 0.5
-
-* [x] Refactor to interface consistent across all bits and pieces - 0.5  
-  The code is getting a little out of hand. I have some things I want to do to
-    clean it up.
-  * [x] Change tests to success counters - 0.5.0  
-    Count total tests, count number of successes (or, equivalently, fails)
-      and report that.
-    * [x] Change to count successes + only display totals
-    * [x] Collect successes/fails in main test method; if there are failures,
-      HCF and exit with error code representing failed module.
-  * [x] Consistent error handling across all functions - 0.5.1  
-    For each of the files listed below:
-    1. Make methods return an `unsigned long` error code. If they can't
-      fail, then they'll always return success.  
-      If you need to return data (e.g. ctors, getters) use an out parameter.
-    2. Convert `bool` error indicators to error codes  
-      Don't store error in an object, return it. (*cough* Tokenizer *cough*)
-    3. Collect all error codes in `errors.h`, ensure no dupes/overlap  
-      Also, a `const char *to_str(error_code)` to provide error messages
-    * [x] `code_block.h`
-    * [x] `data_stack.h`
-    * [x] `method_map.h`
-    * [x] `object.h`
-    * [x] `prop_map.h`
-    * [x] `stringbuilder.h`
-    * [x] `token_stack.h`
-    * [x] `tokenizer.h`
-  * [x] TLC for `tknr_next` - 0.5.2  
-    It's currently a jumbled mess. Some careful thought will be good for it,
-      to simplify it as much as possible. FSA may be useful, as well as taking
-      a peek at FORTH and Factor's tokenizers.
-    * [x] We don't need to take `char *next_char`. That's a holdover.
-    * [ ] ~~Use `unsigned char` instead of `char`.~~
-    * [x] Use `skip_char` instead of `read_char`  
-    It's pretty much unsalvageable :( Oh well.
-  * [x] Write a code style guide 0.5.3  
-    Start by getting down the ideas, see what patterns emerge, categorize
-      based on that.
-    * [x] Actually write it.
-    * [x] Go through the code to make sure everything abides by it.
-  * [x] Ensure everything is unit tested - 0.5.4
-    * [x] `StringBuilder`
-    * [x] `ctno_copy`
-    * [ ] ~~`tst_peek`~~
-    * Look for unused functions; those indicate obvious non-tests  
-      The `mm_`s are listing as uncalled because they're only called through  
-        macros. There might be more similar errors elsewhere.
-  * [x] Go through the Valgrind report and eliminate the memory leaks - 0.5.5
-    * ~~This is gonna take a while. :(~~ It didn't!
-  * [x] Everything in the `TODO` comments - 0.5.6  
-    ...as long as it's possible to do now; i.e. doesn't require work that's
-      slated for completion in a later milestone.
-  * [ ] Misc. cleanup tasks - 0.5.7
-    * [x] Follow the last bullet point of the style guide
-    * [x] Make sure `Object`s aren't accidentally getting passed around by
-      (non-const) )value to avoid nasty GC-related bugs later
-    * [x] Ditto for `Tokenizer`s and file handle cleanup
-    * [x] Implement that one Token -> Object method
-    * [x] Implement `ctno_eq`
-    * [ ] ~~Start `ctno_mk_` family (i.e. make them, but no methods for now)~~
-      * Deferred until standard library (i.e. back where it was)
-    * [x] Condense the error codes and make sure they're named consistently.
-    * [ ] ~~Nested error types? (i.e. SOME_ERROR thrown b/c SOME_OTHER_ERROR)~~
-      * This doesn't seem necessary, and it's a whole lot of work. I might do
-        it later (see `c-exceptions` branch). It'd also make a cool separate
-        project.
-    * [x] Make sure everything checks return values (where there are any)
-    * [x] Use a pushable `Tokenizer` in `TokenStack` to make the history bit
-      more accurate.
-    * [x] `tst_peek` is fundamentally broken right now. Make it work.
-    * [x] Replace `strfoo` with `strnfoo` where available.
-    * [x] Ensure that all error codes defined in source files are declared in
-      `error.h`
-
-### Upcoming milestones
+#### `runnable.h` - 0.6
 
 * [ ] `runnable.h` - 0.6  
   A combination object so I can either define things in Concaten, through
     code blocks, or in C, through functions with a certain signature, and
     call them without worrying about which is which. This layer of abstraction
     will make it much easier to implement user-defined words.
+  * [ ] Define interface. Requirements:
+    * `new` for `CodeBlock`s and `ERROR (*)(DataStack, ScopeStack, TokenStack)`
+      (though for now the `ScopeStack` will be omitted, since it... doesn't
+      exist yet)
+    * `run` which takes a `DataStack`, `ScopeStack`, and `TokenStack`; and
+      returns an `ERROR`.
+      * Now may be a good time to implement user-defined exceptions with nice
+        bits like (Concaten) stacktraces and error messages. If we do, return
+        that instead of an `ERROR`.
+    * `copy`, which copies the tokens in the `CodeBlock` or just copies the
+      function pointer (since functions are immutable in well-defined code, as
+      far as I'm aware, and there's no way to duplicate functions anyway)
+    * That's probably it, but it's worth making sure.
+  * [ ] Implement interface.
+  * [ ] Test rigorously.
+  * [ ] Change `MethodMap` to use `Runnable`s instead of raw function pointers
+
+### Upcoming milestones
 * [ ] `scope_stack.h` - 0.7  
   Contains the list of words. This is a stack so we can sensibly implement
     things like local variables. Shouldn't be too much trouble; it'll mostly
@@ -289,3 +232,7 @@ Major version `0` is pre-completion; some of the parts may be
   A simple object which represents Concaten's equivalent of anonymous
     functions. Can be run, in addition to being modified at runtime, as it's
     simply an array of tokens with some extra words (`call`, for example).
+* [x] Refactor to interface consistent across all bits and pieces - 0.5  
+  The code is getting a little out of hand. I have some things I want to do to
+    clean it up. (Fun fact: This bit took more time than any other milestone,
+    I think. Just goes to show how important planning in advance is.)
