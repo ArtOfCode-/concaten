@@ -112,7 +112,7 @@ Major version `0` is pre-completion; some of the parts may be
     code blocks, or in C, through functions with a certain signature, and
     call them without worrying about which is which. This layer of abstraction
     will make it much easier to implement user-defined words.
-  * [ ] Define interface. Requirements:
+  * [x] Define interface - 0.6.1
     * `new` for `CodeBlock`s and `ERROR (*)(DataStack, ScopeStack, TokenStack)`
       (though for now the `ScopeStack` will be omitted, since it... doesn't
       exist yet)
@@ -125,9 +125,16 @@ Major version `0` is pre-completion; some of the parts may be
       function pointer (since functions are immutable in well-defined code, as
       far as I'm aware, and there's no way to duplicate functions anyway)
     * That's probably it, but it's worth making sure.
-  * [ ] Implement interface.
-  * [ ] Test rigorously.
-  * [ ] Change `MethodMap` to use `Runnable`s instead of raw function pointers
+  * [ ] Implement interface - 0.6.2
+  * [ ] Test rigorously - 0.6.3
+  * [ ] Update references - 0.6.4
+    * Change `MethodMap` to use `Runnable`s instead of raw function pointers.
+    * That's probably it, but make sure there are no other places that need it.
+
+> **Note**: Since `ScopeStack` isn't yet implemented, the notes about it are
+> mostly just placeholders; they'll be made real once `ScopeStack` is written.
+> Ultimate, `ScopeStack` _requires_ `Runnable`, but `Runnable` is a strong
+> independent type that don't need no `ScopeStack`.
 
 ### Upcoming milestones
 * [ ] `scope_stack.h` - 0.7  
