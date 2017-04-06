@@ -1,30 +1,11 @@
 #include "token_stack.h"
 
-struct TS_TokenNode {
-    struct TS_TokenNode *next;
-    struct Token value;
-};
-
-struct TS_LevelNode {
-    struct TS_LevelNode *next;
-    struct TS_TokenNode *token_head;
-};
-
-enum TSCN_Type {
-    TSCN_TOKEN_PUSH, // We pushed a token. `change.data` is unset.
-    TSCN_TOKEN_POP, // We popped a token. `change.data.popped` is set.
-    TSCN_LEVEL_PUSH, // We pushed a level. `change.data` is unset.
-    TSCN_LEVEL_POP // We popped a level. `change.data.popped_head` is set.
-};
-
-struct TS_ChangeNode {
-    struct TS_ChangeNode *prev;
-    enum TSCN_Type type;
-    union {
-        struct Token popped;//type == TSCN_TOKEN_POP
-        struct TS_TokenNode *popped_head;//type == TSCN_LEVEL_POP
-    } data;
-};
+struct PushableTokenizer ptknr_new(const struct Tokenizer from) {
+    return (struct PushableTokenizer) {
+            .head = NULL,
+            .tknr = from
+    };
+}
 
 void tst_level_node_free(struct TS_LevelNode *this) {
     if (this) {
@@ -60,7 +41,7 @@ bool tst_push_change(struct TokenStack *this,
 ERROR tst_new(const struct Tokenizer this, struct TokenStack *into) {
     *into = (struct TokenStack) {
             .level_head = NULL,
-            .tknr = this,
+            .ptknr = ptknr_new(this),
             .tracking_changes = false,
             .latest_change = NULL,
     };
@@ -100,12 +81,19 @@ ERROR tst_pop(struct TokenStack *this, struct Token *ret) {
     this->level_head = level;
     if (level) {
         ret_val = level->token_head->value;
-        struct TS_TokenNode *next = level->token_head->next;
-        free(level->token_head);
-        level->token_head = next;
+        struct TS_TokenNode *old = level->token_head;
+        level->token_head = old->next;
+        free(old);
     } else {
-        if (tknr_next(&this->tknr, &ret_val) != NO_ERROR) {
-            return TST_POP_EMPTY_FAIL;
+        if (this->ptknr.head) {
+            ret_val = this->ptknr.head->value;
+            struct TS_TokenNode *old = this->ptknr.head;
+            this->ptknr.head = old->next;
+            free(old);
+        } else {
+            if (tknr_next(&this->ptknr.tknr, &ret_val) != NO_ERROR) {
+                return TST_POP_EMPTY_FAIL;
+            }
         }
     }
     if (this->tracking_changes) {
@@ -114,12 +102,13 @@ ERROR tst_pop(struct TokenStack *this, struct Token *ret) {
             return TST_POP_SAVE_FAIL;
         }
         if (!tst_push_change(this, (struct TS_ChangeNode) {
-                .type = TSCN_TOKEN_POP, .data.popped = copy
+                .type = level ? TSCN_TOKEN_POP : TSCN_TOKEN_NEXT,
+                .data.popped = copy
         })) {
             return TST_POP_SAVE_FAIL;
         }
     }
-    if (ret) *ret = ret_val;
+    *ret = ret_val;
     return NO_ERROR;
 }
 
@@ -175,6 +164,7 @@ ERROR tst_restore_state(struct TokenStack *this) {
         // errors are determined by the action we're trying to reverse
         switch (todo->type) {
             struct Token popped;
+            struct TS_TokenNode *new_head;
             case TSCN_TOKEN_POP:
                 if (tst_push(this, todo->data.popped) != NO_ERROR) {
                     return TST_RSTR_POP_FAIL;
@@ -186,6 +176,14 @@ ERROR tst_restore_state(struct TokenStack *this) {
                 } else {
                     tkn_free(&popped);
                 }
+                break;
+            case TSCN_TOKEN_NEXT:
+                new_head = malloc(sizeof(*new_head));
+                *new_head = (struct TS_TokenNode) {
+                        .next = this->ptknr.head,
+                        .value = todo->data.popped
+                };
+                this->ptknr.head = new_head;
                 break;
             case TSCN_LEVEL_POP:
                 if (tst_push_level(this) != NO_ERROR) {

@@ -61,6 +61,5 @@
   something's implementation, include it only in the relevant source file, not
   the header.
 * Types should only have their own file if they're used by more than one other
-  type, and aren't intrinsically tied to a certain type. If they don't deserve
-  their own file, they should be forward-declared at most in the header, then
-  defined in the source file, of their associated type.
+  type, and aren't intrinsically tied to a certain type. If either of these is
+  not the case, it should be defined in the same header as its associated type.

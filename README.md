@@ -168,13 +168,16 @@ Major version `0` is pre-completion; some of the parts may be
     * [ ] ~~Start `ctno_mk_` family (i.e. make them, but no methods for now)~~
       * Deferred until standard library (i.e. back where it was)
     * [x] Condense the error codes and make sure they're named consistently.
-    * [ ] Nested error types? (i.e. SOME_ERROR thrown b/c SOME_OTHER_ERROR)
-    * [ ] Make sure everything checks return values (where there are any)
+    * [ ] ~~Nested error types? (i.e. SOME_ERROR thrown b/c SOME_OTHER_ERROR)~~
+      * This doesn't seem necessary, and it's a whole lot of work. I might do
+        it later (see `c-exceptions` branch). It'd also make a cool separate
+        project.
+    * [x] Make sure everything checks return values (where there are any)
     * [ ] Use a pushable `Tokenizer` in `TokenStack` to make the history bit
       more accurate.
     * [ ] `tst_peek` is fundamentally broken right now. Make it work.
     * [x] Replace `strfoo` with `strnfoo` where available.
-    * [ ] Ensure that all error codes defined in source files are declared in
+    * [x] Ensure that all error codes defined in source files are declared in
       `error.h`
 
 ### Upcoming milestones
