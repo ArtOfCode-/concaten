@@ -16,9 +16,9 @@ struct Runnable {
 };
 
 ERROR rn_from_ctn(const struct CodeBlock, struct Runnable *);
-ERROR rn_from_c(CFuncType fptr);
+ERROR rn_from_c(CFuncType fptr, struct Runnable *);
 ERROR rn_copy(const struct Runnable, struct Runnable *);
-ERROR rn_run(struct DataStack *, struct TokenStack *);
-ERROR rn_free(struct Runnable *);
+ERROR rn_run(const struct Runnable, struct DataStack *, struct TokenStack *);
+void rn_free(struct Runnable *);
 
 #endif //CONCATEN_RUNNABLE_H

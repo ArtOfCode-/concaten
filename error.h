@@ -108,6 +108,7 @@ static const ERROR TTO_INVALID_BASE_FAIL                = 858;
 static const ERROR TTO_INVALID_DIGIT_FAIL               = 859;
 static const ERROR TTO_FLP_CONVERT_FAIL                 = 860;
 static const ERROR RN_NEW_CB_COPY_FAIL                  = 900;
-
+static const ERROR RN_COPY_CB_COPY_FAIL                 = 901;
+static const ERROR RN_RUN_TST_PUSH_FAIL                 = 902;
 
 #endif //CONCATEN_ERROR_H
