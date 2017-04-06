@@ -32,12 +32,25 @@ void a_token_push(struct TokenStack *tst, struct Token pushing, ERROR res) {
 void a_token_pop(struct TokenStack *tst, ERROR expected, size_t i, size_t l) {
     struct Token popped;
     ERROR err = tst_pop(tst, &popped);
-    tassert(err == expected, "got unexpected return result");
+    tassert(err == expected, "got unexpected error (" EFMT " not " EFMT ")",
+            err, expected);
     if (err == NO_ERROR) {
         tassert(popped.index == i && popped.line == l,
                 "wrong element popped (%zu %zu, not %zu %zu)",
                 popped.index, popped.line, i, l);
         tkn_free(&popped);
+    }
+}
+
+void a_token_peek(struct TokenStack *tst, ERROR expected, size_t i, size_t l) {
+    struct Token peeked;
+    ERROR err = tst_peek(tst, &peeked);
+    tassert(err == expected, "got unexpected error (" EFMT " not " EFMT ")",
+            err, expected);
+    if (err == NO_ERROR) {
+        tassert(peeked.index == i && peeked.line == l,
+                "wrong element popped (%zu %zu, not %zu %zu)",
+                peeked.index, peeked.line, i, l);
     }
 }
 
@@ -90,14 +103,20 @@ struct TestResult test_token_stack() {
     a_token_push(&tst, gen_token(15, 7), NO_ERROR);
     a_token_push(&tst, gen_token(16, 7), NO_ERROR);
     a_token_pop(&tst, NO_ERROR, 16, 7);
+    a_token_peek(&tst, NO_ERROR, 15, 7);
+    a_token_peek(&tst, NO_ERROR, 15, 7);
+    a_token_peek(&tst, NO_ERROR, 15, 7);
     a_token_pop(&tst, NO_ERROR, 15, 7);
+    a_token_peek(&tst, NO_ERROR, 14, 7);
     a_token_pop(&tst, NO_ERROR, 14, 7);
     a_token_pop(&tst, NO_ERROR, 10, 5);
     a_token_pop(&tst, NO_ERROR, 9, 5);
     a_restore(&tst, NO_ERROR);
     a_token_pop(&tst, NO_ERROR, 10, 5);
     a_token_pop(&tst, NO_ERROR, 9, 5);
+    a_token_peek(&tst, NO_ERROR, 8, 4);
     a_token_pop(&tst, NO_ERROR, 8, 4);
+    a_token_peek(&tst, NO_ERROR, 7, 4);
     a_token_pop(&tst, NO_ERROR, 7, 4);
     a_level_push(&tst, NO_ERROR);
     a_token_push(&tst, gen_token(20, 9), NO_ERROR);
@@ -123,16 +142,21 @@ struct TestResult test_token_stack() {
     a_restore(&tst, NO_ERROR);
     a_token_pop(&tst, NO_ERROR, 3, 1);
     a_token_pop(&tst, NO_ERROR, 2, 1);
+    a_token_peek(&tst, NO_ERROR, 1, 1);
     a_token_pop(&tst, NO_ERROR, 1, 1);
     a_token_pop(&tst, NO_ERROR, 0, 1);
     a_token_pop(&tst, NO_ERROR, 2, 1);
     tst_save_state(&tst);
+    a_token_peek(&tst, NO_ERROR, 4, 1);
     a_token_pop(&tst, NO_ERROR, 4, 1);
     a_token_pop(&tst, NO_ERROR, 6, 1);
     a_token_pop(&tst, NO_ERROR, 8, 1);
+    a_token_peek(&tst, TST_PEEK_EMPTY_FAIL, 0, 0);
     a_token_pop(&tst, TST_POP_EMPTY_FAIL, 0, 0);
+    a_token_peek(&tst, TST_PEEK_EMPTY_FAIL, 0, 0);
     a_token_pop(&tst, TST_POP_EMPTY_FAIL, 0, 0);
     a_restore(&tst, NO_ERROR);
+    a_token_peek(&tst, NO_ERROR, 4, 1);
     a_token_pop(&tst, NO_ERROR, 4, 1);
     a_token_pop(&tst, NO_ERROR, 6, 1);
     a_token_pop(&tst, NO_ERROR, 8, 1);

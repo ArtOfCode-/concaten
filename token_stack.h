@@ -48,7 +48,7 @@ struct TokenStack {
 ERROR tst_new(const struct Tokenizer, struct TokenStack *);
 ERROR tst_push(struct TokenStack *, const struct Token);
 ERROR tst_pop(struct TokenStack *, struct Token *);
-ERROR tst_peek(const struct TokenStack, struct Token *);
+ERROR tst_peek(struct TokenStack *, struct Token *);
 ERROR tst_push_level(struct TokenStack *);
 ERROR tst_pop_level(struct TokenStack *);
 ERROR tst_save_state(struct TokenStack *);

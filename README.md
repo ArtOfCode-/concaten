@@ -107,7 +107,7 @@ Major version `0` is pre-completion; some of the parts may be
 
 #### Intermediary refactor - 0.5
 
-* [ ] Refactor to interface consistent across all bits and pieces - 0.5  
+* [x] Refactor to interface consistent across all bits and pieces - 0.5  
   The code is getting a little out of hand. I have some things I want to do to
     clean it up.
   * [x] Change tests to success counters - 0.5.0  
@@ -173,9 +173,9 @@ Major version `0` is pre-completion; some of the parts may be
         it later (see `c-exceptions` branch). It'd also make a cool separate
         project.
     * [x] Make sure everything checks return values (where there are any)
-    * [ ] Use a pushable `Tokenizer` in `TokenStack` to make the history bit
+    * [x] Use a pushable `Tokenizer` in `TokenStack` to make the history bit
       more accurate.
-    * [ ] `tst_peek` is fundamentally broken right now. Make it work.
+    * [x] `tst_peek` is fundamentally broken right now. Make it work.
     * [x] Replace `strfoo` with `strnfoo` where available.
     * [x] Ensure that all error codes defined in source files are declared in
       `error.h`

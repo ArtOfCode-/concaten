@@ -84,16 +84,14 @@ ERROR tst_pop(struct TokenStack *this, struct Token *ret) {
         struct TS_TokenNode *old = level->token_head;
         level->token_head = old->next;
         free(old);
+    } else if (this->ptknr.head) {
+        ret_val = this->ptknr.head->value;
+        struct TS_TokenNode *old = this->ptknr.head;
+        this->ptknr.head = old->next;
+        free(old);
     } else {
-        if (this->ptknr.head) {
-            ret_val = this->ptknr.head->value;
-            struct TS_TokenNode *old = this->ptknr.head;
-            this->ptknr.head = old->next;
-            free(old);
-        } else {
-            if (tknr_next(&this->ptknr.tknr, &ret_val) != NO_ERROR) {
-                return TST_POP_EMPTY_FAIL;
-            }
+        if (tknr_next(&this->ptknr.tknr, &ret_val) != NO_ERROR) {
+            return TST_POP_EMPTY_FAIL;
         }
     }
     if (this->tracking_changes) {
@@ -109,6 +107,35 @@ ERROR tst_pop(struct TokenStack *this, struct Token *ret) {
         }
     }
     *ret = ret_val;
+    return NO_ERROR;
+}
+
+ERROR tst_peek(struct TokenStack *this, struct Token *out) {
+    struct TS_LevelNode *cur = this->level_head;
+    while (cur && !cur->token_head) cur = cur->next;
+    if (cur) { // then we broke because cur->token_head != NULL
+        *out = cur->token_head->value;
+        return NO_ERROR;
+    }
+    // well, guess we have nothing but empty layers, you monster.
+    if (this->ptknr.head) {
+        *out = this->ptknr.head->value;
+        return NO_ERROR;
+    }
+    struct TS_TokenNode *new_head = malloc(sizeof(*new_head));
+    if (!new_head) {
+        return TST_PEEK_MALLOC_FAIL;
+    }
+    struct Token ret;
+    if (tknr_next(&this->ptknr.tknr, &ret) != NO_ERROR) {
+        return TST_PEEK_EMPTY_FAIL;
+    }
+    *new_head = (struct TS_TokenNode) {
+            .value = ret,
+            .next = this->ptknr.head
+    };
+    this->ptknr.head = new_head;
+    *out = ret;
     return NO_ERROR;
 }
 
