@@ -43,8 +43,8 @@ ERROR rn_run(const struct Runnable run, struct DataStack *ds,
         return run.code.c(ds, ts);
     } else {
         tst_push_level(ts);
-        for (size_t i = run.code.ctn.count - 1; i >= 0; ++i) {
-            if (tst_push(ts, run.code.ctn.tokens[i]) != NO_ERROR) {
+        for (size_t i = run.code.ctn.count; i > 0; --i) {
+            if (tst_push(ts, run.code.ctn.tokens[i-1]) != NO_ERROR) {
                 return RN_RUN_TST_PUSH_FAIL;
             }
         }
