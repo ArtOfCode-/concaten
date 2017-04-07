@@ -51,13 +51,13 @@ struct TestResult test_runnable() {
     tassert(tst_new(test_ts_tknr, &test_ts) == NO_ERROR,
             "failed to init token stack");
     
-    struct Runnable c_testing;
-    tassert(rn_from_c(test1, &c_testing) == NO_ERROR, "failed to init c test");
+    struct Runnable c1, c2;
+    tassert(rn_from_c(test1, &c1) == NO_ERROR, "failed to init c test");
     top_is_lit = true;
     top_type = TKN_WORD;
-    tassert(rn_run(c_testing, &test_ds, &test_ts) == NO_ERROR,
+    tassert(rn_run(c1, &test_ds, &test_ts) == NO_ERROR,
             "failed to run correctly");
     
-    tassert(false, "no Runnable tests yet");
+    tassert(false, "Runnable tests incomplete");
     return (struct TestResult) { .successes = successes, .total = total };
 }
