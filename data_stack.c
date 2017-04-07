@@ -57,6 +57,14 @@ ERROR dst_pop(struct DataStack *dst, struct Object **into) {
     return NO_ERROR;
 }
 
+ERROR dst_peek(struct DataStack *dst, struct Object **into) {
+    if (!dst->head) {
+        return DST_PEEK_EMPTY_FAIL;
+    }
+    *into = dst->head->value;
+    return NO_ERROR;
+}
+
 ERROR dst_copy(const struct DataStack dst, struct DataStack *into) {
     struct DataStack ret = (struct DataStack) {
             .head = dst.head

@@ -11,7 +11,7 @@ static const ERROR NO_ERROR = 0;
  +-------------------*/
 
 // General errors (0-999)
-extern const ERROR USER_DEFINED_ERROR_TYPE;
+static const ERROR USER_DEFINED_ERROR                   =  99;
 
 static const ERROR CB_CTOR_MALLOC_FAIL                  = 101;
 static const ERROR CB_COPY_MALLOC_FAIL                  = 102;
@@ -24,6 +24,7 @@ static const ERROR CB_GET_BAD_IDX_FAIL                  = 141;
 static const ERROR CB_SET_BAD_IDX_FAIL                  = 151;
 static const ERROR DST_PUSH_MALLOC_FAIL                 = 201;
 static const ERROR DST_POP_EMPTY_FAIL                   = 202;
+static const ERROR DST_PEEK_EMPTY_FAIL                  = 203;
 static const ERROR TST_PUSH_MALLOC_FAIL                 = 301;
 static const ERROR TST_PUSH_SAVE_FAIL                   = 302;
 static const ERROR TST_POP_EMPTY_FAIL                   = 303;
