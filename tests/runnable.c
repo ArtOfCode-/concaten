@@ -50,14 +50,41 @@ struct TestResult test_runnable() {
     struct TokenStack test_ts;
     tassert(tst_new(test_ts_tknr, &test_ts) == NO_ERROR,
             "failed to init token stack");
+    struct CodeBlock cb1, cb2;
+    tassert(cb_new(1, &cb1) == NO_ERROR, "failed to init cb1");
+    tassert(cb_append(&cb1, (struct Token) {
+            .type = TKN_INTEGER
+    }) == NO_ERROR, "failed to push token into cb");
+    tassert(cb_new(1, &cb2) == NO_ERROR, "failed to init cb2");
+    tassert(cb_append(&cb2, (struct Token) {
+            .type = TKN_REGEX
+    }) == NO_ERROR, "failed to push token into cb");
     
     struct Runnable c1, c2;
-    tassert(rn_from_c(test1, &c1) == NO_ERROR, "failed to init c test");
+    tassert(rn_from_c(test1, &c1) == NO_ERROR, "failed to init c test 1");
+    tassert(rn_from_c(test2, &c2) == NO_ERROR, "failed to init c test 2");
     top_is_lit = true;
     top_type = TKN_WORD;
     tassert(rn_run(c1, &test_ds, &test_ts) == NO_ERROR,
             "failed to run correctly");
+    tassert(rn_run(c2, &test_ds, &test_ts) == USER_DEFINED_ERROR,
+            "unexpected error code instead of "EFMT, USER_DEFINED_ERROR);
+    top_is_lit = false;
+    top_type = TKN_IDENTIFIER;
     
-    tassert(false, "Runnable tests incomplete");
+    struct Runnable ctn1, ctn2;
+    tassert(rn_from_ctn(cb1, &ctn1) == NO_ERROR, "failed to init ctn test 1");
+    tassert(rn_from_ctn(cb2, &ctn2) == NO_ERROR, "failed to init ctn test 2");
+    tassert(rn_run(ctn1, &test_ds, &test_ts) == NO_ERROR, "failed to run");
+    top_type = TKN_INTEGER;
+    tassert(rn_run(ctn2, &test_ds, &test_ts) == NO_ERROR, "failed to run");
+    top_type = TKN_REGEX;
+    tassert(rn_run(c1, &test_ds, &test_ts) == NO_ERROR, "failed to run c");
+    tassert(rn_run(c2, &test_ds, &test_ts) == NO_ERROR, "failed to run c");
+    tassert(dst_push(&test_ds, &dyn) == NO_ERROR, "failed to push again");
+    
+    tassert(rn_run(c1, &test_ds, &test_ts) == NO_ERROR, "failed to run c");
+    
+//    tassert(false, "Runnable tests incomplete");
     return (struct TestResult) { .successes = successes, .total = total };
 }
