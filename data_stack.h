@@ -18,6 +18,7 @@ ERROR dst_new(struct DataStack *);
 ERROR dst_copy(const struct DataStack, struct DataStack *);
 ERROR dst_push(struct DataStack *, struct Object *);
 ERROR dst_pop(struct DataStack *, struct Object **);
+ERROR dst_peek(struct DataStack *);
 void dst_free(struct DataStack *);
 
 #endif //CONCATEN_DATA_STACK_H
