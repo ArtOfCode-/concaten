@@ -66,6 +66,7 @@ struct TestResult test_runnable() {
     tassert(rn_from_c(test1, &c1) == NO_ERROR, "failed to init c test 1");
     tassert(rn_copy(c1, &c1c) == NO_ERROR, "failed to copy c test 1");
     tassert(rn_eq(c1, c1c), "copy isn't equal to the original");
+    rn_free(&c1c);
     tassert(rn_from_c(test2, &c2) == NO_ERROR, "failed to init c test 2");
     top_is_lit = true;
     top_type = TKN_WORD;
@@ -80,6 +81,7 @@ struct TestResult test_runnable() {
     tassert(rn_from_ctn(cb1, &ctn1) == NO_ERROR, "failed to init ctn test 1");
     tassert(rn_copy(ctn1, &ctn1c) == NO_ERROR, "failed to copy ctn test 1");
     tassert(rn_eq(ctn1, ctn1c), "copy isn't equal to the original");
+    rn_free(&ctn1c);
     tassert(rn_from_ctn(cb2, &ctn2) == NO_ERROR, "failed to init ctn test 2");
     tassert(rn_run(ctn1, &test_ds, &test_ts) == NO_ERROR, "failed to run");
     top_type = TKN_INTEGER;
