@@ -4,11 +4,12 @@
 #include <stddef.h>
 #include <stdbool.h>
 #include "error.h"
+#include "runnable.h"
 
 // we'll switch this to data_stack, scope_stack, token_stack once
 // those are written; for now, we want a compileable and testable
 // version, so we need existing types as arguments.
-typedef void (*MM_VALUE_TYPE)(int, char *);
+typedef struct Runnable MM_VALUE_TYPE;
 
 // same definitions as in prop_map.h
 #define MM_MAX_BUCKET_DEPTH 8

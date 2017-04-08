@@ -2,12 +2,6 @@
 
 #include <stdlib.h>
 
-struct DST_Node {
-    struct DST_Node *next;
-    struct Object *value;
-    size_t refcount;
-};
-
 void dst_node_free(struct DST_Node *nd) {
     while (nd) {
         --nd->refcount;

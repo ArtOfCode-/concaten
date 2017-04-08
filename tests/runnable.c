@@ -62,8 +62,10 @@ struct TestResult test_runnable() {
             .type = TKN_REGEX
     }) == NO_ERROR, "failed to push token into cb");
     
-    struct Runnable c1, c2;
+    struct Runnable c1, c2, c1c;
     tassert(rn_from_c(test1, &c1) == NO_ERROR, "failed to init c test 1");
+    tassert(rn_copy(c1, &c1c) == NO_ERROR, "failed to copy c test 1");
+    tassert(rn_eq(c1, c1c), "copy isn't equal to the original");
     tassert(rn_from_c(test2, &c2) == NO_ERROR, "failed to init c test 2");
     top_is_lit = true;
     top_type = TKN_WORD;
@@ -74,8 +76,10 @@ struct TestResult test_runnable() {
     top_is_lit = false;
     top_type = TKN_IDENTIFIER;
     
-    struct Runnable ctn1, ctn2;
+    struct Runnable ctn1, ctn2, ctn1c;
     tassert(rn_from_ctn(cb1, &ctn1) == NO_ERROR, "failed to init ctn test 1");
+    tassert(rn_copy(ctn1, &ctn1c) == NO_ERROR, "failed to copy ctn test 1");
+    tassert(rn_eq(ctn1, ctn1c), "copy isn't equal to the original");
     tassert(rn_from_ctn(cb2, &ctn2) == NO_ERROR, "failed to init ctn test 2");
     tassert(rn_run(ctn1, &test_ds, &test_ts) == NO_ERROR, "failed to run");
     top_type = TKN_INTEGER;

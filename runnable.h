@@ -18,6 +18,7 @@ struct Runnable {
 ERROR rn_from_ctn(const struct CodeBlock, struct Runnable *);
 ERROR rn_from_c(CFuncType fptr, struct Runnable *);
 ERROR rn_copy(const struct Runnable, struct Runnable *);
+bool rn_eq(const struct Runnable, const struct Runnable);
 ERROR rn_run(const struct Runnable, struct DataStack *, struct TokenStack *);
 void rn_free(struct Runnable *);
 

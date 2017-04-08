@@ -11,6 +11,7 @@ ERROR rn_from_ctn(const struct CodeBlock from, struct Runnable *into) {
     };
     return NO_ERROR;
 }
+
 ERROR rn_from_c(CFuncType fptr, struct Runnable *into) {
     *into = (struct Runnable) {
             .code.c = fptr,
@@ -18,6 +19,7 @@ ERROR rn_from_c(CFuncType fptr, struct Runnable *into) {
     };
     return NO_ERROR;
 }
+
 ERROR rn_copy(const struct Runnable from, struct Runnable *into) {
     if (from.is_c) {
         *into = (struct Runnable) {
@@ -37,6 +39,22 @@ ERROR rn_copy(const struct Runnable from, struct Runnable *into) {
         return NO_ERROR;
     }
 }
+
+bool rn_eq(const struct Runnable lhs, const struct Runnable rhs) {
+    if (lhs.is_c != rhs.is_c) {
+        return false;
+    } else if (lhs.is_c) {
+        return lhs.code.c == rhs.code.c;
+    } else {
+        for (size_t i = 0; i < lhs.code.ctn.count; ++i) {
+            struct Token lt = lhs.code.ctn.tokens[i];
+            struct Token rt = rhs.code.ctn.tokens[i];
+            if (!tkn_eq(lt, rt)) return false;
+        }
+        return true;
+    }
+}
+
 ERROR rn_run(const struct Runnable run, struct DataStack *ds,
              struct TokenStack *ts) {
     if (run.is_c) {
@@ -44,7 +62,7 @@ ERROR rn_run(const struct Runnable run, struct DataStack *ds,
     } else {
         tst_push_level(ts);
         for (size_t i = run.code.ctn.count; i > 0; --i) {
-            if (tst_push(ts, run.code.ctn.tokens[i-1]) != NO_ERROR) {
+            if (tst_push(ts, run.code.ctn.tokens[i - 1]) != NO_ERROR) {
                 return RN_RUN_TST_PUSH_FAIL;
             }
         }

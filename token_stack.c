@@ -193,10 +193,11 @@ ERROR tst_restore_state(struct TokenStack *this) {
     this->tracking_changes = false;
     struct TS_ChangeNode *todo = this->latest_change;
     while (todo) {
-        // errors are determined by the action we're trying to reverse
+        struct Token popped;
+        struct TS_TokenNode *new_head;
+        // errors are determined by the action we're trying to reverse, not
+        // the action we take to reverse it
         switch (todo->type) {
-            struct Token popped;
-            struct TS_TokenNode *new_head;
             case TSCN_TOKEN_POP:
                 if (tst_push(this, todo->data.popped) != NO_ERROR) {
                     return TST_RSTR_POP_FAIL;

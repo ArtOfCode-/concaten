@@ -34,7 +34,6 @@ struct LiteralData {
     size_t size;
     enum LiteralType type;
     void *value;
-    void (*val_free)(void *);
 };
 
 struct Object {

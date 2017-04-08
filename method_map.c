@@ -1,6 +1,5 @@
 #include "method_map.h"
 
-#include <stdlib.h>
 #include <string.h>
 
 #define LOAD_FACTOR 2
@@ -9,7 +8,10 @@ struct MM_KeyValPair mm_kvp_zero() {
     return (struct MM_KeyValPair) {
             .key_len = 0,
             .key = NULL,
-            .func = NULL
+            .func = (struct Runnable) {
+                    .code.c = NULL,
+                    .is_c = false
+            }
     };
 }
 struct MM_Bucket mm_bk_zero() {
@@ -151,7 +153,7 @@ bool mm_is_value(const struct MethodMap mm, MM_VALUE_TYPE f) {
     for (size_t bucket_idx = 0; bucket_idx < mm.bucket_count; ++bucket_idx) {
         const struct MM_Bucket bk = mm.buckets[bucket_idx];
         for (size_t in_idx = 0; in_idx < bk.count; ++in_idx) {
-            if (bk.items[in_idx].func == f) return true;
+            if (rn_eq(bk.items[in_idx].func, f)) return true;
         }
     }
     return false;

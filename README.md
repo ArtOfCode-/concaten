@@ -1,4 +1,4 @@
-# Concaten v0.6.3
+# Concaten v0.6.4
 
 Concaten is a concatenative, stack-based, strongly but optionally strictly
 typed, hyperdynamic, garbage-collected, interpreted programming language. In
@@ -111,7 +111,7 @@ Versions only apply to that branch. For example, dev might be at 1.6.3, while
 
 #### `runnable.h` - 0.6
 
-* [ ] `runnable.h` - 0.6  
+* [x] `runnable.h` - 0.6  
   A combination object so I can either define things in Concaten, through
     code blocks, or in C, through functions with a certain signature, and
     call them without worrying about which is which. This layer of abstraction
@@ -131,9 +131,10 @@ Versions only apply to that branch. For example, dev might be at 1.6.3, while
     * That's probably it, but it's worth making sure.
   * [x] Implement interface - 0.6.2
   * [x] Test rigorously - 0.6.3
-  * [ ] Update references - 0.6.4
+  * [x] Update references - 0.6.4
     * Change `MethodMap` to use `Runnable`s instead of raw function pointers.
     * That's probably it, but make sure there are no other places that need it.
+  * [ ] Make sure there are no memory leaks.
 
 > **Note**: Since `ScopeStack` isn't yet implemented, the notes about it are
 > mostly just placeholders; they'll be made real once `ScopeStack` is written.

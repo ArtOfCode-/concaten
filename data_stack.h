@@ -8,7 +8,12 @@
 // linked-list has O(1) push/pop always, and can be copied in O(1)
 // (as long as it's not a deep copy!)
 
-struct DST_Node;
+struct DST_Node {
+    struct DST_Node *next;
+    struct Object *value;
+    size_t refcount;
+};
+
 struct DataStack {
     struct DST_Node *head;
 };
