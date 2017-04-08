@@ -34,6 +34,10 @@ struct TS_ChangeNode {
 
 struct PushableTokenizer {
     struct Tokenizer tknr;
+    // ...plus a stack we can put things on
+    // strictly speaking, a queue is what we need, but because in this specific
+    // case we only need to push items to the back one at a time, and when it's
+    // empty, a stack will work.
     struct TS_TokenNode *head;
 };
 

@@ -111,31 +111,35 @@ ERROR tst_pop(struct TokenStack *this, struct Token *ret) {
 }
 
 ERROR tst_peek(struct TokenStack *this, struct Token *out) {
-    struct TS_LevelNode *cur = this->level_head;
-    while (cur && !cur->token_head) cur = cur->next;
-    if (cur) { // then we broke because cur->token_head != NULL
-        *out = cur->token_head->value;
+    struct TS_LevelNode *lh_cur = this->level_head;
+    // find the first level with tokens
+    while (lh_cur && !lh_cur->token_head) lh_cur = lh_cur->next;
+    if (lh_cur) {
+        // then some tokens are on the stack; return one
+        *out = lh_cur->token_head->value;
         return NO_ERROR;
     }
-    // well, guess we have nothing but empty layers, you monster.
+    // no pushed tokens -- let's see if the tokenizer has any
     if (this->ptknr.head) {
+        // then there's something in the ptknr's stack to return
         *out = this->ptknr.head->value;
         return NO_ERROR;
     }
-    struct TS_TokenNode *new_head = malloc(sizeof(*new_head));
-    if (!new_head) {
+    // we gotta pull something from the tokenizer
+    struct TS_TokenNode *nd_pushing = malloc(sizeof(*nd_pushing));
+    if (!nd_pushing) {
         return TST_PEEK_MALLOC_FAIL;
     }
-    struct Token ret;
-    if (tknr_next(&this->ptknr.tknr, &ret) != NO_ERROR) {
+    struct Token next_token;
+    if (tknr_next(&this->ptknr.tknr, &next_token) != NO_ERROR) {
         return TST_PEEK_EMPTY_FAIL;
     }
-    *new_head = (struct TS_TokenNode) {
-            .value = ret,
+    *nd_pushing = (struct TS_TokenNode) {
+            .value = next_token,
             .next = this->ptknr.head
     };
-    this->ptknr.head = new_head;
-    *out = ret;
+    this->ptknr.head = nd_pushing;
+    *out = next_token;
     return NO_ERROR;
 }
 
@@ -211,6 +215,7 @@ ERROR tst_restore_state(struct TokenStack *this) {
                         .value = todo->data.popped
                 };
                 this->ptknr.head = new_head;
+                
                 break;
             case TSCN_LEVEL_POP:
                 if (tst_push_level(this) != NO_ERROR) {
