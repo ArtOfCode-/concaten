@@ -43,6 +43,7 @@ struct TestResult test_tkn_value() {
         tassert(tkn_value(&t[i], &ret) == NO_ERROR, "get fail at %zu", i);
         tassert(ctno_eq(o[i], ret), "wrong val at %zu", i);
         ctno_free(&o[i]);
+        ctno_free(&ret);
     }
 
     struct Token word = tkn("asdf", TKN_WORD);
