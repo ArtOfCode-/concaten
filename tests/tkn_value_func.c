@@ -43,7 +43,7 @@ struct TestResult test_tkn_value() {
     tassert(ctno_literal(o4_val, 4, LTL_string, NULL, &o[4]) == NO_ERROR,
             "failed to initialize o4");
     
-    for (size_t i = 0; i < 4; ++i) {
+    for (size_t i = 0; i < sizeof(t) / sizeof(t[0]); ++i) {
         tassert(tkn_value(&t[i], &ret) == NO_ERROR, "get fail at %zu", i);
         tassert(ctno_eq(o[i], ret), "wrong val at %zu", i);
         ctno_free(&o[i]);
