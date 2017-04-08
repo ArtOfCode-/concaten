@@ -23,9 +23,10 @@ struct TestResult test_tkn_value() {
     struct Object ret;
     struct Token t[] = {
             tkn("123", TKN_INTEGER), tkn("2.3", TKN_REAL),
-            tkn("\"hi\"", TKN_STRING), tkn(":foo", TKN_IDENTIFIER)
+            tkn("\"hi\"", TKN_STRING), tkn(":foo", TKN_IDENTIFIER),
+            tkn("\"\\\"\\e[31mhell\\e[0mo!\\\"\"", TKN_STRING)
     };
-    struct Object o[4];
+    struct Object o[5];
     integral o0_val = 123;
     tassert(ctno_literal(&o0_val, sizeof(o0_val), LTL_integral, NULL, &o[0])
             == NO_ERROR, "failed to initialize o0");
@@ -38,6 +39,9 @@ struct TestResult test_tkn_value() {
     char *o3_val = "foo";
     tassert(ctno_literal(o3_val, 4, LTL_identifier, NULL, &o[3]) == NO_ERROR,
             "failed to initialize o3");
+    char *o4_val = "\"\x07e[31mhell\x07[0mo!\"";
+    tassert(ctno_literal(o4_val, 4, LTL_string, NULL, &o[4]) == NO_ERROR,
+            "failed to initialize o4");
     
     for (size_t i = 0; i < 4; ++i) {
         tassert(tkn_value(&t[i], &ret) == NO_ERROR, "get fail at %zu", i);

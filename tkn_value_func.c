@@ -9,32 +9,58 @@
 
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wunused-parameter"
+
 ERROR tkn_value_word(struct Token *from, struct Object *into) {
     return TTO_WORDS_VALUELESS_FAIL;
 }
+
 #pragma GCC diagnostic pop
 
 char tto_hexchar_to_val(const char c) {
     switch (c) {
-        case '0': return 0;
-        case '1': return 1;
-        case '2': return 2;
-        case '3': return 3;
-        case '4': return 4;
-        case '5': return 5;
-        case '6': return 6;
-        case '7': return 7;
-        case '8': return 8;
-        case '9': return 9;
-        case 'a': case 'A': return 10;
-        case 'b': case 'B': return 11;
-        case 'c': case 'C': return 12;
-        case 'd': case 'D': return 13;
-        case 'e': case 'E': return 14;
-        case 'f': case 'F': return 15;
-        default: return 16;
+        case '0':
+            return 0;
+        case '1':
+            return 1;
+        case '2':
+            return 2;
+        case '3':
+            return 3;
+        case '4':
+            return 4;
+        case '5':
+            return 5;
+        case '6':
+            return 6;
+        case '7':
+            return 7;
+        case '8':
+            return 8;
+        case '9':
+            return 9;
+        case 'a':
+        case 'A':
+            return 10;
+        case 'b':
+        case 'B':
+            return 11;
+        case 'c':
+        case 'C':
+            return 12;
+        case 'd':
+        case 'D':
+            return 13;
+        case 'e':
+        case 'E':
+            return 14;
+        case 'f':
+        case 'F':
+            return 15;
+        default:
+            return 16;
     }
 }
+
 ERROR tto_escape_hex(const char **pos, char **ret_pos, const char *const end) {
     char x_val;
     int t;
@@ -60,7 +86,9 @@ ERROR tto_escape_hex(const char **pos, char **ret_pos, const char *const end) {
     **ret_pos = x_val;
     return NO_ERROR;
 }
-ERROR tto_escape_string(const char *const str, size_t val_len, char **out) {
+
+ERROR tto_escape_string(const char *const str, size_t val_len,
+                        char **out, size_t *out_len) {
     ERROR err;
     char *ret = malloc(val_len);
     if (!ret) return TTO_MALLOC_FAIL;
@@ -74,15 +102,33 @@ ERROR tto_escape_string(const char *const str, size_t val_len, char **out) {
                 goto error_handler;
             }
             switch (*pos) {
-                case '0': *ret_pos = '\0'; break;
-                case 'a': *ret_pos = '\a'; break;
-                case 'b': *ret_pos = '\b'; break;
-                case 'e': *ret_pos = '\x1B'; break;
-                case 'f': *ret_pos = '\f'; break;
-                case 'n': *ret_pos = '\n'; break;
-                case 'r': *ret_pos = '\r'; break;
-                case 't': *ret_pos = '\t'; break;
-                case 'v': *ret_pos = '\v'; break;
+                case '0':
+                    *ret_pos = '\0';
+                    break;
+                case 'a':
+                    *ret_pos = '\a';
+                    break;
+                case 'b':
+                    *ret_pos = '\b';
+                    break;
+                case 'e':
+                    *ret_pos = '\x1B';
+                    break;
+                case 'f':
+                    *ret_pos = '\f';
+                    break;
+                case 'n':
+                    *ret_pos = '\n';
+                    break;
+                case 'r':
+                    *ret_pos = '\r';
+                    break;
+                case 't':
+                    *ret_pos = '\t';
+                    break;
+                case 'v':
+                    *ret_pos = '\v';
+                    break;
                 case 'x':
                     err = tto_escape_hex(&pos, &ret_pos, end_null);
                     if (err != NO_ERROR) goto error_handler;
@@ -96,26 +142,24 @@ ERROR tto_escape_string(const char *const str, size_t val_len, char **out) {
     }
     *ret_pos = 0;
     ++ret_pos;
-    char *new_ret = realloc(ret, ret_pos - ret);
-    if (!new_ret) {
-        *out = ret;
-    } else {
-        *out = new_ret;
-    }
+    *out = ret;
+    *out_len = ret_pos - ret;
     return NO_ERROR;
-error_handler:;
+  error_handler:;
     free(ret);
     return err;
 }
+
 ERROR tkn_value_string(struct Token *from, struct Object *into) {
     size_t val_len = from->raw_len - 2;
     ++from->raw;
     from->raw[val_len] = '\0';
-    char *escaped;
-    if (tto_escape_string(from->raw, val_len, &escaped) != NO_ERROR) {
+    char *esc;
+    size_t esc_len;
+    if (tto_escape_string(from->raw, val_len, &esc, &esc_len) != NO_ERROR) {
         return TTO_STRING_ESCAPE_FAIL;
     }
-    ERROR err = ctno_literal(escaped, val_len, LTL_string, NULL, into);
+    ERROR err = ctno_literal(esc, esc_len, LTL_string, NULL, into);
     --from->raw;
     tkn_free(from);
     return err;
@@ -168,6 +212,7 @@ ERROR tkn_value_integer(struct Token *from, struct Object *into) {
     tkn_free(from);
     return err;
 }
+
 ERROR tkn_value_real(struct Token *from, struct Object *into) {
     char *end;
     errno = 0;
@@ -182,6 +227,7 @@ ERROR tkn_value_real(struct Token *from, struct Object *into) {
     tkn_free(from);
     return err;
 }
+
 ERROR tkn_value_identifier(struct Token *from, struct Object *into) {
     ERROR err = ctno_literal(from->raw + 1, from->raw_len - 1, LTL_identifier,
                              NULL, into);
@@ -191,10 +237,12 @@ ERROR tkn_value_identifier(struct Token *from, struct Object *into) {
 
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wunused-parameter"
+
 ERROR tkn_value_regex(struct Token *from, struct Object *into) {
     // this isn't implemented in this version
     return TTO_NOT_IMPLEMENTED_FAIL;
 }
+
 #pragma GCC diagnostic pop
 
 ERROR tkn_value(struct Token *from, struct Object *into) {
