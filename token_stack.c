@@ -264,4 +264,11 @@ void tst_free(struct TokenStack *this) {
         level = next;
     }
     this->level_head = NULL;
+    struct TS_TokenNode *ptknr_head = this->ptknr.head;
+    while (ptknr_head) {
+        tkn_free(&ptknr_head->value);
+        struct TS_TokenNode *next = ptknr_head->next;
+        free(ptknr_head);
+        ptknr_head = next;
+    }
 }
