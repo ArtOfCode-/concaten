@@ -115,7 +115,16 @@ Versions only apply to that branch. For example, dev might be at 1.6.3, while
   Contains the list of words. This is a stack so we can sensibly implement
     things like local variables. Shouldn't be too much trouble; it'll mostly
     be combining `PropMap` and `DataStack`.
-  * [ ] Write the TODO for this milestone
+  * [ ] Design the interface
+    * Should be analogous to `TokenStack` -- you can push layers, etc. -- but
+      with maps, instead of stacks. Layers are basically restore points, but
+      stacked up instead of numbered.
+    * Needs a `get_candidates` function, which returns a list of every word
+      with that name.
+  * [ ] Implement the functions
+  * [ ] Test them
+    * Make sure they don't leak memory!
+  * Edit `Runnable` to use them
 
 ### Upcoming milestones
 * [ ] Main method - 0.8
