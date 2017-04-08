@@ -49,9 +49,11 @@ struct TestResult test_tkn_value() {
     struct Token word = tkn("asdf", TKN_WORD);
     tassert(tkn_value(&word, &ret) == TTO_WORDS_VALUELESS_FAIL,
             "got value for word");
+    tkn_free(&word);
     struct Token unknown = tkn("adsf", TKN_UNKNOWN);
     tassert(tkn_value(&unknown, &ret) == TTO_UNKNOWN_TYPE_FAIL,
             "got value for unknown");
+    tkn_free(&unknown);
     
     return (struct TestResult) { .successes = successes, .total = total };
 }
