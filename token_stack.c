@@ -132,6 +132,7 @@ ERROR tst_peek(struct TokenStack *this, struct Token *out) {
     }
     struct Token next_token;
     if (tknr_next(&this->ptknr.tknr, &next_token) != NO_ERROR) {
+        free(nd_pushing);
         return TST_PEEK_EMPTY_FAIL;
     }
     *nd_pushing = (struct TS_TokenNode) {
