@@ -112,7 +112,7 @@ ERROR tto_escape_string(const char *const str, size_t val_len,
                     *ret_pos = '\b';
                     break;
                 case 'e':
-                    *ret_pos = '\x1B';
+                    *ret_pos = '\x07';
                     break;
                 case 'f':
                     *ret_pos = '\f';
@@ -162,6 +162,7 @@ ERROR tkn_value_string(struct Token *from, struct Object *into) {
     ERROR err = ctno_literal(esc, esc_len, LTL_string, NULL, into);
     --from->raw;
     tkn_free(from);
+    free(esc);
     return err;
 }
 
