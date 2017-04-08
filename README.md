@@ -101,6 +101,10 @@ Major version `0` is pre-completion; some of the parts may be
   the language; from there, I'll iterate based on feedback and input from the
   users, and implement niceties.
 
+Versions only apply to that branch. For example, dev might be at 1.6.3, while
+  master is on 0.5.7; that just means that the bit that's on dev is incomplete
+  and not ready to be pushed to master yet.
+
 ---
 
 ### Current milestone

@@ -69,7 +69,7 @@ struct TestResult test_runnable() {
     tassert(rn_run(c1, &test_ds, &test_ts) == NO_ERROR,
             "failed to run correctly");
     tassert(rn_run(c2, &test_ds, &test_ts) == USER_DEFINED_ERROR,
-            "unexpected error code instead of "EFMT, USER_DEFINED_ERROR);
+            "got wrong error running c2");
     top_is_lit = false;
     top_type = TKN_IDENTIFIER;
     
@@ -87,9 +87,26 @@ struct TestResult test_runnable() {
     tassert(dst_push(&test_ds, &dyn) == NO_ERROR, "failed to push again");
     top_type = TKN_INTEGER;
     tassert(rn_run(c1, &test_ds, &test_ts) == NO_ERROR, "failed to run c");
+    tassert(rn_run(c1, &test_ds, &test_ts) == NO_ERROR, "failed to run c");
+    tassert(rn_run(c1, &test_ds, &test_ts) == NO_ERROR, "failed to run c");
+    tassert(rn_run(c1, &test_ds, &test_ts) == NO_ERROR, "failed to run c");
+    tassert(rn_run(ctn2, &test_ds, &test_ts) == NO_ERROR, "failed to run");
     tassert(rn_run(ctn2, &test_ds, &test_ts) == NO_ERROR, "failed to run");
     top_type = TKN_REGEX;
     tassert(rn_run(c1, &test_ds, &test_ts) == NO_ERROR, "failed to run c`");
+    
+    dst_free(&test_ds);
+    ctno_free(&lit);
+    ctno_free(&dyn);
+    pm_free(&pm);
+    tknr_free(&test_ts_tknr);
+    tst_free(&test_ts);
+    cb_free(&cb1);
+    cb_free(&cb2);
+    rn_free(&c1);
+    rn_free(&c2);
+    rn_free(&ctn1);
+    rn_free(&ctn2);
     
 //    tassert(false, "Runnable tests incomplete");
     return (struct TestResult) { .successes = successes, .total = total };
