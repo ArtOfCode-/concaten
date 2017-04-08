@@ -25,6 +25,7 @@ ERROR test2(struct DataStack *ds, struct TokenStack *ts) {
     
     struct Token tots;
     tassert(tst_pop(ts, &tots) == NO_ERROR, "failed to pop ts");
+    tkn_free(&tots);
     tassert(tots.type == top_type, "got wrong value for ts");
     return USER_DEFINED_ERROR;
 }
