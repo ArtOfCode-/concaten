@@ -1,4 +1,4 @@
-# Concaten v0.5.7
+# Concaten v0.6.3
 
 Concaten is a concatenative, stack-based, strongly but optionally strictly
 typed, hyperdynamic, garbage-collected, interpreted programming language. In
@@ -125,8 +125,8 @@ Major version `0` is pre-completion; some of the parts may be
       function pointer (since functions are immutable in well-defined code, as
       far as I'm aware, and there's no way to duplicate functions anyway)
     * That's probably it, but it's worth making sure.
-  * [ ] Implement interface - 0.6.2
-  * [ ] Test rigorously - 0.6.3
+  * [x] Implement interface - 0.6.2
+  * [x] Test rigorously - 0.6.3
   * [ ] Update references - 0.6.4
     * Change `MethodMap` to use `Runnable`s instead of raw function pointers.
     * That's probably it, but make sure there are no other places that need it.

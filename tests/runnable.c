@@ -39,7 +39,8 @@ struct TestResult test_runnable() {
     tassert(ctno_literal(&v, sizeof(v), LTL_integral, NULL, &lit) == NO_ERROR,
             "failed to init literal object");
     struct Object dyn;
-    struct PropMap pm = (struct PropMap) { 0 };
+    struct PropMap pm;
+    tassert(pm_new(8, &pm) == NO_ERROR, "failed to init propmap for dyn");
     tassert(ctno_dynamic(pm, NULL, &dyn) == NO_ERROR,
             "failed to init dynamic object");
     tassert(dst_push(&test_ds, &dyn) == NO_ERROR, "failed to push to ds");
@@ -77,13 +78,18 @@ struct TestResult test_runnable() {
     tassert(rn_from_ctn(cb2, &ctn2) == NO_ERROR, "failed to init ctn test 2");
     tassert(rn_run(ctn1, &test_ds, &test_ts) == NO_ERROR, "failed to run");
     top_type = TKN_INTEGER;
+    tassert(rn_run(c1, &test_ds, &test_ts) == NO_ERROR, "failed to run c");
     tassert(rn_run(ctn2, &test_ds, &test_ts) == NO_ERROR, "failed to run");
     top_type = TKN_REGEX;
-    tassert(rn_run(c1, &test_ds, &test_ts) == NO_ERROR, "failed to run c");
-    tassert(rn_run(c2, &test_ds, &test_ts) == NO_ERROR, "failed to run c");
+    tassert(rn_run(c1, &test_ds, &test_ts) == NO_ERROR, "failed to run c`");
+    tassert(rn_run(c2, &test_ds, &test_ts) == USER_DEFINED_ERROR,
+            "got wrong error running c2");
     tassert(dst_push(&test_ds, &dyn) == NO_ERROR, "failed to push again");
-    
+    top_type = TKN_INTEGER;
     tassert(rn_run(c1, &test_ds, &test_ts) == NO_ERROR, "failed to run c");
+    tassert(rn_run(ctn2, &test_ds, &test_ts) == NO_ERROR, "failed to run");
+    top_type = TKN_REGEX;
+    tassert(rn_run(c1, &test_ds, &test_ts) == NO_ERROR, "failed to run c`");
     
 //    tassert(false, "Runnable tests incomplete");
     return (struct TestResult) { .successes = successes, .total = total };
