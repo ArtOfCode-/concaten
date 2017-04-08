@@ -109,43 +109,15 @@ Versions only apply to that branch. For example, dev might be at 1.6.3, while
 
 ### Current milestone
 
-#### `runnable.h` - 0.6
+#### `scope_stack.h` - 0.7
 
-* [x] `runnable.h` - 0.6  
-  A combination object so I can either define things in Concaten, through
-    code blocks, or in C, through functions with a certain signature, and
-    call them without worrying about which is which. This layer of abstraction
-    will make it much easier to implement user-defined words.
-  * [x] Define interface - 0.6.1
-    * `new` for `CodeBlock`s and `ERROR (*)(DataStack, ScopeStack, TokenStack)`
-      (though for now the `ScopeStack` will be omitted, since it... doesn't
-      exist yet)
-    * `run` which takes a `DataStack`, `ScopeStack`, and `TokenStack`; and
-      returns an `ERROR`.
-      * Now may be a good time to implement user-defined exceptions with nice
-        bits like (Concaten) stacktraces and error messages. If we do, return
-        that instead of an `ERROR`.
-    * `copy`, which copies the tokens in the `CodeBlock` or just copies the
-      function pointer (since functions are immutable in well-defined code, as
-      far as I'm aware, and there's no way to duplicate functions anyway)
-    * That's probably it, but it's worth making sure.
-  * [x] Implement interface - 0.6.2
-  * [x] Test rigorously - 0.6.3
-  * [x] Update references - 0.6.4
-    * Change `MethodMap` to use `Runnable`s instead of raw function pointers.
-    * That's probably it, but make sure there are no other places that need it.
-  * [ ] Make sure there are no memory leaks.
-
-> **Note**: Since `ScopeStack` isn't yet implemented, the notes about it are
-> mostly just placeholders; they'll be made real once `ScopeStack` is written.
-> Ultimate, `ScopeStack` _requires_ `Runnable`, but `Runnable` is a strong
-> independent type that don't need no `ScopeStack`.
-
-### Upcoming milestones
 * [ ] `scope_stack.h` - 0.7  
   Contains the list of words. This is a stack so we can sensibly implement
     things like local variables. Shouldn't be too much trouble; it'll mostly
     be combining `PropMap` and `DataStack`.
+  * [ ] Write the TODO for this milestone
+
+### Upcoming milestones
 * [ ] Main method - 0.8
 * [ ] Minimal standard library - 0.9  
   Words like `if`, `{`, and `puts` so we can play with the language at all.
