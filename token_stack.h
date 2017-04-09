@@ -15,7 +15,7 @@ struct TS_LevelNode {
     struct TS_TokenNode *token_head;
 };
 
-enum TSCN_Type {
+enum TS_ChangeType {
     TSCN_TOKEN_PUSH, // We pushed a token. `change.data` is unset.
     TSCN_TOKEN_POP, // We popped a token. `change.data.popped` is set.
     TSCN_TOKEN_NEXT, // We read in a token. `change.data.popped` is set.
@@ -25,7 +25,7 @@ enum TSCN_Type {
 
 struct TS_ChangeNode {
     struct TS_ChangeNode *prev;
-    enum TSCN_Type type;
+    enum TS_ChangeType type;
     union {
         struct Token popped;//type == TSCN_TOKEN_POP
         struct TS_TokenNode *popped_head;//type == TSCN_LEVEL_POP
