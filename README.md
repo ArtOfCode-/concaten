@@ -1,4 +1,4 @@
-# Concaten v0.6.4
+# Concaten v0.7.1
 
 Concaten is a concatenative, stack-based, strongly but optionally strictly
 typed, hyperdynamic, garbage-collected, interpreted programming language. In
@@ -115,16 +115,20 @@ Versions only apply to that branch. For example, dev might be at 1.6.3, while
   Contains the list of words. This is a stack so we can sensibly implement
     things like local variables. Shouldn't be too much trouble; it'll mostly
     be combining `PropMap` and `DataStack`.
-  * [ ] Design the interface
+  * [x] Design the interface - 0.7.1
     * Should be analogous to `TokenStack` -- you can push layers, etc. -- but
       with maps, instead of stacks. Layers are basically restore points, but
       stacked up instead of numbered.
     * Needs a `get_candidates` function, which returns a list of every word
       with that name.
-  * [ ] Implement the functions
-  * [ ] Test them
+  * [ ] Implement the functions - 0.7.2
+  * [ ] Test them - 0.7.3
     * Make sure they don't leak memory!
-  * Edit `Runnable` to use them
+  * [ ] Edit `Runnable` to take this as a parameter, too - 0.7.4
+    * Nothing outside of Runnable-related stuff should need to be changed,
+      because anything that can be run should be run through the `Runnable`
+      object. Do a second check, though.
+      
 
 ### Upcoming milestones
 * [ ] Main method - 0.8
@@ -132,6 +136,7 @@ Versions only apply to that branch. For example, dev might be at 1.6.3, while
   Words like `if`, `{`, and `puts` so we can play with the language at all.
   * When designing/adding arrays, add the same methods to `CodeBlock`
   * If necessary, create `ctno_mk_` family to automatically create things
+  * Some of this might be done during 0.8 to facilitate testing.
 * [ ] Misc. required updates as needed
   * [ ] Thorough code review  
     Finding places where the code is needlessly complicated, duplicated, or
