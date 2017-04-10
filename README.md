@@ -121,7 +121,7 @@ Versions only apply to that branch. For example, dev might be at 1.6.3, while
       stacked up instead of numbered.
     * Needs a `get_candidates` function, which returns a list of every word
       with that name.
-  * [ ] Implement the functions - 0.7.2
+  * [x] Implement the functions - 0.7.2
   * [ ] Test them - 0.7.3
     * Make sure they don't leak memory!
   * [ ] Edit `Runnable` to take this as a parameter, too - 0.7.4

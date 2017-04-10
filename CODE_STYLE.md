@@ -14,6 +14,7 @@
    finding potential errors as quickly and painlessly as possible.
     * `FooType *f = malloc(sizeof(*foo))`, rather than
       `FooType *f = malloc(sizeof(FooType))`
+    * `sizeof(A) * count`, to keep it all in `size_t` arithmetic.
     * When replacing something, create the replacement in a variable, *then*
       copy it into its destination, rather than creating it in the destination
       and having to copy the original back if you need to revert.

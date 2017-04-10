@@ -85,7 +85,7 @@ ERROR get_next_char_file(struct Tokenizer *from) {
     if (tknr_end(*from)) {
         return TKNR_FILE_READ_EOF_FAIL;
     } else if (fs->next_chars_pos == BUF_SIZE) {
-        size_t count = fread(fs->buf, sizeof(char), BUF_SIZE, fs->fptr);
+        size_t count = fread(fs->buf, 1, BUF_SIZE, fs->fptr);
         if (count != BUF_SIZE) {
             if (feof(fs->fptr)) {
                 fs->eof = count;
@@ -211,7 +211,7 @@ ERROR tknr_from_filepath(const char *path, struct Tokenizer *into) {
     ret.source.file.fptr = fptr;
     
     // location
-    char *path_c = malloc(path_len * sizeof(char) + 1);
+    char *path_c = malloc(path_len + 1);
     if (!path_c) {
         fclose(fptr);
         return TKNR_CTOR_FILE_MALLOC_FAIL;
@@ -220,7 +220,7 @@ ERROR tknr_from_filepath(const char *path, struct Tokenizer *into) {
     ret.origin = path_c;
     
     struct FileSource *fs = &ret.source.file;
-    size_t count = fread(fs->buf, sizeof(char), BUF_SIZE, fs->fptr);
+    size_t count = fread(fs->buf, 1, BUF_SIZE, fs->fptr);
     if (count != BUF_SIZE) {
         if (feof(fs->fptr)) {
             fs->eof = count;
@@ -572,7 +572,7 @@ ERROR tknr_next(struct Tokenizer *from, struct Token *out) {
     
     ERROR err;
     struct Token ret = tkn_empty(from->line, from->index);
-    ret.origin = malloc(from->origin_len * sizeof(char));
+    ret.origin = malloc(from->origin_len);
     if (!ret.origin) {
         err = TKNR_NT_MALLOC_FAIL;
         goto error_handler;

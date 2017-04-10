@@ -69,7 +69,7 @@ ERROR ss_get(const struct ScopeStack this, const char *const key,
 
 ERROR ss_get_all(const struct ScopeStack this, const char *const key,
                  struct Runnable **out, size_t *out_size) {
-    *out = malloc(sizeof(struct Runnable) * this.count);
+    *out = malloc(sizeof(**out) * this.count);
     if (!*out) {
         return SST_GET_ALL_MALLOC_FAIL;
     }
@@ -100,15 +100,27 @@ ERROR ss_set(struct ScopeStack *this, const char *const key,
 
 ERROR ss_push_scope(struct ScopeStack *this) {
     if (this->cap == this->count) {
-        // resize
+        struct MethodMap *new = realloc(this->layers,
+                                        sizeof(*new) * this->cap * 2);
+        if (!new) {
+            return SST_PUSH_SCOPE_MALLOC_FAIL;
+        }
+        this->layers = new;
+        this->cap *= 2;
     }
-    // set the value at count to a new MethodMap
-    // increment count
+    if (mm_new(16, &this->layers[this->count]) != NO_ERROR) {
+        return SST_PUSH_SCOPE_MM_NEW_FAIL;
+    }
+    ++this->count;
+    return NO_ERROR;
 }
 
 ERROR ss_pop_scope(struct ScopeStack *this) {
-    // if count == 1, return AT_BOTTOM_ERROR
-    // otherwise, mm_free value at count-1 and decrease count
+    if (this->count == 1) { //intentionally _not_ 0
+        return SST_POP_SCOPE_AT_BOTTOM_FAIL;
+    }
+    mm_free(&this->layers[--this->count]);
+    return NO_ERROR;
 }
 
 void ss_free(struct ScopeStack *this) {
