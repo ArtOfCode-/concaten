@@ -208,6 +208,7 @@ void ss_free(struct ScopeStack *this) {
     for (size_t i = 0; i < this->count; ++i) {
         mm_free(&this->layers[i]);
     }
+    free(this->layers);
     struct SS_ChangeNode *cur = this->change_head;
     while (cur) {
         switch (cur->type) {

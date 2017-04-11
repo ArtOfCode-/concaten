@@ -73,11 +73,13 @@ struct TestResult test_scope_stack() {
     tassert(out_count == 2, "wrong count for out_ary");
     tassert(rn_eq(out_ary[0], r4), "got wrong value for first element");
     tassert(rn_eq(out_ary[1], r1), "got wrong value for second element");
+    free(out_ary);
     tassert(ss_redefine(&ss, "r0", r6), "failed to redefine r0");
     tassert(ss_get_all(ss, "r0", &out_ary, &out_count) == NO_ERROR,
             "failed to get_all for key r0");
     tassert(out_count == 1, "wrong count for out_ary");
     tassert(rn_eq(out_ary[0], r6), "got wrong value for first element");
+    free(out_ary);
     tassert(ss_get(ss, "r0", &out) == NO_ERROR, "failed to get r0");
     tassert(rn_eq(out, r6), "got wrong single value for r0");
     
