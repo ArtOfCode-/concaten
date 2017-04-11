@@ -7,7 +7,8 @@ static size_t successes, total;
 static bool top_is_lit;
 static enum TokenType top_type;
 
-ERROR test1(struct DataStack *ds, struct TokenStack *ts) {
+ERROR test1(struct DataStack *ds, struct ScopeStack *ss, struct TokenStack *ts) {
+    (void) ss;
     struct Object *tods;
     tassert(dst_peek(ds, &tods) == NO_ERROR, "failed to peek ds");
     tassert(tods->is_literal == top_is_lit, "got incorrect value for ds");
@@ -18,7 +19,8 @@ ERROR test1(struct DataStack *ds, struct TokenStack *ts) {
     return NO_ERROR;
 }
 
-ERROR test2(struct DataStack *ds, struct TokenStack *ts) {
+ERROR test2(struct DataStack *ds, struct ScopeStack *ss, struct TokenStack *ts) {
+    (void) ss;
     struct Object *tods;
     tassert(dst_pop(ds, &tods) == NO_ERROR, "failed to pop ds");
     tassert(tods->is_literal == top_is_lit, "got wrong value for ds");
@@ -68,11 +70,12 @@ struct TestResult test_runnable() {
     tassert(rn_eq(c1, c1c), "copy isn't equal to the original");
     rn_free(&c1c);
     tassert(rn_from_c(test2, &c2) == NO_ERROR, "failed to init c test 2");
+    tassert(!rn_eq(c1, c2), "different c runnables compare equal");
     top_is_lit = true;
     top_type = TKN_WORD;
-    tassert(rn_run(c1, &test_ds, &test_ts) == NO_ERROR,
+    tassert(rn_run(c1, &test_ds, NULL, &test_ts) == NO_ERROR,
             "failed to run correctly");
-    tassert(rn_run(c2, &test_ds, &test_ts) == USER_DEFINED_ERROR,
+    tassert(rn_run(c2, &test_ds, NULL, &test_ts) == USER_DEFINED_ERROR,
             "got wrong error running c2");
     top_is_lit = false;
     top_type = TKN_IDENTIFIER;
@@ -83,24 +86,25 @@ struct TestResult test_runnable() {
     tassert(rn_eq(ctn1, ctn1c), "copy isn't equal to the original");
     rn_free(&ctn1c);
     tassert(rn_from_ctn(cb2, &ctn2) == NO_ERROR, "failed to init ctn test 2");
-    tassert(rn_run(ctn1, &test_ds, &test_ts) == NO_ERROR, "failed to run");
+    tassert(!rn_eq(ctn1, ctn2), "different ctn runnables compare equal");
+    tassert(rn_run(ctn1, &test_ds, NULL, &test_ts) == NO_ERROR, "failed to run");
     top_type = TKN_INTEGER;
-    tassert(rn_run(c1, &test_ds, &test_ts) == NO_ERROR, "failed to run c");
-    tassert(rn_run(ctn2, &test_ds, &test_ts) == NO_ERROR, "failed to run");
+    tassert(rn_run(c1, &test_ds, NULL, &test_ts) == NO_ERROR, "failed to run c");
+    tassert(rn_run(ctn2, &test_ds, NULL, &test_ts) == NO_ERROR, "failed to run");
     top_type = TKN_REGEX;
-    tassert(rn_run(c1, &test_ds, &test_ts) == NO_ERROR, "failed to run c`");
-    tassert(rn_run(c2, &test_ds, &test_ts) == USER_DEFINED_ERROR,
+    tassert(rn_run(c1, &test_ds, NULL, &test_ts) == NO_ERROR, "failed to run c`");
+    tassert(rn_run(c2, &test_ds, NULL, &test_ts) == USER_DEFINED_ERROR,
             "got wrong error running c2");
     tassert(dst_push(&test_ds, &dyn) == NO_ERROR, "failed to push again");
     top_type = TKN_INTEGER;
-    tassert(rn_run(c1, &test_ds, &test_ts) == NO_ERROR, "failed to run c");
-    tassert(rn_run(c1, &test_ds, &test_ts) == NO_ERROR, "failed to run c");
-    tassert(rn_run(c1, &test_ds, &test_ts) == NO_ERROR, "failed to run c");
-    tassert(rn_run(c1, &test_ds, &test_ts) == NO_ERROR, "failed to run c");
-    tassert(rn_run(ctn2, &test_ds, &test_ts) == NO_ERROR, "failed to run");
-    tassert(rn_run(ctn2, &test_ds, &test_ts) == NO_ERROR, "failed to run");
+    tassert(rn_run(c1, &test_ds, NULL, &test_ts) == NO_ERROR, "failed to run c");
+    tassert(rn_run(c1, &test_ds, NULL, &test_ts) == NO_ERROR, "failed to run c");
+    tassert(rn_run(c1, &test_ds, NULL, &test_ts) == NO_ERROR, "failed to run c");
+    tassert(rn_run(c1, &test_ds, NULL, &test_ts) == NO_ERROR, "failed to run c");
+    tassert(rn_run(ctn2, &test_ds, NULL, &test_ts) == NO_ERROR, "failed to run");
+    tassert(rn_run(ctn2, &test_ds, NULL, &test_ts) == NO_ERROR, "failed to run");
     top_type = TKN_REGEX;
-    tassert(rn_run(c1, &test_ds, &test_ts) == NO_ERROR, "failed to run c`");
+    tassert(rn_run(c1, &test_ds, NULL, &test_ts) == NO_ERROR, "failed to run c`");
     
     dst_free(&test_ds);
     ctno_free(&lit);

@@ -5,7 +5,9 @@
 #include "data_stack.h"
 #include "token_stack.h"
 
-typedef ERROR (*CFuncType)(struct DataStack *, struct TokenStack *);
+struct ScopeStack;
+typedef ERROR (*CFuncType)(struct DataStack *, struct ScopeStack *,
+                           struct TokenStack *);
 
 struct Runnable {
     union {
@@ -19,7 +21,8 @@ ERROR rn_from_ctn(const struct CodeBlock, struct Runnable *);
 ERROR rn_from_c(CFuncType fptr, struct Runnable *);
 ERROR rn_copy(const struct Runnable, struct Runnable *);
 bool rn_eq(const struct Runnable, const struct Runnable);
-ERROR rn_run(const struct Runnable, struct DataStack *, struct TokenStack *);
+ERROR rn_run(const struct Runnable, struct DataStack *, struct ScopeStack *,
+             struct TokenStack *);
 void rn_free(struct Runnable *);
 
 #endif //CONCATEN_RUNNABLE_H

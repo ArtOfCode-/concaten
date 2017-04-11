@@ -1,4 +1,4 @@
-# Concaten v0.7.2
+# Concaten v0.7.4
 
 Concaten is a concatenative, stack-based, strongly but optionally strictly
 typed, hyperdynamic, garbage-collected, interpreted programming language. In
@@ -111,7 +111,7 @@ Versions only apply to that branch. For example, dev might be at 1.6.3, while
 
 #### `scope_stack.h` - 0.7
 
-* [ ] `scope_stack.h` - 0.7  
+* [x] `scope_stack.h` - 0.7  
   Contains the list of words. This is a stack so we can sensibly implement
     things like local variables. Shouldn't be too much trouble; it'll mostly
     be combining `PropMap` and `DataStack`.
@@ -122,9 +122,9 @@ Versions only apply to that branch. For example, dev might be at 1.6.3, while
     * Needs a `get_candidates` function, which returns a list of every word
       with that name.
   * [x] Implement the functions - 0.7.2
-  * [ ] Test them - 0.7.3
+  * [x] Test them - 0.7.3
     * Make sure they don't leak memory!
-  * [ ] Edit `Runnable` to take this as a parameter, too - 0.7.4
+  * [x] Edit `Runnable` to take this as a parameter, too - 0.7.4
     * Nothing outside of Runnable-related stuff should need to be changed,
       because anything that can be run should be run through the `Runnable`
       object. Do a second check, though.
@@ -141,6 +141,8 @@ Versions only apply to that branch. For example, dev might be at 1.6.3, while
   * [ ] Thorough code review  
     Finding places where the code is needlessly complicated, duplicated, or
       the like, and fixing it.
+    * Make sure `PropMap` and `MethodMap` have the same interface, to the
+      extent possible.
   * [ ] Profiling/optimizing.  
     Design some code that'll test as many features as possible, as strenuously
       as possible, so that we have a good program to benchmark and profile

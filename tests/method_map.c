@@ -16,8 +16,9 @@
 
 
 #define X(num) \
-    ERROR _f##num(struct DataStack *ds, struct TokenStack *ts) { \
-        (void) ds; (void) ts; return NO_ERROR; \
+    ERROR _f##num(struct DataStack *ds, struct ScopeStack *ss, \
+                  struct TokenStack *ts) { \
+        (void) ds; (void) ts; (void) ss; return NO_ERROR; \
     }
 test_x
 #undef X

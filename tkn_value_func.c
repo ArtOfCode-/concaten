@@ -61,7 +61,7 @@ char tto_hexchar_to_val(const char c) {
     }
 }
 
-ERROR tto_escape_hex(const char **pos, char **ret_pos, const char *const end) {
+ERROR tto_escape_hex(const char **pos, char **ret_pos, const char *end) {
     char x_val;
     int t;
     x_val = 0;
@@ -87,13 +87,13 @@ ERROR tto_escape_hex(const char **pos, char **ret_pos, const char *const end) {
     return NO_ERROR;
 }
 
-ERROR tto_escape_string(const char *const str, size_t val_len,
+ERROR tto_escape_string(const char *str, size_t val_len,
                         char **out, size_t *out_len) {
     ERROR err;
     char *ret = malloc(val_len);
     if (!ret) return TTO_MALLOC_FAIL;
     char *ret_pos = ret;
-    const char *const end_null = str + val_len - 1;
+    const char *end_null = str + val_len - 1;
     for (const char *pos = str; pos < end_null; ++pos, ++ret_pos) {
         if (*pos == '\\') {
             ++pos;

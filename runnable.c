@@ -56,9 +56,9 @@ bool rn_eq(const struct Runnable lhs, const struct Runnable rhs) {
 }
 
 ERROR rn_run(const struct Runnable run, struct DataStack *ds,
-             struct TokenStack *ts) {
+             struct ScopeStack *ss, struct TokenStack *ts) {
     if (run.is_c) {
-        return run.code.c(ds, ts);
+        return run.code.c(ds, ss, ts);
     } else {
         tst_push_level(ts);
         for (size_t i = run.code.ctn.count; i > 0; --i) {
