@@ -1,6 +1,6 @@
 #include "scope_stack.h"
 
-bool ss_push_change(struct ScopeStack *this, struct SS_ChangeNode cn) {
+bool sst_push_change(struct ScopeStack *this, struct SS_ChangeNode cn) {
     if (!this->saving_state) { return true; }
     struct SS_ChangeNode *pushing = malloc(sizeof(*pushing));
     if (!pushing) { return false; }
@@ -10,7 +10,7 @@ bool ss_push_change(struct ScopeStack *this, struct SS_ChangeNode cn) {
     return true;
 }
 
-ERROR ss_new(size_t init_cap, struct ScopeStack *out) {
+ERROR sst_new(size_t init_cap, struct ScopeStack *out) {
     struct MethodMap *layer_space = malloc(sizeof(*layer_space) * init_cap);
     if (!layer_space) {
         return SST_CTOR_MALLOC_FAIL;
@@ -22,17 +22,17 @@ ERROR ss_new(size_t init_cap, struct ScopeStack *out) {
             .saving_state = false,
             .layers = layer_space
     };
-    ss_push_scope(&ret);
+    sst_push_scope(&ret);
     *out = ret;
     return NO_ERROR;
 }
 
-ERROR ss_save_state(struct ScopeStack *this) {
+ERROR sst_save_state(struct ScopeStack *this) {
     this->saving_state = true;
     return NO_ERROR;
 }
 
-ERROR ss_restore_state(struct ScopeStack *this) {
+ERROR sst_restore_state(struct ScopeStack *this) {
     this->saving_state = false;
     struct SS_ChangeNode *cn = this->change_head;
     while (cn) {
@@ -41,7 +41,7 @@ ERROR ss_restore_state(struct ScopeStack *this) {
                 this->layers[this->count++] = cn->set_data.removed_layer;
                 break;
             case SSCN_SCOPE_PUSH:
-                if (ss_pop_scope(this) != NO_ERROR) {
+                if (sst_pop_scope(this) != NO_ERROR) {
                     return SST_RST_PUSH_SCOPE_FAIL;
                 }
                 break;
@@ -69,7 +69,7 @@ ERROR ss_restore_state(struct ScopeStack *this) {
     return NO_ERROR;
 }
 
-ERROR ss_get(const struct ScopeStack this, const char *key,
+ERROR sst_get(const struct ScopeStack this, const char *key,
              struct Runnable *out) {
     for (size_t i = this.count; i > 0; --i) {
         ERROR err = mm_get(this.layers[i - 1], key, out);
@@ -84,7 +84,7 @@ ERROR ss_get(const struct ScopeStack this, const char *key,
     return SST_GET_NO_KEY_FAIL;
 }
 
-ERROR ss_get_all(const struct ScopeStack this, const char *key,
+ERROR sst_get_all(const struct ScopeStack this, const char *key,
                  struct Runnable **out, size_t *out_size) {
     *out = malloc(sizeof(**out) * this.count);
     if (!*out) {
@@ -106,7 +106,7 @@ ERROR ss_get_all(const struct ScopeStack this, const char *key,
     return NO_ERROR;
 }
 
-ERROR ss_set(struct ScopeStack *this, const char *key,
+ERROR sst_set(struct ScopeStack *this, const char *key,
              const struct Runnable val) {
     struct MethodMap *top = &this->layers[this->count - 1];
     struct Runnable old_val;
@@ -122,7 +122,7 @@ ERROR ss_set(struct ScopeStack *this, const char *key,
     bool success;
     if (old_val_pres) {
         // then we changed the value, rather than adding a new one
-        success = ss_push_change(this, (struct SS_ChangeNode) {
+        success = sst_push_change(this, (struct SS_ChangeNode) {
                 .type = SSCN_SET,
                 .set_data.single = {
                         .val = old_val,
@@ -131,7 +131,7 @@ ERROR ss_set(struct ScopeStack *this, const char *key,
                 }
         });
     } else {
-        success = ss_push_change(this, (struct SS_ChangeNode) {
+        success = sst_push_change(this, (struct SS_ChangeNode) {
                 .type = SSCN_ADD,
                 .set_data.single = {
                         .key = key,
@@ -143,7 +143,7 @@ ERROR ss_set(struct ScopeStack *this, const char *key,
     return NO_ERROR;
 }
 
-ERROR ss_push_scope(struct ScopeStack *this) {
+ERROR sst_push_scope(struct ScopeStack *this) {
     if (this->cap == this->count) {
         struct MethodMap *new = realloc(this->layers,
                                         sizeof(*new) * this->cap * 2);
@@ -160,7 +160,7 @@ ERROR ss_push_scope(struct ScopeStack *this) {
     return NO_ERROR;
 }
 
-ERROR ss_redefine(struct ScopeStack *this, const char *key,
+ERROR sst_redefine(struct ScopeStack *this, const char *key,
                   struct Runnable val) {
     for (size_t i = this->count; i > 0; --i) {
         if (mm_is_key(this->layers[i - 1], key)) {
@@ -169,7 +169,7 @@ ERROR ss_redefine(struct ScopeStack *this, const char *key,
                 return SST_REDF_SAVE_OLD_VAL_FAIL;
             }
             if (mm_set(&this->layers[i - 1], key, val) == NO_ERROR) {
-                if (!ss_push_change(this, (struct SS_ChangeNode) {
+                if (!sst_push_change(this, (struct SS_ChangeNode) {
                         .type = SSCN_SET,
                         .set_data.single = {
                                 .key = key,
@@ -187,12 +187,12 @@ ERROR ss_redefine(struct ScopeStack *this, const char *key,
     return SST_REDF_NO_KEY_FAIL;
 }
 
-ERROR ss_pop_scope(struct ScopeStack *this) {
+ERROR sst_pop_scope(struct ScopeStack *this) {
     if (this->count == 1) { //intentionally _not_ 0
         return SST_POP_SCOPE_AT_BOTTOM_FAIL;
     }
     if (this->saving_state) {
-        if (!ss_push_change(this, (struct SS_ChangeNode) {
+        if (!sst_push_change(this, (struct SS_ChangeNode) {
                 .type = SSCN_SCOPE_POP,
                 .set_data.removed_layer = this->layers[--this->count]
         })) {
@@ -204,7 +204,7 @@ ERROR ss_pop_scope(struct ScopeStack *this) {
     return NO_ERROR;
 }
 
-void ss_free(struct ScopeStack *this) {
+void sst_free(struct ScopeStack *this) {
     for (size_t i = 0; i < this->count; ++i) {
         mm_free(&this->layers[i]);
     }

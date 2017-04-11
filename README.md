@@ -109,29 +109,14 @@ Versions only apply to that branch. For example, dev might be at 1.6.3, while
 
 ### Current milestone
 
-#### `scope_stack.h` - 0.7
+#### Main method - 0.8
 
-* [x] `scope_stack.h` - 0.7  
-  Contains the list of words. This is a stack so we can sensibly implement
-    things like local variables. Shouldn't be too much trouble; it'll mostly
-    be combining `PropMap` and `DataStack`.
-  * [x] Design the interface - 0.7.1
-    * Should be analogous to `TokenStack` -- you can push layers, etc. -- but
-      with maps, instead of stacks. Layers are basically restore points, but
-      stacked up instead of numbered.
-    * Needs a `get_candidates` function, which returns a list of every word
-      with that name.
-  * [x] Implement the functions - 0.7.2
-  * [x] Test them - 0.7.3
-    * Make sure they don't leak memory!
-  * [x] Edit `Runnable` to take this as a parameter, too - 0.7.4
-    * Nothing outside of Runnable-related stuff should need to be changed,
-      because anything that can be run should be run through the `Runnable`
-      object. Do a second check, though.
-      
+* [ ] Main method - 0.8
+  * [ ] Shouldn't be too much. We're not doing command-line options yet.
+  * [ ] For every word, do a lookup in the `scope_stack`, execute it
+  * [ ] See the pseudocode
 
 ### Upcoming milestones
-* [ ] Main method - 0.8
 * [ ] Minimal standard library - 0.9  
   Words like `if`, `{`, and `puts` so we can play with the language at all.
   * When designing/adding arrays, add the same methods to `CodeBlock`
@@ -143,6 +128,7 @@ Versions only apply to that branch. For example, dev might be at 1.6.3, while
       the like, and fixing it.
     * Make sure `PropMap` and `MethodMap` have the same interface, to the
       extent possible.
+    * Ditto for the three stacks.
   * [ ] Profiling/optimizing.  
     Design some code that'll test as many features as possible, as strenuously
       as possible, so that we have a good program to benchmark and profile

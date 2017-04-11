@@ -26,16 +26,16 @@ struct ScopeStack {
     bool saving_state;
     struct SS_ChangeNode *change_head;
 };
-ERROR ss_new(size_t, struct ScopeStack *);
-ERROR ss_save_state(struct ScopeStack *);
-ERROR ss_restore_state(struct ScopeStack *);
-ERROR ss_get(const struct ScopeStack, const char *, struct Runnable *);
-ERROR ss_get_all(const struct ScopeStack, const char *,
+ERROR sst_new(size_t, struct ScopeStack *);
+ERROR sst_save_state(struct ScopeStack *);
+ERROR sst_restore_state(struct ScopeStack *);
+ERROR sst_get(const struct ScopeStack, const char *, struct Runnable *);
+ERROR sst_get_all(const struct ScopeStack, const char *,
                  struct Runnable **, size_t *);
-ERROR ss_set(struct ScopeStack *, const char *, struct Runnable);
-ERROR ss_redefine(struct ScopeStack *, const char *, struct Runnable);
-ERROR ss_push_scope(struct ScopeStack *);
-ERROR ss_pop_scope(struct ScopeStack *);
-void ss_free(struct ScopeStack *);
+ERROR sst_set(struct ScopeStack *, const char *, struct Runnable);
+ERROR sst_redefine(struct ScopeStack *, const char *, struct Runnable);
+ERROR sst_push_scope(struct ScopeStack *);
+ERROR sst_pop_scope(struct ScopeStack *);
+void sst_free(struct ScopeStack *);
 
 #endif //CONCATEN_SCOPE_STACK_H
