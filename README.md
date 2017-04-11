@@ -138,9 +138,19 @@ Versions only apply to that branch. For example, dev might be at 1.6.3, while
   * [ ] Benchmarking between Concaten and equivalent-level languages  
     Probably Python or Ruby. I want at most 3x time taken, and for that value
       to be as low as possible.
-  * Beta testing?
+  * [ ] Informative error messages! Right now it's a code, which you can look
+    up in `error.h`, but without knowing the codebase as well as its author,
+    the meaning probably isn't clear.
+  * [ ] Beta testing  
     Hand out the interpreter as it is to as many people as possible, get them
-      to play with the language and try to break it.
+      to play with the language and try to break it.  
+    We want lots and lots of people trying it out, so we can get lots of
+      feedback and iterate quickly.
+    * [ ] Create `FEEDBACK.md`; should contain a link to give bug reports and
+      feature requests seperately, as well as asking people to run the test
+      suite and a couple of test programs on their machine to make sure it all
+      works properly. It'll also explain what to do if you get a confusing
+      error message (since I want Concaten's to be understandable)
 * [ ] Documentation - 1.0  
   Including demo code, a detailed up-to-date list of every default global word
     (like `if`) and what they do, every built-in method, and a brief overview

@@ -35,21 +35,32 @@ int normal_parse(char *filepath) {
             struct Runnable *candidates;
             size_t cands_count;
             sst_get_all(sst, parsing.raw, &candidates, &cands_count);
+            if (cands_count == 0) {
+                printf("No word '%s' found.\n", parsing.raw);
+                return 4;
+            }
             for (size_t i = 0; i < cands_count; ++i) {
-                sst_save_state(&sst);
-                tst_save_state(&tst);
+                if ((err = sst_save_state(&sst)) != NO_ERROR) {
+                    printf("Failed to save scope stack (error "EFMT")", err);
+                    return 5;
+                }
+                if ((err = tst_save_state(&tst)) != NO_ERROR) {
+                    printf("Failed to save token stack (error "EFMT")", err);
+                    return 6;
+                }
                 struct DataStack dst_c;
                 if ((err = dst_copy(dst, &dst_c)) != NO_ERROR) {
                     printf("Failed to copy data stack (error "EFMT")\n", err);
-                    return 4;
+                    return 7;
                 }
                 
                 err = rn_run(candidates[i], &dst, &sst, &tst);
                 if (err == ARGUMENT_TYPE_MISMATCH_FAIL) {
                     continue;
                 } else if (err != NO_ERROR) {
-                    printf("An error occurred: "EFMT, err);
-                    return 4;
+                    printf("An error occurred while running %s: "EFMT,
+                           parsing.raw, err);
+                    return 8;
                 } else {
                     break;
                 }
@@ -62,7 +73,7 @@ int normal_parse(char *filepath) {
     }
     if (err != TST_POP_EMPTY_FAIL) {
         printf("Tried to get token and got unexpected error "EFMT"\n", err);
-        return 5;
+        return 7;
     }
     return 0;
 }
@@ -74,7 +85,9 @@ int main(int argc, char **argv) {
     }
     for (int argidx = 1; argidx < argc; ++argidx) {
         int res = normal_parse(argv[argidx]);
-        if (res != 0) { return res; }
+        if (res != 0) {
+            return argidx * 10 + res;
+        }
     }
     return 0;
     /* //Pseudocode
