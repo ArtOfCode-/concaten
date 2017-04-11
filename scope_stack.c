@@ -65,6 +65,7 @@ ERROR ss_restore_state(struct ScopeStack *this) {
         free(cn);
         cn = next;
     }
+    this->change_head = NULL;
     return NO_ERROR;
 }
 
