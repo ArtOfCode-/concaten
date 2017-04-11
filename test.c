@@ -36,11 +36,11 @@ int main() {
     test(object);
     test(prop_map);
     test(runnable);
+    test(scope_stack);
     test(stringbuilder);
     test(token_stack);
     test(tokenizer);
     test(tkn_value);
-    to_test(scope_stack);
     to_test(standard_lib);
     puts("Done with all tests. Completed with no errors.");
 }

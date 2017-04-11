@@ -1,4 +1,4 @@
-# Concaten v0.7.1
+# Concaten v0.7.2
 
 Concaten is a concatenative, stack-based, strongly but optionally strictly
 typed, hyperdynamic, garbage-collected, interpreted programming language. In

@@ -29,6 +29,7 @@ ERROR ss_get(const struct ScopeStack, const char *const, struct Runnable *);
 ERROR ss_get_all(const struct ScopeStack, const char *const,
                  struct Runnable **, size_t *);
 ERROR ss_set(struct ScopeStack *, const char *const, struct Runnable);
+ERROR ss_redefine(struct ScopeStack *, const char *const, struct Runnable);
 ERROR ss_push_scope(struct ScopeStack *);
 ERROR ss_pop_scope(struct ScopeStack *);
 void ss_free(struct ScopeStack *);

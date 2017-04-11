@@ -20,7 +20,7 @@ set(NORMAL_SRCS
 set(TEST_SRCS
         tests/prop_map.c tests/tokenizer.c tests/method_map.c tests/object.c
         tests/data_stack.c tests/token_stack.c tests/code_block.c
-        tests/stringbuilder.c tests/tkn_value_func.c tests/runnable.c)
+        tests/stringbuilder.c tests/tkn_value_func.c tests/runnable.c tests/scope_stack.c)
 
 add_executable(concaten main.c ${NORMAL_SRCS})
 set_target_properties(concaten PROPERTIES COMPILE_FLAGS

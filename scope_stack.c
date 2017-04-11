@@ -1,5 +1,15 @@
 #include "scope_stack.h"
 
+bool ss_push_change(struct ScopeStack *this, struct SS_ChangeNode cn) {
+    if (!this->saving_state) return true;
+    struct SS_ChangeNode *pushing = malloc(sizeof(*pushing));
+    if (!pushing) return false;
+    *pushing = cn;
+    pushing->next = this->change_head;
+    this->change_head = pushing;
+    return true;
+}
+
 ERROR ss_new(size_t init_cap, struct ScopeStack *out) {
     struct MethodMap *layer_space = malloc(sizeof(*layer_space) * init_cap);
     if (!layer_space) {
@@ -37,11 +47,13 @@ ERROR ss_restore_state(struct ScopeStack *this) {
                 }
                 break;
             case SSCN_SET:
-                if (ss_set(this, cn->set_data.key, cn->set_data.val) !=
-                    NO_ERROR) {
+                if (mm_set(&this->layers[cn->set_data.layer_idx],
+                           cn->set_data.key, cn->set_data.val) != NO_ERROR) {
                     return SST_RST_SET_FAIL;
                 }
                 break;
+            case SSCN_REDEFINE:
+                
             default:
                 return SST_RST_UNKNOWN_TYPE_FAIL;
         }
@@ -54,8 +66,8 @@ ERROR ss_restore_state(struct ScopeStack *this) {
 
 ERROR ss_get(const struct ScopeStack this, const char *const key,
              struct Runnable *out) {
-    for (size_t i = 0; i < this.count; ++i) {
-        ERROR err = mm_get(this.layers[i], key, out);
+    for (size_t i = this.count; i > 0; --i) {
+        ERROR err = mm_get(this.layers[i-1], key, out);
         if (err == NO_ERROR) {
             return NO_ERROR;
         } else if (err == MM_GET_NO_KEY_FAIL) {
@@ -73,11 +85,11 @@ ERROR ss_get_all(const struct ScopeStack this, const char *const key,
     if (!*out) {
         return SST_GET_ALL_MALLOC_FAIL;
     }
-    size_t cpos = 0;
-    for (size_t i = 0; i < 0; ++i) {
-        ERROR err = mm_get(this.layers[i], key, &(*out)[cpos]);
+    size_t cidx = 0;
+    for (size_t i = this.count; i > 0; --i) {
+        ERROR err = mm_get(this.layers[i-1], key, &(*out)[cidx]);
         if (err == NO_ERROR) {
-            ++cpos;
+            ++cidx;
         } else if (err == MM_GET_NO_KEY_FAIL) {
             continue;
         } else {
@@ -85,16 +97,25 @@ ERROR ss_get_all(const struct ScopeStack this, const char *const key,
             return SST_GET_ALL_MM_GET_FAIL;
         }
     }
-    *out_size = cpos;
+    *out_size = cidx;
     return NO_ERROR;
 }
 
 ERROR ss_set(struct ScopeStack *this, const char *const key,
              const struct Runnable val) {
-    struct MethodMap *top = &this->layers[0];
+    struct MethodMap *top = &this->layers[this->count - 1];
+    struct Runnable old_val;
+    bool old_val_pres;
     if (mm_set(top, key, val) != NO_ERROR) {
         return SST_SET_MM_SET_FAIL;
     }
+    if (!ss_push_change(this, (struct SS_ChangeNode) {
+            .type = SSCN_SET,
+            .set_data = {
+                    .layer_idx = this->count - 1,
+                    .val = 
+            }
+    }));
     return NO_ERROR;
 }
 
@@ -113,6 +134,20 @@ ERROR ss_push_scope(struct ScopeStack *this) {
     }
     ++this->count;
     return NO_ERROR;
+}
+
+ERROR ss_redefine(struct ScopeStack *this, const char *const key,
+                  struct Runnable val) {
+    for (size_t i = this->count; i > 0; --i) {
+        if (mm_is_key(this->layers[i-1], key)) {
+            if (mm_set(&this->layers[i-1], key, val) == NO_ERROR) {
+                return NO_ERROR;
+            } else {
+                return SST_REDF_MM_SET_FAIL;
+            }
+        }
+    }
+    return SST_REDF_NO_KEY_FAIL;
 }
 
 ERROR ss_pop_scope(struct ScopeStack *this) {
