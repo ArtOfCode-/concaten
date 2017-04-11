@@ -10,6 +10,7 @@ static const ERROR NO_ERROR = 0;
  * Core class errors *
  *********************/
 
+static const ERROR ARGUMENT_TYPE_MISMATCH_FAIL      =   1;
 static const ERROR USER_DEFINED_ERROR               =  99;
 static const ERROR CB_CTOR_MALLOC_FAIL              = 101;
 static const ERROR CB_COPY_MALLOC_FAIL              = 102;

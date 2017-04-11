@@ -1,4 +1,4 @@
-# Concaten v0.7.4
+# Concaten v0.8
 
 Concaten is a concatenative, stack-based, strongly but optionally strictly
 typed, hyperdynamic, garbage-collected, interpreted programming language. In
@@ -111,10 +111,12 @@ Versions only apply to that branch. For example, dev might be at 1.6.3, while
 
 #### Main method - 0.8
 
-* [ ] Main method - 0.8
-  * [ ] Shouldn't be too much. We're not doing command-line options yet.
-  * [ ] For every word, do a lookup in the `scope_stack`, execute it
-  * [ ] See the pseudocode
+* [x] Main method - 0.8
+  * [x] Shouldn't be too much. We're not doing command-line options yet.
+  * [x] For every word, do a lookup in the `scope_stack`, execute it
+  * [x] For every non-word, push its value to the data stack.
+  * No testing in this milestone because we need the standard library done to
+    be able to test it.
 
 ### Upcoming milestones
 * [ ] Minimal standard library - 0.9  
@@ -143,7 +145,7 @@ Versions only apply to that branch. For example, dev might be at 1.6.3, while
   Including demo code, a detailed up-to-date list of every default global word
     (like `if`) and what they do, every built-in method, and a brief overview
     of how Concaten works, as well as how to install it and what the
-    command-line arguments are.  
+    command-line arguments are (or at least, what they're gonna be).  
   In theory, mostly done (because of the spec, and you did this while writing
     the standard library, *right*?), but in practice, it probably should be
     rewritten.

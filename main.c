@@ -4,6 +4,7 @@
 #include "data_stack.h"
 #include "token_stack.h"
 #include "scope_stack.h"
+#include "object.h"
 
 int normal_parse(char *filepath) {
     ERROR err;
@@ -40,17 +41,28 @@ int normal_parse(char *filepath) {
                 struct DataStack dst_c;
                 if ((err = dst_copy(dst, &dst_c)) != NO_ERROR) {
                     printf("Failed to copy data stack (error "EFMT")\n", err);
+                    return 4;
                 }
                 
-                rn_run(candidates[i], &dst, &sst, &tst);
-                
-                // TODO finish this
+                err = rn_run(candidates[i], &dst, &sst, &tst);
+                if (err == ARGUMENT_TYPE_MISMATCH_FAIL) {
+                    continue;
+                } else if (err != NO_ERROR) {
+                    printf("An error occurred: "EFMT, err);
+                    return 4;
+                } else {
+                    break;
+                }
             }
+        } else {
+            struct Object new_val;
+            tkn_value(&parsing, &new_val);
+            dst_push(&dst, &new_val);
         }
     }
     if (err != TST_POP_EMPTY_FAIL) {
         printf("Tried to get token and got unexpected error "EFMT"\n", err);
-        return 4;
+        return 5;
     }
     return 0;
 }
