@@ -114,10 +114,15 @@ Versions only apply to that branch. For example, dev might be at 1.6.3, while
 This should have been done a while ago, but I forgot to add it to the roadmap.
 
 * `type.h` - 0.9  
-  Just a list of strings, really.
+  Just a list of strings, really. Well, *identifiers*, but those are strings
+    with a special flag behind the scenes.
   * [ ] Define interface.
     * ctor, `cp`, `check`, and the like.
     * ...probably all the `list` methods
+  * [ ] Implement the methods
+  * [ ] Test them.  
+    This will require some fanciness with methods on objects, but shouldn't be
+      super hard.
 
 ### Upcoming milestones
 * [ ] Minimal standard library - 0.10  
