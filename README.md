@@ -50,7 +50,7 @@ For an example of how the language will probably look, see `test.ctn`.
   specced out, actual usage might reveal things that I didn't consider, and
   therefore need to add in, remove, or change.
 
----
+### Helping out
 
 If you want to contribute code, awesome! Be sure to check out `CODE_STYLE.md`.
 
@@ -129,7 +129,6 @@ This should have been done a while ago, but I forgot to add it to the roadmap.
   Words like `if`, `{`, and `puts` so we can play with the language at all.
   * When designing/adding arrays, add the same methods to `CodeBlock`
   * If necessary, create `ctno_mk_` family to automatically create things
-  * Some of this might be done during 0.8 to facilitate testing.
 * [ ] Misc. required updates as needed - 0.11
   * [ ] Thorough code review  
     Finding places where the code is needlessly complicated, duplicated, or
