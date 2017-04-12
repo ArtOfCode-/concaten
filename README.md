@@ -109,22 +109,23 @@ Versions only apply to that branch. For example, dev might be at 1.6.3, while
 
 ### Current milestone
 
-#### Main method - 0.8
+#### Types - 0.9
 
-* [x] Main method - 0.8
-  * [x] Shouldn't be too much. We're not doing command-line options yet.
-  * [x] For every word, do a lookup in the `scope_stack`, execute it
-  * [x] For every non-word, push its value to the data stack.
-  * No testing in this milestone because we need the standard library done to
-    be able to test it.
+This should have been done a while ago, but I forgot to add it to the roadmap.
+
+* `type.h` - 0.9  
+  Just a list of strings, really.
+  * [ ] Define interface.
+    * ctor, `cp`, `check`, and the like.
+    * ...probably all the `list` methods
 
 ### Upcoming milestones
-* [ ] Minimal standard library - 0.9  
+* [ ] Minimal standard library - 0.10  
   Words like `if`, `{`, and `puts` so we can play with the language at all.
   * When designing/adding arrays, add the same methods to `CodeBlock`
   * If necessary, create `ctno_mk_` family to automatically create things
   * Some of this might be done during 0.8 to facilitate testing.
-* [ ] Misc. required updates as needed
+* [ ] Misc. required updates as needed - 0.11
   * [ ] Thorough code review  
     Finding places where the code is needlessly complicated, duplicated, or
       the like, and fixing it.
@@ -141,16 +142,8 @@ Versions only apply to that branch. For example, dev might be at 1.6.3, while
   * [ ] Informative error messages! Right now it's a code, which you can look
     up in `error.h`, but without knowing the codebase as well as its author,
     the meaning probably isn't clear.
-  * [ ] Beta testing  
-    Hand out the interpreter as it is to as many people as possible, get them
-      to play with the language and try to break it.  
-    We want lots and lots of people trying it out, so we can get lots of
-      feedback and iterate quickly.
-    * [ ] Create `FEEDBACK.md`; should contain a link to give bug reports and
-      feature requests seperately, as well as asking people to run the test
-      suite and a couple of test programs on their machine to make sure it all
-      works properly. It'll also explain what to do if you get a confusing
-      error message (since I want Concaten's to be understandable)
+  * [ ] Can code blocks and types be lists of tokens and identifiers
+    respectively? Just with a couple of extra methods.
 * [ ] Documentation - 1.0  
   Including demo code, a detailed up-to-date list of every default global word
     (like `if`) and what they do, every built-in method, and a brief overview
@@ -159,6 +152,17 @@ Versions only apply to that branch. For example, dev might be at 1.6.3, while
   In theory, mostly done (because of the spec, and you did this while writing
     the standard library, *right*?), but in practice, it probably should be
     rewritten.
+* [ ] Beta testing  
+  Hand out the interpreter as it is to as many people as possible, get them
+    to play with the language and try to break it.  
+  We want lots and lots of people trying it out, so we can get lots of
+    feedback and iterate quickly.
+  * [ ] Create `FEEDBACK.md`; should contain a link to give bug reports and
+    feature requests seperately, as well as asking people to run the test
+    suite and a couple of test programs on their machine to make sure it all
+    works properly. It'll also explain what to do if you get a confusing
+    error message (which is mostly tell me what you were doing so I can
+    repro and make a better error message)
 * ***Take a break.*** You just wrote an entire programming language. Give it a
   week or two, play with it a little, but don't start working on the next bits.
   Bugfixes only.
