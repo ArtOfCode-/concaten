@@ -41,6 +41,7 @@ int main() {
     test(token_stack);
     test(tokenizer);
     test(tkn_value);
+    to_test(type);
     to_test(standard_lib);
     puts("Done with all tests. Completed with no errors.");
 }

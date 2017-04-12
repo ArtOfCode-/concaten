@@ -118,7 +118,7 @@ This should have been done a while ago, but I forgot to add it to the roadmap.
     with a special flag behind the scenes.
   * [ ] Define interface.
     * ctor, `cp`, `check`, and the like.
-    * ...probably all the `list` methods
+    * Types are immutable; creating a new one is creating a copy.
   * [ ] Implement the methods
   * [ ] Test them.  
     This will require some fanciness with methods on objects, but shouldn't be
