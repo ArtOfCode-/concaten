@@ -3,6 +3,6 @@
 
 #include "stl/integral.h"
 
-void stl_init();
+ERROR stl_init();
 
 #endif //CONCATEN_STL_H
