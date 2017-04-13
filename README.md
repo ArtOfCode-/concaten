@@ -1,6 +1,6 @@
-# Concaten v0.8
+# Concaten v0.9.2
 
-Concaten is a concatenative, stack-based, strongly but optionally strictly
+Concaten is a concatenative, stack-based, strongly and strictly
 typed, hyperdynamic, garbage-collected, interpreted programming language. In
 order, that means that:
 
@@ -14,21 +14,25 @@ order, that means that:
   part of the implementation of passing parameters to methods; however,
   Concaten's is persistent -- C's, if not empty after all the parameters have
   been passed to the method, is messing something up.
-3. **strongly but optionally strictly typed** - Most methods related to
-  variable assignment take a type as an optional parameter, and check that the
-  datum to be stored is of that type. They are **optional**, however, and duck
-  typing works fine in Concaten. At the same time, objects of one type are
-  never implicitly converted to another type by the language -- though, of
-  course, words, including those in the standard library, are free to. (c.f.
-  all standard library words beginning `*`)
-4. **hyperdynamic** - Every keyword is an overrideable (though *not*
+3. **strongly**... - 
+  under no circumstances does the language itself coerce something between
+  types. This doesn't, however, prevent certain library functions (i.e. those
+  beginning in `*`) from doing that; it just means that it has to be done
+  explicitly in some code, as opposed to being done implicitly by the language.
+4. **and strictly typed** - All methods related to variable assignment
+  take a type as a required parameter, and check that the datum to be stored
+  is of that type. The types are similar to interfaces in languages like C# and
+  Java -- they define a set of methods that a given object must have to be
+  passable. However, they make no limitations on the content of the methods.
+  It wouldn't be inaccurate to call this fail-fast duck typing.
+5. **hyperdynamic** - Every keyword is an overrideable (though *not*
   replaceable) word, and everything is an object that can have methods
   monkey-patched in or out. Every function's code can be read, analyzed, and
   changed at runtime. The one exception to this is an object's properties --
   to allow fundamental objects and methods to be implemented in the
   interpreter's language, either for speed boosts or simplicity, properties
   are neither visible nor editable outside of that object's methods.
-5. **garbage-collected** - You don't need to worry about memory; Concaten will
+6. **garbage-collected** - You don't need to worry about memory; Concaten will
   handle it for you with a reference-counting garbage collector. Because of
   its nature, you can also usually rely on the GC deleting and destructing an
   object when you expect it to -- in comparison to tracing GCs, which run
@@ -36,7 +40,7 @@ order, that means that:
   overhead in exchange for deleting an object as soon as it's no longer used,
   which means that destructors have meaning. As long as cyclical references
   are avoided, at least.
-6. **interpreted** - Rather than being converted to machine language or
+7. **interpreted** - Rather than being converted to machine language or
   assembly, then executed directly by the CPU or OS, Concaten code is executed
   as-is by an intermediary program. Depending on the OS and specific
   circumstances, this might be abstracted away such that the user doesn't see
@@ -120,7 +124,7 @@ This should have been done a while ago, but I forgot to add it to the roadmap.
     * ctor, `cp`, `check`, and the like.
     * Types are immutable; creating a new one is creating a copy.
   * [x] Implement the methods - 0.9.1
-  * [ ] Test them - 0.9.2  
+  * [x] Test them - 0.9.2  
     This will require some fanciness with methods on objects, but shouldn't be
       super hard.
 

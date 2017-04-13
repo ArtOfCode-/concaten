@@ -9,6 +9,8 @@ struct Type {
     size_t *mthd_lens;
 };
 
+extern const struct Type MATCH_ALL;
+
 ERROR tp_new(char **, size_t, struct Type *);
 ERROR tp_copy(const struct Type, struct Type *);
 bool tp_matches(const struct Type, const struct Object);

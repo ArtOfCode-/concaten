@@ -2,6 +2,12 @@
 
 #include <string.h>
 
+const struct Type MATCH_ALL = {
+        .mthds = NULL,
+        .mthds_count = 0,
+        .mthd_lens = 0
+};
+
 ERROR tp_new(char **names, size_t name_count, struct Type *out) {
     char **names_c = malloc(sizeof(*names_c) * name_count);
     if (!names_c) { return TP_CTOR_ARY_MALLOC_FAIL; }
