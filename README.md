@@ -116,11 +116,11 @@ This should have been done a while ago, but I forgot to add it to the roadmap.
 * `type.h` - 0.9  
   Just a list of strings, really. Well, *identifiers*, but those are strings
     with a special flag behind the scenes.
-  * [ ] Define interface.
+  * [x] Define interface - 0.9.0
     * ctor, `cp`, `check`, and the like.
     * Types are immutable; creating a new one is creating a copy.
-  * [ ] Implement the methods
-  * [ ] Test them.  
+  * [x] Implement the methods - 0.9.1
+  * [ ] Test them - 0.9.2  
     This will require some fanciness with methods on objects, but shouldn't be
       super hard.
 

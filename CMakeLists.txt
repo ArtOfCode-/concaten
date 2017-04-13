@@ -16,11 +16,11 @@ set(PROFILE_LIBS)
 
 set(NORMAL_SRCS
         tokenizer.c stringbuilder.c method_map.c prop_map.c object.c
-        data_stack.c token_stack.c code_block.c tkn_value_func.c runnable.c scope_stack.c)
+        data_stack.c token_stack.c code_block.c tkn_value_func.c runnable.c scope_stack.c type.c)
 set(TEST_SRCS
         tests/prop_map.c tests/tokenizer.c tests/method_map.c tests/object.c
         tests/data_stack.c tests/token_stack.c tests/code_block.c
-        tests/stringbuilder.c tests/tkn_value_func.c tests/runnable.c tests/scope_stack.c)
+        tests/stringbuilder.c tests/tkn_value_func.c tests/runnable.c tests/scope_stack.c tests/type.c)
 
 add_executable(concaten main.c ${NORMAL_SRCS})
 set_target_properties(concaten PROPERTIES COMPILE_FLAGS

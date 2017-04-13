@@ -9,9 +9,10 @@ struct Type {
     size_t *mthd_lens;
 };
 
-ERROR tp_new(char **, size_t, size_t *);
-ERROR tp_cp(const struct Type, struct Type *);
-ERROR tp_matches(const struct Type, const struct Object);
+ERROR tp_new(char **, size_t, struct Type *);
+ERROR tp_copy(const struct Type, struct Type *);
+bool tp_matches(const struct Type, const struct Object);
+bool tp_eq(const struct Type, const struct Type);
 void tp_free(struct Type *);
 
 #endif //CONCATEN_TYPE_H
