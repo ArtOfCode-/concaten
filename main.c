@@ -29,28 +29,32 @@ int normal_parse(char *filepath) {
         printf("Failed to initialize scope stack (error "EFMT")\n", err);
         return 3;
     }
-    struct Token parsing;
-    while ((err = tst_pop(&tst, &parsing)) == NO_ERROR) {
-        if (parsing.type == TKN_WORD) {
+    #define eprint(...) do {\
+        fprintf(stderr, "%zu@%zu:%zu: ", ctkn.origin, ctkn.line, ctkn.index); \
+        fprintf(stderr, __VA_ARGS__); \
+    } while(0)
+    struct Token ctkn;
+    while ((err = tst_pop(&tst, &ctkn)) == NO_ERROR) {
+        if (ctkn.type == TKN_WORD) {
             struct Runnable *candidates;
             size_t cands_count;
-            sst_get_all(sst, parsing.raw, &candidates, &cands_count);
+            sst_get_all(sst, ctkn.raw, &candidates, &cands_count);
             if (cands_count == 0) {
-                printf("No word '%s' found.\n", parsing.raw);
+                eprint("No word '%s' found.\n", ctkn.raw);
                 return 4;
             }
             for (size_t i = 0; i < cands_count; ++i) {
                 if ((err = sst_save_state(&sst)) != NO_ERROR) {
-                    printf("Failed to save scope stack (error "EFMT")", err);
+                    eprint("Failed to save scope stack:"EFMT"\n", err);
                     return 5;
                 }
                 if ((err = tst_save_state(&tst)) != NO_ERROR) {
-                    printf("Failed to save token stack (error "EFMT")", err);
+                    eprint("Failed to save token stack:"EFMT"\n", err);
                     return 6;
                 }
                 struct DataStack dst_c;
                 if ((err = dst_copy(dst, &dst_c)) != NO_ERROR) {
-                    printf("Failed to copy data stack (error "EFMT")\n", err);
+                    eprint("Failed to copy data stack:"EFMT"\n", err);
                     return 7;
                 }
                 
@@ -58,8 +62,8 @@ int normal_parse(char *filepath) {
                 if (err == ARGUMENT_TYPE_MISMATCH_FAIL) {
                     continue;
                 } else if (err != NO_ERROR) {
-                    printf("An error occurred while running %s: "EFMT,
-                           parsing.raw, err);
+                    eprint("An error occurred while running %s: "EFMT"\n",
+                           ctkn.raw, err);
                     return 8;
                 } else {
                     break;
@@ -67,7 +71,7 @@ int normal_parse(char *filepath) {
             }
         } else {
             struct Object new_val;
-            tkn_value(&parsing, &new_val);
+            tkn_value(&ctkn, &new_val);
             dst_push(&dst, &new_val);
         }
     }

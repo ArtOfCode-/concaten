@@ -21,8 +21,8 @@ order, that means that:
   explicitly in some code, as opposed to being done implicitly by the language.
 4. **and strictly typed** - All methods related to variable assignment
   take a type as a required parameter, and check that the datum to be stored
-  is of that type. The types are similar to interfaces in languages like C# and
-  Java -- they define a set of methods that a given object must have to be
+  is of that type. The types are similar to interfaces in languages like C#
+  and Java -- they define a set of methods that a given object must have to be
   passable. However, they make no limitations on the content of the methods.
   It wouldn't be inaccurate to call this fail-fast duck typing.
 5. **hyperdynamic** - Every keyword is an overrideable (though *not*
@@ -113,26 +113,23 @@ Versions only apply to that branch. For example, dev might be at 1.6.3, while
 
 ### Current milestone
 
-#### Types - 0.9
+#### Minimal Standard Library - 0.10
 
-This should have been done a while ago, but I forgot to add it to the roadmap.
-
-* `type.h` - 0.9  
-  Just a list of strings, really. Well, *identifiers*, but those are strings
-    with a special flag behind the scenes.
-  * [x] Define interface - 0.9.0
-    * ctor, `cp`, `check`, and the like.
-    * Types are immutable; creating a new one is creating a copy.
-  * [x] Implement the methods - 0.9.1
-  * [x] Test them - 0.9.2  
-    This will require some fanciness with methods on objects, but shouldn't be
-      super hard.
-
-### Upcoming milestones
 * [ ] Minimal standard library - 0.10  
   Words like `if`, `{`, and `puts` so we can play with the language at all.
   * When designing/adding arrays, add the same methods to `CodeBlock`
   * If necessary, create `ctno_mk_` family to automatically create things
+  * [ ] `integral` methods
+  * [ ] `real` methods
+  * [ ] Make sure `integral` and `real` can be added together
+  * [ ] `string` methods
+  * [ ] `code-block` methods
+  * [ ] `{` word
+  * [ ] `[` word and lists
+  * [ ] Control words (`if`, `each`, etc.)
+  * [ ] `puts` and `*puts`
+
+### Upcoming milestones
 * [ ] Misc. required updates as needed - 0.11
   * [ ] Thorough code review  
     Finding places where the code is needlessly complicated, duplicated, or
