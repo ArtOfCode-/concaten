@@ -115,7 +115,7 @@ struct TestResult test_tokenizer() {
                     .is_from_file = true,
                     .code = NO_ERROR,
                     .types = NULL,
-                    .token_count = 81
+                    .token_count = 83
             }
     };
     size_t test_num = sizeof(tests) / sizeof(tests[0]);
