@@ -37,7 +37,7 @@ ERROR ctno_dynamic(struct PropMap pm, struct MethodMap *methods,
     return NO_ERROR;
 }
 
-ERROR ctno_copy(const struct Object copying, struct Object *into) {
+ERROR ctno_copy(const struct Object *copying, struct Object *into) {
     if (mm_claim(copying.methods) != NO_ERROR) return CTNO_COPY_CLAIM_FAIL;
     struct Object ret = (struct Object) {
             .is_literal = copying.is_literal,
@@ -70,7 +70,7 @@ ERROR ctno_copy(const struct Object copying, struct Object *into) {
     return NO_ERROR;
 }
 
-bool ctno_eq(const struct Object lhs, const struct Object rhs) {
+bool ctno_eq(const struct Object *lhs, const struct Object *rhs) {
     if (lhs.is_literal != rhs.is_literal) {
         return false;
     } else if (lhs.is_literal) {
@@ -134,11 +134,11 @@ ERROR ctno_set_prop(struct Object *to, const char *key,
     return NO_ERROR;
 }
 
-ERROR ctno_get_prop(const struct Object to, const char *key,
+ERROR ctno_get_prop(const struct Object *from, const char *key,
                     struct Object **into) {
-    if (to.is_literal) return CTNO_GET_LITERAL_FAIL;
+    if (from.is_literal) return CTNO_GET_LITERAL_FAIL;
     struct Object *got;
-    ERROR err = pm_get(to.data.properties, key, &got);
+    ERROR err = pm_get(from.data.properties, key, &got);
     if (err != NO_ERROR) {
         if (err != PM_GET_NO_KEY_FAIL) {
             return CTNO_GET_PM_GET_FAIL;

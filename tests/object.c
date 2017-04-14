@@ -57,7 +57,7 @@ struct TestResult test_object() {
     tassert(ctno_get_prop(t3, "2", &t3g4) == NO_ERROR, "failed to get val");
     tassert(*ctno_to(t3g3, integral) == val, "t3g3->long bad value");
     assert_eq(ctno_to(t3g4, char), name, "t3g4->char*");
-    tassert(ctno_set_prop(t3, "self", &t) == CTNO_SET_CYCLE_FAIL,
+    tassert(ctno_set_prop(t3, "self", t3) == CTNO_SET_CYCLE_FAIL,
             "direct cycles allowed");
     struct PropMap t4pm;
     tassert(pm_new(8, &t4pm) == NO_ERROR, "failed to initialize propmap");
@@ -70,23 +70,26 @@ struct TestResult test_object() {
     tassert(ctno_set_prop(t3, "self", &t4) == CTNO_SET_CYCLE_FAIL,
             "indirect cycles allowed");
     ctno_free(&t4);
-    struct Object t5;
-    tassert(ctno_copy(t3, &t5) == NO_ERROR, "failed to copy");
-    tassert(t3.data.properties.buckets != t5.data.properties.buckets,
+    struct Object *t5 = malloc(sizeof(*t5));
+    tassert(t5, "failed to allocate memory for t5");
+    tassert(ctno_copy(t3, t5) == NO_ERROR, "failed to copy");
+    tassert(t3->data.properties.buckets != t5->data.properties.buckets,
             "reference copy, not real copy");
     tassert(ctno_eq(t3, t5), "copy produced unequal objects");
-    struct Object t5g1;
+    struct Object *t5g1 = malloc(sizeof(*t5g1));
+    tassert(t5g1, "failed to allocate memory for t561");
     tassert(ctno_get_prop(t5, "1", &t5g1) == NO_ERROR, "failed to get");
-    tassert(t5g1.data.literal.value == t1.data.literal.value,
+    tassert(t5g1->data.literal.value == t1->data.literal.value,
             "failed to get identical object");
-    ctno_free(&t5);
-    struct Object t6;
-    tassert(ctno_copy(t1, &t6) == NO_ERROR, "failed to copy");
-    tassert(t1.data.literal.value != t6.data.literal.value,
+    ctno_free(t5);
+    struct Object *t6 = malloc(sizeof(*t6));
+    tassert(t6, "failed to allocate memory for t6");
+    tassert(ctno_copy(t1, t6) == NO_ERROR, "failed to copy");
+    tassert(t1->data.literal.value != t6->data.literal.value,
             "reference copy");
     tassert(ctno_eq(t1, t6), "got inequal objects");
     tassert(*ctno_to(t1, integral) == *ctno_to(t6, integral), "unequal val");
-    ctno_free(&t6);
+    ctno_free(t6);
     ctno_free(t3);
     // and _now_ t1/t2 should be gone.
     
