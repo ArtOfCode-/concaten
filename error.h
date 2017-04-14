@@ -137,12 +137,18 @@ static const ERROR RN_RUN_TST_PUSH_FAIL             =  902;
 static const ERROR STL_INT_INIT_MM_NEW_FAIL         = 1000;
 static const ERROR STL_INT_INIT_RN_FROM_C_FAIL      = 1001;
 static const ERROR STL_INT_INIT_MM_SET_FAIL         = 1002;
-static const ERROR STL_INT_STR_DSPOP_FAIL           = 1010;
-static const ERROR STL_INT_STR_TO_LIT_FAIL          = 1011;
-static const ERROR STL_INT_STR_GET_SIZE_FAIL        = 1012;
-static const ERROR STL_INT_STR_MALLOC_FAIL          = 1013;
-static const ERROR STL_INT_STR_SNPRINTF_FAIL        = 1014;
-static const ERROR STL_INT_STR_CTNO_NEW_FAIL        = 1015;
-static const ERROR STL_INT_STR_DSPUSH_FAIL          = 1016;
+static const ERROR STL_INT_STR_DSPOP_FAIL           = 1003;
+static const ERROR STL_INT_STR_TO_LIT_FAIL          = 1004;
+static const ERROR STL_INT_STR_GET_SIZE_FAIL        = 1005;
+static const ERROR STL_INT_STR_MALLOC_FAIL          = 1006;
+static const ERROR STL_INT_STR_SNPRINTF_FAIL        = 1007;
+static const ERROR STL_INT_STR_CTNO_NEW_FAIL        = 1008;
+static const ERROR STL_INT_STR_DSPUSH_FAIL          = 1009;
+static const ERROR STL_STR_INIT_MM_NEW_FAIL         = 1010;
+static const ERROR STL_STR_INIT_RN_FROM_C_FAIL      = 1011;
+static const ERROR STL_STR_INIT_MM_SET_FAIL         = 1012;
+static const ERROR STL_INT_INIT_MALLOC_FAIL         = 1013;
+static const ERROR STL_STR_STR_DSPOP_FAIL           = 1014;
+static const ERROR STL_STR_INIT_MALLOC_FAIL         = 1015;
 
 #endif //CONCATEN_ERROR_H

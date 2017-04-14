@@ -208,10 +208,11 @@ ERROR tkn_value_integer(struct Token *from, struct Object *into) {
     if ((val == LLONG_MAX || val == LLONG_MIN) && errno == ERANGE) {
         return TTO_OUT_OF_RANGE_FAIL;
     }
-    if (num_end != raw + len - 1) {
+    if (num_end != raw + len) {
         return TTO_INVALID_DIGIT_FAIL;
     }
-    ERROR err = ctno_literal(&val, sizeof(val), LTL_integral, NULL, into);
+    ERROR err = ctno_literal(&val, sizeof(val), LTL_integral,
+                             integral_methods, into);
     tkn_free(from);
     return err;
 }

@@ -19,6 +19,7 @@ struct TestResult test_data_stack() {
     struct Object *dst2_got;
     struct Object *dst1_got;
     tassert(dst_new(&dst1) == NO_ERROR, "failed to init datastack");
+    tassert(dst_empty(dst1), "non-empty initially");
     integral val = 12;
     struct Object foo, bar, baz, wuf;
     tassert(ctno_literal(&val, sizeof(val), LTL_integral, NULL, &foo) ==
@@ -39,12 +40,14 @@ struct TestResult test_data_stack() {
     ++val;
     tassert(dst_push(&dst1, &foo) == NO_ERROR, "failed to push");
     tassert(dst_push(&dst1, &bar) == NO_ERROR, "failed to push");
+    tassert(!dst_empty(dst1), "empty after adding");
     tassert(dst_push(&dst1, &baz) == NO_ERROR, "failed to push");
     tassert(dst_push(&dst1, &wuf) == NO_ERROR, "failed to push");
     tassert(dst_push(&dst1, &baz) == NO_ERROR, "failed to push");
     assert_pop_eq(1, baz);
     struct DataStack dst2;
     tassert(dst_copy(dst1, &dst2) == NO_ERROR, "failed to copy");
+    tassert(!dst_empty(dst1), "empty after copying");
     assert_pop_eq(2, wuf);
     assert_pop_eq(2, baz);
     assert_pop_eq(2, bar);

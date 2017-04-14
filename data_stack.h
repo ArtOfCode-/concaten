@@ -2,6 +2,7 @@
 #define CONCATEN_DATA_STACK_H
 
 #include <stddef.h>
+#include <stdbool.h>
 
 #include "error.h"
 
@@ -24,6 +25,7 @@ ERROR dst_copy(const struct DataStack, struct DataStack *);
 ERROR dst_push(struct DataStack *, struct Object *);
 ERROR dst_pop(struct DataStack *, struct Object **);
 ERROR dst_peek(struct DataStack *, struct Object **);
+bool dst_empty(const struct DataStack);
 void dst_free(struct DataStack *);
 
 #endif //CONCATEN_DATA_STACK_H

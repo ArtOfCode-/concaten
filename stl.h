@@ -2,7 +2,8 @@
 #define CONCATEN_STL_H
 
 #include "stl/integral.h"
+#include "stl/string.h"
 
-ERROR stl_init();
+ERROR init_stl();
 
 #endif //CONCATEN_STL_H
