@@ -12,7 +12,7 @@ ERROR ctn_puts(struct DataStack *d, struct ScopeStack *s, struct TokenStack *t) 
     if (!top->is_literal || top->data.literal.type != LTL_string) {
         return ARGUMENT_TYPE_MISMATCH_FAIL;
     }
-    char *val = ctno_to(*top, char);
+    char *val = ctno_to(top, char);
     puts(val);
     ctno_free(top);
     return NO_ERROR;

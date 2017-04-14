@@ -94,7 +94,7 @@ bool ctno_eq(const struct Object lhs, const struct Object rhs) {
                 struct PM_KeyValPair ri = rpb.items[iidx];
                 if (li.key_len != ri.key_len ||
                         strncmp(li.key, ri.key, li.key_len) != 0 ||
-                        !ctno_eq(*li.val, *ri.val)) return false;
+                        !ctno_eq(li.val, ri.val)) return false;
             }
         }
         return true;
@@ -135,7 +135,7 @@ ERROR ctno_set_prop(struct Object *to, const char *key,
 }
 
 ERROR ctno_get_prop(const struct Object to, const char *key,
-                    struct Object *into) {
+                    struct Object **into) {
     if (to.is_literal) return CTNO_GET_LITERAL_FAIL;
     struct Object *got;
     ERROR err = pm_get(to.data.properties, key, &got);
@@ -146,7 +146,7 @@ ERROR ctno_get_prop(const struct Object to, const char *key,
             return CTNO_GET_NO_KEY_FAIL;
         }
     }
-    *into = *got;
+    *into = got;
     return NO_ERROR;
 }
 
@@ -175,6 +175,7 @@ void ctno_free(struct Object *freeing) {
                 }
                 pm_free(pm);
             }
+            free(freeing); // ensures that we didn't ctno_free(&sth);
         }
     }
 }

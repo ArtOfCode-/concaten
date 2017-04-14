@@ -37,17 +37,19 @@ struct TestResult test_runnable() {
     total = 0;
     struct DataStack test_ds;
     tassert(dst_new(&test_ds) == NO_ERROR, "failed to init data stack");
-    struct Object lit;
+    struct Object *lit = malloc(sizeof(*lit));
+    tassert(lit, "failed to allocate space for lit");
     integral v = 12;
-    tassert(ctno_literal(&v, sizeof(v), LTL_integral, NULL, &lit) == NO_ERROR,
+    tassert(ctno_literal(&v, sizeof(v), LTL_integral, NULL, lit) == NO_ERROR,
             "failed to init literal object");
-    struct Object dyn;
+    struct Object *dyn = malloc(sizeof(*dyn));
+    tassert(dyn, "failed to allocate space for dyn");
     struct PropMap pm;
     tassert(pm_new(8, &pm) == NO_ERROR, "failed to init propmap for dyn");
-    tassert(ctno_dynamic(pm, NULL, &dyn) == NO_ERROR,
+    tassert(ctno_dynamic(pm, NULL, dyn) == NO_ERROR,
             "failed to init dynamic object");
-    tassert(dst_push(&test_ds, &dyn) == NO_ERROR, "failed to push to ds");
-    tassert(dst_push(&test_ds, &lit) == NO_ERROR, "failed to push to ds");
+    tassert(dst_push(&test_ds, dyn) == NO_ERROR, "failed to push to ds");
+    tassert(dst_push(&test_ds, lit) == NO_ERROR, "failed to push to ds");
     struct Tokenizer test_ts_tknr;
     tassert(tknr_from_string("foo :bar 0xbad", "hi", &test_ts_tknr) == NO_ERROR,
             "failed to init ts's tknr");
@@ -57,7 +59,7 @@ struct TestResult test_runnable() {
     struct CodeBlock cb1, cb2;
     tassert(cb_new(1, &cb1) == NO_ERROR, "failed to init cb1");
     tassert(cb_append(&cb1, (struct Token) {
-            .type = TKN_INTEGER
+            .type = TKN_INTEGRAL
     }) == NO_ERROR, "failed to push token into cb");
     tassert(cb_new(1, &cb2) == NO_ERROR, "failed to init cb2");
     tassert(cb_append(&cb2, (struct Token) {
@@ -88,15 +90,15 @@ struct TestResult test_runnable() {
     tassert(rn_from_ctn(cb2, &ctn2) == NO_ERROR, "failed to init ctn test 2");
     tassert(!rn_eq(ctn1, ctn2), "different ctn runnables compare equal");
     tassert(rn_run(ctn1, &test_ds, NULL, &test_ts) == NO_ERROR, "failed to run");
-    top_type = TKN_INTEGER;
+    top_type = TKN_INTEGRAL;
     tassert(rn_run(c1, &test_ds, NULL, &test_ts) == NO_ERROR, "failed to run c");
     tassert(rn_run(ctn2, &test_ds, NULL, &test_ts) == NO_ERROR, "failed to run");
     top_type = TKN_REGEX;
     tassert(rn_run(c1, &test_ds, NULL, &test_ts) == NO_ERROR, "failed to run c`");
     tassert(rn_run(c2, &test_ds, NULL, &test_ts) == USER_DEFINED_ERROR,
             "got wrong error running c2");
-    tassert(dst_push(&test_ds, &dyn) == NO_ERROR, "failed to push again");
-    top_type = TKN_INTEGER;
+    tassert(dst_push(&test_ds, dyn) == NO_ERROR, "failed to push again");
+    top_type = TKN_INTEGRAL;
     tassert(rn_run(c1, &test_ds, NULL, &test_ts) == NO_ERROR, "failed to run c");
     tassert(rn_run(c1, &test_ds, NULL, &test_ts) == NO_ERROR, "failed to run c");
     tassert(rn_run(c1, &test_ds, NULL, &test_ts) == NO_ERROR, "failed to run c");
@@ -107,8 +109,8 @@ struct TestResult test_runnable() {
     tassert(rn_run(c1, &test_ds, NULL, &test_ts) == NO_ERROR, "failed to run c`");
     
     dst_free(&test_ds);
-    ctno_free(&lit);
-    ctno_free(&dyn);
+    ctno_free(lit);
+    ctno_free(dyn);
     pm_free(&pm);
     tknr_free(&test_ts_tknr);
     tst_free(&test_ts);

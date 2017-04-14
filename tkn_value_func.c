@@ -168,7 +168,7 @@ ERROR tkn_value_string(struct Token *from, struct Object *into) {
     return err;
 }
 
-ERROR tkn_value_integer(struct Token *from, struct Object *into) {
+ERROR tkn_value_integral(struct Token *from, struct Object *into) {
     int b = 10;
     char *raw = from->raw;
     size_t len = from->raw_len;
@@ -257,8 +257,8 @@ ERROR tkn_value(struct Token *from, struct Object *into) {
             return tkn_value_string(from, into);
         case TKN_REGEX:
             return tkn_value_regex(from, into);
-        case TKN_INTEGER:
-            return tkn_value_integer(from, into);
+        case TKN_INTEGRAL:
+            return tkn_value_integral(from, into);
         case TKN_REAL:
             return tkn_value_real(from, into);
         case TKN_IDENTIFIER:

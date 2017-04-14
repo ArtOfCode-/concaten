@@ -25,7 +25,7 @@ typedef double real;
 enum LiteralType {
     all_types_X
     LTL_string,
-    LTL_char = LTL_string,
+    LTL_char = LTL_string, // so ctno_to works
     LTL_identifier
 };
 #undef X
@@ -53,13 +53,13 @@ struct Object {
 ERROR ctno_literal(const void *, size_t, enum LiteralType, struct MethodMap *,
                    struct Object *);
 ERROR ctno_dynamic(const struct PropMap, struct MethodMap *, struct Object *);
-ERROR ctno_copy(const struct Object, struct Object *);
-bool ctno_eq(const struct Object, const struct Object);
+ERROR ctno_copy(const struct Object *, struct Object *);
+bool ctno_eq(const struct Object *, const struct Object *);
 ERROR ctno_set_prop(struct Object *, const char *, struct Object *);
-ERROR ctno_get_prop(const struct Object, const char *, struct Object *);
+ERROR ctno_get_prop(const struct Object *, const char *, struct Object **);
 #define ctno_to(ctno, _t) \
-    (((ctno).is_literal && (ctno).data.literal.type == LTL_##_t) \
-        ? ((_t *) (ctno).data.literal.value) \
+    (((ctno)->is_literal && (ctno)->data.literal.type == LTL_##_t) \
+        ? ((_t *) (ctno)->data.literal.value) \
         : NULL)
 ERROR ctno_claim(struct Object *);
 void ctno_free(struct Object *);

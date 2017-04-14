@@ -12,7 +12,7 @@ ERROR to_s_d(struct DataStack *d, struct ScopeStack *s, struct TokenStack *t) {
     if (!top->is_literal || top->data.literal.type != LTL_integral) {
         return ARGUMENT_TYPE_MISMATCH_FAIL;
     }
-    integral *val = ctno_to(*top, integral);
+    integral *val = ctno_to(top, integral);
     if (!val) {
         return STL_INT_STR_TO_LIT_FAIL;
     }

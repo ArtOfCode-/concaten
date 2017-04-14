@@ -103,8 +103,8 @@ struct TestResult test_tokenizer() {
                     .is_from_file = false,
                     .code = NO_ERROR,
                     .types = (enum TokenType[]) {
-                            TKN_WORD, TKN_STRING, TKN_INTEGER, TKN_INTEGER,
-                            TKN_INTEGER, TKN_INTEGER, TKN_REAL,
+                            TKN_WORD, TKN_STRING, TKN_INTEGRAL, TKN_INTEGRAL,
+                            TKN_INTEGRAL, TKN_INTEGRAL, TKN_REAL,
                             TKN_IDENTIFIER, TKN_WORD, TKN_WORD, TKN_WORD,
                             TKN_REGEX
                     },

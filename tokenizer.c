@@ -28,7 +28,7 @@ const char *tkn_type_name(enum TokenType t) {
             return "string";
         case TKN_REGEX:
             return "regex";
-        case TKN_INTEGER:
+        case TKN_INTEGRAL:
             return "integer";
         case TKN_REAL:
             return "real";
@@ -399,7 +399,7 @@ ERROR get_number(struct Tokenizer *from, struct Token partial, bool neg,
         err = sb_append(&raw, '-');
         if (err != NO_ERROR) { goto error_handler; }
     }
-    partial.type = TKN_INTEGER;
+    partial.type = TKN_INTEGRAL;
     enum {
         B2, B8, B10, B16
     } base = B10;
@@ -466,7 +466,7 @@ ERROR get_number(struct Tokenizer *from, struct Token partial, bool neg,
         err = TKNR_NT_SB_FREE_COPY_FAIL;
         goto error_handler;
     }
-    partial.type = decimal ? TKN_REAL : TKN_INTEGER;
+    partial.type = decimal ? TKN_REAL : TKN_INTEGRAL;
     *out = partial;
     return NO_ERROR;
   error_handler:;

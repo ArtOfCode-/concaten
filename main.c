@@ -41,7 +41,7 @@ bool normal_parse(char *filepath) {
             // first, look for methods in the top of stack
             if (!dst_empty(dst)) {
                 struct Object *top;
-                if ((err = dst_pop(&dst, &top)) != NO_ERROR) {
+                if ((err = dst_peek(&dst, &top)) != NO_ERROR) {
                     eprint("Failed to retrieve data top: "EFMT"\n", err);
                     return false;
                 }
@@ -52,7 +52,15 @@ bool normal_parse(char *filepath) {
                         eprint("Failed to get existing key: "EFMT"\n", err);
                         return false;
                     }
-                    
+                    err = rn_run(trying, &dst, &sst, &tst);
+                    if (err == ARGUMENT_TYPE_MISMATCH_FAIL) {
+                        /* nop */
+                    } else if (err != NO_ERROR) {
+                        eprint("Failed to run: "EFMT"\n", err);
+                        return false;
+                    } else {
+                        break;
+                    }
                 }
             }
             
@@ -90,12 +98,15 @@ bool normal_parse(char *filepath) {
                 }
             }
         } else {
-            struct Object new_val;
-            if ((err = tkn_value(&ctkn, &new_val)) != NO_ERROR) {
+            struct Object *new_val = malloc(sizeof(*new_val));
+            if (!new_val) {
+                eprint("Failed to allocate space for new object.\n");
+            }
+            if ((err = tkn_value(&ctkn, new_val)) != NO_ERROR) {
                 eprint("Failed to get token's value: "EFMT"\n", err);
                 return false;
             }
-            if ((err = dst_push(&dst, &new_val)) != NO_ERROR) {
+            if ((err = dst_push(&dst, new_val)) != NO_ERROR) {
                 eprint("Failed to push token's value: "EFMT"\n", err);
                 return false;
             }
