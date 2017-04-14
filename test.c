@@ -2,6 +2,7 @@
 
 #include <sys/time.h>
 #include <stdbool.h>
+#include <stdlib.h>
 
 bool do_test(struct TestResult (*testf)(), const char *test_name) {
     struct timeval beg, end;

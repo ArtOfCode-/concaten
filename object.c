@@ -77,7 +77,7 @@ bool ctno_eq(const struct Object lhs, const struct Object rhs) {
         const struct LiteralData ld = lhs.data.literal;
         const struct LiteralData rd = rhs.data.literal;
         return ld.type == rd.type && ld.size == rd.size &&
-               memcmp(ld.value, rd.value, ld.size) == 0;
+               strncmp(ld.value, rd.value, ld.size) == 0;
     } else {
         const struct PropMap lp = lhs.data.properties;
         const struct PropMap rp = rhs.data.properties;

@@ -7,32 +7,28 @@
 #include "object.h"
 #include "stl.h"
 
-int normal_parse(char *filepath) {
+bool normal_parse(char *filepath) {
     ERROR err;
     struct Tokenizer tknr;
-    if ((err = init_stl()) != NO_ERROR) {
-        printf("Failed to initialize standard library: "EFMT"\n", err);
-        return 1;
-    }
     if ((err = tknr_from_filepath(filepath, &tknr)) != NO_ERROR) {
         printf("%s could not be tokenized: "EFMT"%s\n", filepath, err,
                 err == TKNR_CTOR_FILE_FOPEN_FAIL ? " (is it readable?)" : "");
-        return 2;
+        return false;
     }
     struct TokenStack tst;
     if ((err = tst_new(tknr, &tst)) != NO_ERROR) {
         printf("Failed to initialize token stack: "EFMT"\n", err);
-        return 3;
+        return false;
     }
     struct DataStack dst;
     if ((err = dst_new(&dst)) != NO_ERROR) {
         printf("Failed to initialize data stack: "EFMT"\n", err);
-        return 4;
+        return false;
     }
     struct ScopeStack sst;
     if ((err = sst_new(8, &sst)) != NO_ERROR) {
         printf("Failed to initialize scope stack: "EFMT"\n", err);
-        return 5;
+        return false;
     }
     #define eprint(...) do {\
         fprintf(stderr, "%s@%zu:%zu: Error while parsing '%s': ", \
@@ -47,14 +43,14 @@ int normal_parse(char *filepath) {
                 struct Object *top;
                 if ((err = dst_pop(&dst, &top)) != NO_ERROR) {
                     eprint("Failed to retrieve data top: "EFMT"\n", err);
-                    return 6;
+                    return false;
                 }
                 if (mm_is_key(*top->methods, ctkn.raw)) {
                     struct Runnable trying;
                     if ((err = mm_get(*top->methods, ctkn.raw, &trying))
                             != NO_ERROR) {
                         eprint("Failed to get existing key: "EFMT"\n", err);
-                        return 7;
+                        return false;
                     }
                     
                 }
@@ -66,21 +62,21 @@ int normal_parse(char *filepath) {
             sst_get_all(sst, ctkn.raw, &candidates, &cands_count);
             if (cands_count == 0) {
                 eprint("No word '%s' found.\n", ctkn.raw);
-                return 8;
+                return false;
             }
             for (size_t i = 0; i < cands_count; ++i) {
                 if ((err = sst_save_state(&sst)) != NO_ERROR) {
                     eprint("Failed to save scope stack: "EFMT"\n", err);
-                    return 9;
+                    return false;
                 }
                 if ((err = tst_save_state(&tst)) != NO_ERROR) {
                     eprint("Failed to save token stack: "EFMT"\n", err);
-                    return 10;
+                    return false;
                 }
                 struct DataStack dst_c;
                 if ((err = dst_copy(dst, &dst_c)) != NO_ERROR) {
                     eprint("Failed to copy data stack: "EFMT"\n", err);
-                    return 11;
+                    return false;
                 }
                 
                 err = rn_run(candidates[i], &dst, &sst, &tst);
@@ -88,7 +84,7 @@ int normal_parse(char *filepath) {
                     continue;
                 } else if (err != NO_ERROR) {
                     eprint("Failed to run: "EFMT"\n", err);
-                    return 12;
+                    return false;
                 } else {
                     break;
                 }
@@ -97,19 +93,19 @@ int normal_parse(char *filepath) {
             struct Object new_val;
             if ((err = tkn_value(&ctkn, &new_val)) != NO_ERROR) {
                 eprint("Failed to get token's value: "EFMT"\n", err);
-                return 13;
+                return false;
             }
             if ((err = dst_push(&dst, &new_val)) != NO_ERROR) {
                 eprint("Failed to push token's value: "EFMT"\n", err);
-                return 14;
+                return false;
             }
         }
     }
     if (err != TST_POP_EMPTY_FAIL) {
         printf("Failed to get next token: "EFMT"\n", err);
-        return 15;
+        return false;
     }
-    return 0;
+    return true;
 }
 
 int main(int argc, char **argv) {
@@ -120,10 +116,14 @@ int main(int argc, char **argv) {
         printf("Usage: \"%s\" paths...\n", argv[0]);
         return 1;
     }
+    ERROR err;
+    if ((err = init_stl()) != NO_ERROR) {
+        fprintf(stderr, "Failed to init standard library: "EFMT"\n", err);
+    }
     for (int argidx = 1; argidx < argc; ++argidx) {
         int res = normal_parse(argv[argidx]);
-        if (res != 0) {
-            return argidx * 10 + res;
+        if (!res) {
+            return argidx;
         }
     }
     return 0;

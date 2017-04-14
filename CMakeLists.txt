@@ -6,12 +6,12 @@ set(CMAKE_C_STANDARD 11)
 set(NORMAL_FLAGS "-Wall -Wextra -Werror -pedantic -O3 -std=c11")
 set(NORMAL_LIBS)
 
-set(TEST_FLAGS "-g -O0")
+set(TEST_FLAGS "-g")
 set(TEST_LIBS)
 
 # to enable ASan, add -fsanitize=address -fno-omit-frame-pointer and asan lib
 # it doesn't work on WSL, so it's not added by default
-set(PROFILE_FLAGS "")
+set(PROFILE_FLAGS "-O0")
 set(PROFILE_LIBS)
 
 set(NORMAL_SRCS

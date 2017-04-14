@@ -143,7 +143,7 @@ ERROR tto_escape_string(const char *str, size_t val_len,
         }
     }
     *ret_pos = 0;
-    ++ret_pos;
+    ++ret_pos; // ret_pos is on the null terminator before this
     *out = ret;
     *out_len = ret_pos - ret;
     return NO_ERROR;
@@ -153,7 +153,7 @@ ERROR tto_escape_string(const char *str, size_t val_len,
 }
 
 ERROR tkn_value_string(struct Token *from, struct Object *into) {
-    size_t val_len = from->raw_len - 2;
+    size_t val_len = from->raw_len - 1;
     ++from->raw;
     from->raw[val_len] = '\0';
     char *esc;
@@ -224,7 +224,7 @@ ERROR tkn_value_real(struct Token *from, struct Object *into) {
     if ((val == 0 || val == HUGE_VAL) && errno != 0) {
         return TTO_FLP_CONVERT_FAIL;
     }
-    if (end != from->raw + from->raw_len - 1) {
+    if (end != from->raw + from->raw_len) {
         return TTO_INVALID_DIGIT_FAIL;
     }
     ERROR err = ctno_literal(&val, sizeof(val), LTL_real, NULL, into);
@@ -233,7 +233,7 @@ ERROR tkn_value_real(struct Token *from, struct Object *into) {
 }
 
 ERROR tkn_value_identifier(struct Token *from, struct Object *into) {
-    ERROR err = ctno_literal(from->raw + 1, from->raw_len - 1, LTL_identifier,
+    ERROR err = ctno_literal(from->raw + 1, from->raw_len, LTL_identifier,
                              NULL, into);
     tkn_free(from);
     return err;

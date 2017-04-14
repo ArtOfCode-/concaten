@@ -7,9 +7,9 @@
 #include "../object.h"
 
 struct Token tkn(char *raw, enum TokenType type) {
-    size_t raw_len = strlen(raw) + 1;
-    char *raw_c = malloc(raw_len);
-    strncpy(raw_c, raw, raw_len);
+    size_t raw_len = strlen(raw);
+    char *raw_c = malloc(raw_len + 1);
+    strncpy(raw_c, raw, raw_len + 1);
     return (struct Token) {
             .raw_len = raw_len,
             .raw = raw_c,
@@ -45,11 +45,12 @@ struct TestResult test_tkn_value() {
     
     for (size_t i = 0; i < sizeof(t) / sizeof(t[0]); ++i) {
         tassert(tkn_value(&t[i], &ret) == NO_ERROR, "get fail at %zu", i);
-        tassert(ctno_eq(o[i], ret), "wrong val at %zu", i);
+        bool same = ctno_eq(o[i], ret);
+        tassert(same, "wrong val at %zu", i);
         ctno_free(&o[i]);
         ctno_free(&ret);
     }
-
+    
     struct Token word = tkn("asdf", TKN_WORD);
     tassert(tkn_value(&word, &ret) == TTO_WORDS_VALUELESS_FAIL,
             "got value for word");
