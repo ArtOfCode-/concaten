@@ -6,7 +6,7 @@
 #define assert_pop_eq(num, what) \
     tassert(dst_pop(&dst##num, &dst##num##_got) == NO_ERROR, \
             "failed to pop"); \
-    tassert(dst##num##_got == &what, \
+    tassert(dst##num##_got == what, \
             str(__LINE__) ": " str(num) " got bad result")
 
 #define assert_no_pop(num) \
@@ -22,13 +22,13 @@ struct TestResult test_data_stack() {
     tassert(dst_empty(dst1), "non-empty initially");
     integral val = 12;
     struct Object *foo = malloc(sizeof(*foo));
-    tassert(baz, "failed to malloc space for object");
+    tassert(foo, "failed to malloc space for object");
     struct Object *bar = malloc(sizeof(*bar));
-    tassert(baz, "failed to malloc space for object");
+    tassert(bar, "failed to malloc space for object");
     struct Object *baz = malloc(sizeof(*baz));
     tassert(baz, "failed to malloc space for object");
     struct Object *wuf = malloc(sizeof(*wuf));
-    tassert(baz, "failed to malloc space for object");
+    tassert(wuf, "failed to malloc space for object");
     tassert(ctno_literal(&val, sizeof(val), LTL_integral, NULL, foo) ==
                     NO_ERROR,
             "failed to initialize foo");

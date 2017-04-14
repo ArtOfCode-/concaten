@@ -38,22 +38,22 @@ ERROR ctno_dynamic(struct PropMap pm, struct MethodMap *methods,
 }
 
 ERROR ctno_copy(const struct Object *copying, struct Object *into) {
-    if (mm_claim(copying.methods) != NO_ERROR) return CTNO_COPY_CLAIM_FAIL;
+    if (mm_claim(copying->methods) != NO_ERROR) return CTNO_COPY_CLAIM_FAIL;
     struct Object ret = (struct Object) {
-            .is_literal = copying.is_literal,
-            .methods = copying.methods,
+            .is_literal = copying->is_literal,
+            .methods = copying->methods,
             .refcount = 1
     };
-    if (copying.is_literal) {
-        const size_t width = copying.data.literal.size;
+    if (copying->is_literal) {
+        const size_t width = copying->data.literal.size;
         void *d_c = malloc(width);
         if (!d_c) return CTNO_COPY_DATA_FAIL;
-        memcpy(d_c, copying.data.literal.value, width);
+        memcpy(d_c, copying->data.literal.value, width);
         ret.data.literal.size = width;
         ret.data.literal.value = d_c;
     } else {
         struct PropMap pm_c;
-        if (pm_copy(copying.data.properties, &pm_c) != NO_ERROR) {
+        if (pm_copy(copying->data.properties, &pm_c) != NO_ERROR) {
             return CTNO_COPY_PROPS_FAIL;
         }
         for (size_t bidx = 0; bidx < pm_c.bucket_count; ++bidx) {
@@ -71,16 +71,16 @@ ERROR ctno_copy(const struct Object *copying, struct Object *into) {
 }
 
 bool ctno_eq(const struct Object *lhs, const struct Object *rhs) {
-    if (lhs.is_literal != rhs.is_literal) {
+    if (lhs->is_literal != rhs->is_literal) {
         return false;
-    } else if (lhs.is_literal) {
-        const struct LiteralData ld = lhs.data.literal;
-        const struct LiteralData rd = rhs.data.literal;
+    } else if (lhs->is_literal) {
+        const struct LiteralData ld = lhs->data.literal;
+        const struct LiteralData rd = rhs->data.literal;
         return ld.type == rd.type && ld.size == rd.size &&
                strncmp(ld.value, rd.value, ld.size) == 0;
     } else {
-        const struct PropMap lp = lhs.data.properties;
-        const struct PropMap rp = rhs.data.properties;
+        const struct PropMap lp = lhs->data.properties;
+        const struct PropMap rp = rhs->data.properties;
         if (lp.bucket_count != rp.bucket_count ||
                 lp.item_count != rp.item_count) {
             return false;
@@ -136,9 +136,9 @@ ERROR ctno_set_prop(struct Object *to, const char *key,
 
 ERROR ctno_get_prop(const struct Object *from, const char *key,
                     struct Object **into) {
-    if (from.is_literal) return CTNO_GET_LITERAL_FAIL;
+    if (from->is_literal) return CTNO_GET_LITERAL_FAIL;
     struct Object *got;
-    ERROR err = pm_get(from.data.properties, key, &got);
+    ERROR err = pm_get(from->data.properties, key, &got);
     if (err != NO_ERROR) {
         if (err != PM_GET_NO_KEY_FAIL) {
             return CTNO_GET_PM_GET_FAIL;

@@ -61,15 +61,16 @@ struct TestResult test_object() {
             "direct cycles allowed");
     struct PropMap t4pm;
     tassert(pm_new(8, &t4pm) == NO_ERROR, "failed to initialize propmap");
-    struct Object t4;
-    tassert(ctno_dynamic(t4pm, NULL, &t4) == NO_ERROR,
+    struct Object *t4 = malloc(sizeof(*t4));
+    tassert(t4, "failed to allocate memory for t4");
+    tassert(ctno_dynamic(t4pm, NULL, t4) == NO_ERROR,
             "failed to initialize t4");
     pm_free(&t4pm);
-    tassert(ctno_set_prop(&t4, "self2", t3) == NO_ERROR,
+    tassert(ctno_set_prop(t4, "self2", t3) == NO_ERROR,
             "failed intermediary add");
-    tassert(ctno_set_prop(t3, "self", &t4) == CTNO_SET_CYCLE_FAIL,
+    tassert(ctno_set_prop(t3, "self", t4) == CTNO_SET_CYCLE_FAIL,
             "indirect cycles allowed");
-    ctno_free(&t4);
+    ctno_free(t4);
     struct Object *t5 = malloc(sizeof(*t5));
     tassert(t5, "failed to allocate memory for t5");
     tassert(ctno_copy(t3, t5) == NO_ERROR, "failed to copy");

@@ -20,13 +20,12 @@ struct Token tkn(char *raw, enum TokenType type) {
 
 struct TestResult test_tkn_value() {
     size_t successes = 0, total = 0;
-    struct Object *ret = malloc(sizeof(*ret));
-    tassert(ret, "failed to allocate space for ret");
     struct Token t[] = {
             tkn("123", TKN_INTEGRAL), tkn("2.3", TKN_REAL),
             tkn("\"hi\"", TKN_STRING), tkn(":foo", TKN_IDENTIFIER),
             tkn("\"\\\"\\e[31mhell\\e[0mo!\\\"\"", TKN_STRING)
     };
+    struct Object *ret;
     struct Object *o[5];
     for (size_t i = 0; i < sizeof(o) / sizeof(o[0]); ++i) {
         o[i] = malloc(sizeof(*o[i]));
@@ -49,6 +48,8 @@ struct TestResult test_tkn_value() {
             == NO_ERROR, "failed to initialize o4");
     
     for (size_t i = 0; i < sizeof(t) / sizeof(t[0]); ++i) {
+        ret = malloc(sizeof(*ret));
+        tassert(ret, "failed to allocate space for ret");
         tassert(tkn_value(&t[i], ret) == NO_ERROR, "get fail at %zu", i);
         bool same = ctno_eq(o[i], ret);
         tassert(same, "wrong val at %zu", i);
@@ -56,6 +57,8 @@ struct TestResult test_tkn_value() {
         ctno_free(ret);
     }
     
+    ret = malloc(sizeof(*ret));
+    tassert(ret, "failed to allocate space for ret");
     struct Token word = tkn("asdf", TKN_WORD);
     tassert(tkn_value(&word, ret) == TTO_WORDS_VALUELESS_FAIL,
             "got value for word");
@@ -64,6 +67,7 @@ struct TestResult test_tkn_value() {
     tassert(tkn_value(&unknown, ret) == TTO_UNKNOWN_TYPE_FAIL,
             "got value for unknown");
     tkn_free(&unknown);
+    free(ret); // NOT ctno_free
     
     return (struct TestResult) { .successes = successes, .total = total };
 }

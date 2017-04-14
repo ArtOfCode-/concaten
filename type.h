@@ -13,7 +13,7 @@ extern const struct Type MATCH_ALL;
 
 ERROR tp_new(char **, size_t, struct Type *);
 ERROR tp_copy(const struct Type, struct Type *);
-bool tp_matches(const struct Type, const struct Object);
+bool tp_matches(const struct Type, const struct Object *);
 bool tp_eq(const struct Type, const struct Type);
 void tp_free(struct Type *);
 
