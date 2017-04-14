@@ -1,3 +1,4 @@
+"Hello, World!" puts
 12 >string puts
 -12 >string puts
 0xF >string puts

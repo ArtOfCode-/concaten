@@ -16,7 +16,6 @@ ERROR to_s_d(struct DataStack *d, struct ScopeStack *s, struct TokenStack *t) {
     if (!val) {
         return STL_INT_STR_TO_LIT_FAIL;
     }
-    ctno_free(top);
     int len = snprintf(NULL, 0, "%lld", *val);
     if (len < 0) return STL_INT_STR_GET_SIZE_FAIL;
     size_t len_st = ((size_t) len) + 1;
@@ -24,8 +23,10 @@ ERROR to_s_d(struct DataStack *d, struct ScopeStack *s, struct TokenStack *t) {
     if (!str_ver) return STL_INT_STR_MALLOC_FAIL;
     if (snprintf(str_ver, len_st, "%lld", *val) < 0) {
         free(str_ver);
+        ctno_free(top);
         return STL_INT_STR_SNPRINTF_FAIL;
     }
+    ctno_free(top);
     struct Object *res = malloc(sizeof(*res));
     if (!res) {
         free(str_ver);
