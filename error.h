@@ -152,5 +152,6 @@ static const ERROR STL_INT_INIT_MALLOC_FAIL         = 1013;
 static const ERROR STL_STR_STR_DSPOP_FAIL           = 1014;
 static const ERROR STL_STR_INIT_MALLOC_FAIL         = 1015;
 static const ERROR STL_MM_CLAIM_FAIL                = 1016;
+static const ERROR STL_GLB_INIT_MALLOC_FAIL         = 1017;
 
 #endif //CONCATEN_ERROR_H
