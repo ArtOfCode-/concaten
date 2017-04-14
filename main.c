@@ -5,29 +5,34 @@
 #include "token_stack.h"
 #include "scope_stack.h"
 #include "object.h"
+#include "stl.h"
 
 int normal_parse(char *filepath) {
     ERROR err;
     struct Tokenizer tknr;
-    if ((err = tknr_from_filepath(filepath, &tknr)) != NO_ERROR) {
-        printf("File '%s' not found. Please make sure it exists."
-                       " (error "EFMT")\n", filepath, err);
+    if ((err = stl_init()) != NO_ERROR) {
+        printf("Failed to initialize standard library: "EFMT"\n", err);
         return 1;
+    }
+    if ((err = tknr_from_filepath(filepath, &tknr)) != NO_ERROR) {
+        printf("%s could not be tokenized: "EFMT"%s\n", filepath, err,
+                err == TKNR_CTOR_FILE_FOPEN_FAIL ? " (is it readable?)" : "");
+        return 2;
     }
     struct TokenStack tst;
     if ((err = tst_new(tknr, &tst)) != NO_ERROR) {
-        printf("Failed to initialize token stack (error "EFMT")\n", err);
-        return 2;
+        printf("Failed to initialize token stack: "EFMT"\n", err);
+        return 3;
     }
     struct DataStack dst;
     if ((err = dst_new(&dst)) != NO_ERROR) {
-        printf("Failed to initialize data stack (error "EFMT")\n", err);
-        return 3;
+        printf("Failed to initialize data stack: "EFMT"\n", err);
+        return 4;
     }
     struct ScopeStack sst;
     if ((err = sst_new(8, &sst)) != NO_ERROR) {
-        printf("Failed to initialize scope stack (error "EFMT")\n", err);
-        return 3;
+        printf("Failed to initialize scope stack: "EFMT"\n", err);
+        return 5;
     }
     #define eprint(...) do {\
         fprintf(stderr, "%zu@%zu:%zu: ", ctkn.origin, ctkn.line, ctkn.index); \
@@ -41,21 +46,21 @@ int normal_parse(char *filepath) {
             sst_get_all(sst, ctkn.raw, &candidates, &cands_count);
             if (cands_count == 0) {
                 eprint("No word '%s' found.\n", ctkn.raw);
-                return 4;
+                return 6;
             }
             for (size_t i = 0; i < cands_count; ++i) {
                 if ((err = sst_save_state(&sst)) != NO_ERROR) {
                     eprint("Failed to save scope stack:"EFMT"\n", err);
-                    return 5;
+                    return 7;
                 }
                 if ((err = tst_save_state(&tst)) != NO_ERROR) {
                     eprint("Failed to save token stack:"EFMT"\n", err);
-                    return 6;
+                    return 8;
                 }
                 struct DataStack dst_c;
                 if ((err = dst_copy(dst, &dst_c)) != NO_ERROR) {
                     eprint("Failed to copy data stack:"EFMT"\n", err);
-                    return 7;
+                    return 9;
                 }
                 
                 err = rn_run(candidates[i], &dst, &sst, &tst);
@@ -64,7 +69,7 @@ int normal_parse(char *filepath) {
                 } else if (err != NO_ERROR) {
                     eprint("An error occurred while running %s: "EFMT"\n",
                            ctkn.raw, err);
-                    return 8;
+                    return 10;
                 } else {
                     break;
                 }
@@ -77,7 +82,7 @@ int normal_parse(char *filepath) {
     }
     if (err != TST_POP_EMPTY_FAIL) {
         printf("Tried to get token and got unexpected error "EFMT"\n", err);
-        return 7;
+        return 11;
     }
     return 0;
 }

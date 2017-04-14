@@ -42,6 +42,25 @@ ERROR to_s(struct DataStack *d, struct ScopeStack *s, struct TokenStack *t) {
 }
 
 struct MethodMap *integral_methods = NULL;
+
+#define try(expr, code) do {\
+    err = (expr); \
+    if (err != NO_ERROR) { err = code; goto error_handler; } \
+} while (0)
+#define try_add_c(str_name, v) do {\
+    struct Runnable rn_##v; \
+    try(rn_from_c(v, &rn_##v), STL_INT_INIT_RN_FROM_C_FAIL); \
+    try(mm_set(integral_methods, str_name, rn_##v), STL_INT_INIT_MM_SET_FAIL); \
+} while (0)
 ERROR init_integral_methods() {
-    
+    ERROR err;
+    if (mm_new(16, integral_methods) != NO_ERROR) {
+        return STL_INT_INIT_MM_NEW_FAIL;
+    }
+    try_add_c(">string", to_s);
+    return NO_ERROR;
+error_handler:;
+    mm_free(integral_methods);
+    return err;
 }
+
