@@ -31,6 +31,9 @@ ERROR to_s_d(struct DataStack *d, struct ScopeStack *s, struct TokenStack *t) {
         free(str_ver);
         return STL_INT_STR_MALLOC_FAIL;
     }
+    if (mm_claim(string_methods) != NO_ERROR) {
+        return STL_MM_CLAIM_FAIL;
+    }
     if (ctno_literal(str_ver, len_st, LTL_string, string_methods, res)
             != NO_ERROR) {
         free(str_ver);

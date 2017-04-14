@@ -131,6 +131,7 @@ static const ERROR TTO_OUT_OF_RANGE_FAIL            =  857;
 static const ERROR TTO_INVALID_BASE_FAIL            =  858;
 static const ERROR TTO_INVALID_DIGIT_FAIL           =  859;
 static const ERROR TTO_FLP_CONVERT_FAIL             =  860;
+static const ERROR TTO_MM_CLAIM_FAIL                =  861;
 static const ERROR RN_NEW_CB_COPY_FAIL              =  900;
 static const ERROR RN_COPY_CB_COPY_FAIL             =  901;
 static const ERROR RN_RUN_TST_PUSH_FAIL             =  902;
@@ -150,5 +151,6 @@ static const ERROR STL_STR_INIT_MM_SET_FAIL         = 1012;
 static const ERROR STL_INT_INIT_MALLOC_FAIL         = 1013;
 static const ERROR STL_STR_STR_DSPOP_FAIL           = 1014;
 static const ERROR STL_STR_INIT_MALLOC_FAIL         = 1015;
+static const ERROR STL_MM_CLAIM_FAIL                = 1016;
 
 #endif //CONCATEN_ERROR_H

@@ -42,7 +42,7 @@ ERROR init_string_methods() {
     try_add_c("puts", ctn_puts);
     
     return NO_ERROR;
-    error_handler:;
+error_handler:;
     mm_free(string_methods);
     return err;
 }

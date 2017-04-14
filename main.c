@@ -11,23 +11,23 @@ bool normal_parse(char *filepath) {
     ERROR err;
     struct Tokenizer tknr;
     if ((err = tknr_from_filepath(filepath, &tknr)) != NO_ERROR) {
-        printf("%s could not be tokenized: "EFMT"%s\n", filepath, err,
+        fprintf(stderr, "%s could not be tokenized: "EFMT"%s\n", filepath, err,
                 err == TKNR_CTOR_FILE_FOPEN_FAIL ? " (is it readable?)" : "");
         return false;
     }
     struct TokenStack tst;
     if ((err = tst_new(tknr, &tst)) != NO_ERROR) {
-        printf("Failed to initialize token stack: "EFMT"\n", err);
+        fprintf(stderr, "Failed to initialize token stack: "EFMT"\n", err);
         return false;
     }
     struct DataStack dst;
     if ((err = dst_new(&dst)) != NO_ERROR) {
-        printf("Failed to initialize data stack: "EFMT"\n", err);
+        fprintf(stderr, "Failed to initialize data stack: "EFMT"\n", err);
         return false;
     }
     struct ScopeStack sst;
     if ((err = sst_new(8, &sst)) != NO_ERROR) {
-        printf("Failed to initialize scope stack: "EFMT"\n", err);
+        fprintf(stderr, "Failed to initialize scope stack: "EFMT"\n", err);
         return false;
     }
     #define eprint(...) do {\
@@ -59,7 +59,7 @@ bool normal_parse(char *filepath) {
                         eprint("Failed to run: "EFMT"\n", err);
                         return false;
                     } else {
-                        break;
+                        continue;
                     }
                 }
             }
@@ -113,7 +113,7 @@ bool normal_parse(char *filepath) {
         }
     }
     if (err != TST_POP_EMPTY_FAIL) {
-        printf("Failed to get next token: "EFMT"\n", err);
+        fprintf(stderr, "Failed to get next token: "EFMT"\n", err);
         return false;
     }
     return true;
