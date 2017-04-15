@@ -30,6 +30,7 @@ bool normal_parse(char *filepath) {
         fprintf(stderr, "Failed to initialize scope stack: "EFMT"\n", err);
         return false;
     }
+    sst.layers[0] = global_funcs;
     #define eprint(...) do {\
         fprintf(stderr, "%s@%zu:%zu: Error while parsing '%s': ", \
             ctkn.origin, ctkn.line, ctkn.index, ctkn.raw); \
@@ -69,7 +70,7 @@ bool normal_parse(char *filepath) {
             size_t cands_count;
             sst_get_all(sst, ctkn.raw, &candidates, &cands_count);
             if (cands_count == 0) {
-                eprint("No word '%s' found.\n", ctkn.raw);
+                eprint("No word found.\n", ctkn.raw);
                 return false;
             }
             for (size_t i = 0; i < cands_count; ++i) {
@@ -89,6 +90,15 @@ bool normal_parse(char *filepath) {
                 
                 err = rn_run(candidates[i], &dst, &sst, &tst);
                 if (err == ARGUMENT_TYPE_MISMATCH_FAIL) {
+                    if ((err = tst_restore_state(&tst)) != NO_ERROR) {
+                        eprint("Failed to restore token stack: "EFMT"\n", err);
+                    }
+                    if ((err = sst_restore_state(&sst)) != NO_ERROR) {
+                        eprint("Failed to restore scope stack: "EFMT"\n", err);
+                    }
+                    if ((err = dst_copy(dst_c, &dst)) != NO_ERROR) {
+                        eprint("Failed to restore data stack: "EFMT"\n", err);
+                    }
                     continue;
                 } else if (err != NO_ERROR) {
                     eprint("Failed to run: "EFMT"\n", err);
@@ -97,6 +107,8 @@ bool normal_parse(char *filepath) {
                     break;
                 }
             }
+            eprint("Argument types all failed to match.\n");
+            return false;
         } else {
             struct Object *new_val = malloc(sizeof(*new_val));
             if (!new_val) {

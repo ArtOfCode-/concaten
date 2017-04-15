@@ -3,6 +3,7 @@
 
 #include "stl/integral.h"
 #include "stl/string.h"
+#include "stl/globals.h"
 
 ERROR init_stl();
 

@@ -10,6 +10,7 @@ struct CodeBlock {
 };
 
 ERROR cb_new(size_t, struct CodeBlock *);
+ERROR cb_from_tkns(size_t, struct Token *, struct CodeBlock *);
 ERROR cb_copy(const struct CodeBlock, struct CodeBlock *);
 ERROR cb_append(struct CodeBlock *, const struct Token);
 // no cb_push_to(CodeBlock, TokenStack) b/c that's in Runnable
