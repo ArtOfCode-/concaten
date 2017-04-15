@@ -70,7 +70,7 @@ bool normal_parse(char *filepath) {
             size_t cands_count;
             sst_get_all(sst, ctkn.raw, &candidates, &cands_count);
             if (cands_count == 0) {
-                eprint("No word found.\n", ctkn.raw);
+                eprint("No word found.\n");
                 return false;
             }
             for (size_t i = 0; i < cands_count; ++i) {

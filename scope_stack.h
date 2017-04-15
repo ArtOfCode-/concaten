@@ -16,11 +16,11 @@ struct SS_ChangeNode {
             struct Runnable val;
             size_t layer_idx;
         } single;
-        struct MethodMap removed_layer;
+        struct MethodMap *removed_layer;
     } set_data;
 };
 struct ScopeStack {
-    struct MethodMap *layers;
+    struct MethodMap **layers;
     size_t cap;
     size_t count;
     bool saving_state;

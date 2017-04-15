@@ -4,7 +4,7 @@
 #include "../tokenizer.h"
 #include "../method_map.h"
 
-struct MethodMap global_funcs;
+struct MethodMap *global_funcs = NULL;
 
 #define try(expr, code) do {\
     err = (expr); \
@@ -32,10 +32,14 @@ struct MethodMap global_funcs;
         STL_GLB_INIT_CB_NEW_FAIL); \
     struct Runnable rn_##id; \
     try(rn_from_ctn(cb_##id, &rn_##id), STL_GLB_INIT_RN_NEW_FAIL); \
-    try(mm_set(&global_funcs, name, rn_##id), STL_GLB_INIT_MM_SET_FAIL); \
+    try(mm_set(global_funcs, name, rn_##id), STL_GLB_INIT_MM_SET_FAIL); \
 } while(0)
 
 ERROR init_globals() {
+    global_funcs = malloc(sizeof(*global_funcs));
+    if (!global_funcs) {
+        return STL_GLB_INIT_MALLOC_FAIL;
+    }
     size_t pseudo_line = 0, pseudo_index = 0;
     ERROR err;
     try_add_ctn("*puts", any_puts,
@@ -43,6 +47,6 @@ ERROR init_globals() {
     
     return NO_ERROR;
 error_handler:;
-    mm_free(&global_funcs);
+    mm_free(global_funcs);
     return err;
 }
