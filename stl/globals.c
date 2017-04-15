@@ -6,7 +6,7 @@
 #include "../object.h"
 
 ERROR curly(struct DataStack *d, struct ScopeStack *s, struct TokenStack *t) {
-    (void)s;
+    (void) s;
     ERROR err = NO_ERROR;
     size_t curly_count = 1;
     struct CodeBlock ret;
@@ -36,9 +36,10 @@ ERROR curly(struct DataStack *d, struct ScopeStack *s, struct TokenStack *t) {
     if (!pushing) {
         return STL_GLB_CURLY_MALLOC_FAIL;
     }
-    printf("%zu tokens\n", ret.count);
-    if (ctno_literal(&ret, sizeof(ret), LTL_codeBlock, NULL, pushing) != 
-            NO_ERROR) {
+    printf("%zu tokens, ending in %s\n", ret.count,
+           ret.tokens[ret.count - 1].raw);
+    if (ctno_literal(&ret, sizeof(ret), LTL_codeBlock, NULL, pushing) !=
+        NO_ERROR) {
         return STL_GLB_CURLY_CTNO_NEW_FAIL;
     }
     cb_free(&ret);
@@ -90,7 +91,7 @@ ERROR init_globals() {
     try_add_c("{", curly);
     
     return NO_ERROR;
-error_handler:;
+  error_handler:;
     mm_free(&global_funcs);
     return err;
 }

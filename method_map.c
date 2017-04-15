@@ -10,7 +10,7 @@ struct MM_KeyValPair mm_kvp_zero() {
             .key = NULL,
             .func = (struct Runnable) {
                     .code.c = NULL,
-                    .is_c = false
+                    .type = RNT_C_CODE
             }
     };
 }
