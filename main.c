@@ -135,10 +135,10 @@ bool normal_parse(char *filepath) {
 
 int main(int argc, char **argv) {
     if (argc <= 0) {
-        puts("Usage: /path/to/concaten paths...");
+        fputs("Usage: /path/to/concaten paths...", stderr);
         return 1;
     } else if (argc == 1) {
-        printf("Usage: \"%s\" paths...\n", argv[0]);
+        fprintf(stderr, "Usage: \"%s\" paths...\n", argv[0]);
         return 1;
     }
     ERROR err;
