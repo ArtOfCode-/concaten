@@ -107,8 +107,10 @@ bool normal_parse(char *filepath) {
                     break;
                 }
             }
-            eprint("Argument types all failed to match.\n");
-            return false;
+            if (err == ARGUMENT_TYPE_MISMATCH_FAIL) {
+                eprint("Argument types all failed to match.\n");
+                return false;
+            }
         } else {
             struct Object *new_val = malloc(sizeof(*new_val));
             if (!new_val) {
