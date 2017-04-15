@@ -4,12 +4,12 @@
 
 * `*puts` - Prints any object, by using that objects `>string` method.  
   **Effect:** `*>`
-
-### Not yet implemented / Incomplete
-
 * `{` - Finds the matching `}`, ignoring all other brace types, adding every
   token until then to a code block that it pushes onto the stack.
   **Effect:** Irregular.
+
+### Not yet implemented / Incomplete
+
 * `[` - Finds the matching `]`, ignoring all other brace types, adding every
   token until then to a code block, which it runs. Anything added to the stack
   is removed from the stack and pushed into a list

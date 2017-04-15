@@ -4,6 +4,9 @@
 ERROR init_stl() {
     ERROR err;
     err = init_globals();
+    if (err != NO_ERROR) {
+        return err;
+    }
     err = init_integral_methods();
     if (err != NO_ERROR) {
         mm_free(&global_funcs);

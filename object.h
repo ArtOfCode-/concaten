@@ -15,8 +15,9 @@ typedef double real;
     X(boolean, bool) \
     X(dataStack, struct DataStack) \
     X(tokenStack, struct TokenStack) \
-//    X(runnable, struct Runnable)
-//    X(scopeStack, struct ScopeStack)
+    X(runnable, struct Runnable) \
+    X(scopeStack, struct ScopeStack) \
+    X(codeBlock, struct CodeBlock)
 //    X(list, struct List)
 //    X(map, struct Map)
 //    X(regex, struct Regex)

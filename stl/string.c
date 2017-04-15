@@ -18,6 +18,12 @@ ERROR ctn_puts(struct DataStack *d, struct ScopeStack *s, struct TokenStack *t) 
     return NO_ERROR;
 }
 
+ERROR string_to_s(struct DataStack *d, struct ScopeStack *s,
+                  struct TokenStack *t) {
+    (void)d;(void)s;(void)t; // nop; strings are already strings
+    return NO_ERROR;
+}
+
 struct MethodMap *string_methods = NULL;
 
 #define try(expr, code) do {\
@@ -40,6 +46,7 @@ ERROR init_string_methods() {
         return STL_STR_INIT_MM_NEW_FAIL;
     }
     try_add_c("puts", ctn_puts);
+    try_add_c(">string", string_to_s);
     
     return NO_ERROR;
 error_handler:;

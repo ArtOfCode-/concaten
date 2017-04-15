@@ -3,7 +3,8 @@
 #include "../object.h"
 #include "string.h"
 
-ERROR to_s_d(struct DataStack *d, struct ScopeStack *s, struct TokenStack *t) {
+ERROR integral_to_s_d(struct DataStack *d, struct ScopeStack *s,
+                      struct TokenStack *t) {
     (void)s;(void)t;
     struct Object *top;
     if (dst_pop(d, &top) != NO_ERROR) {
@@ -69,8 +70,8 @@ ERROR init_integral_methods() {
     if (mm_new(16, integral_methods) != NO_ERROR) {
         return STL_INT_INIT_MM_NEW_FAIL;
     }
-    try_add_c(">string", to_s_d);
-    try_add_c(">string-d", to_s_d);
+    try_add_c(">string", integral_to_s_d);
+    try_add_c(">string-d", integral_to_s_d);
     return NO_ERROR;
 error_handler:;
     mm_free(integral_methods);

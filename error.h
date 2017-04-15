@@ -158,5 +158,9 @@ static const ERROR STL_GLB_INIT_MM_NEW_FAIL         = 1017;
 static const ERROR STL_GLB_INIT_CB_NEW_FAIL         = 1018;
 static const ERROR STL_GLB_INIT_RN_NEW_FAIL         = 1019;
 static const ERROR STL_GLB_INIT_MM_SET_FAIL         = 1020;
+static const ERROR STL_GLB_CURLY_CB_NEW_FAIL        = 1021;
+static const ERROR STL_GLB_CURLY_MALLOC_FAIL        = 1022;
+static const ERROR STL_GLB_CURLY_CTNO_NEW_FAIL      = 1023;
+static const ERROR STL_GLB_CURLY_DSPUSH_FAIL        = 1024;
 
 #endif //CONCATEN_ERROR_H
