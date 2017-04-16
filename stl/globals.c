@@ -1,9 +1,5 @@
 #include "../stl.h"
-#include <stdlib.h>
 #include <string.h>
-#include "../tokenizer.h"
-#include "../method_map.h"
-#include "../object.h"
 
 ERROR curly(struct DataStack *d, struct ScopeStack *s, struct TokenStack *t) {
     (void) s;
@@ -50,7 +46,16 @@ ERROR curly(struct DataStack *d, struct ScopeStack *s, struct TokenStack *t) {
 }
 
 struct MethodMap global_funcs;
-
+static size_t pseudo_line = 0, pseudo_index = 0;
+static inline struct Token tkn(char *val, enum TokenType tt) {
+    pseudo_index += strlen(val) + 1;
+    return (struct Token) {
+        .raw = val, .raw_len = strlen(val),
+        .origin = "<native code>", .origin_len = 13,
+        .type = tt, .line = pseudo_line,
+        .index =  + 1,
+    };
+}
 #define try(expr, code) do {\
     err = (expr); \
     if (err != NO_ERROR) { err = code; goto error_handler; } \
@@ -62,12 +67,7 @@ struct MethodMap global_funcs;
 } while (0)
 // normally, string literals are bad, but the way these specific tokens are
 // used means it's fine to put literals, as long as I don't `tkn_free`.
-#define tkn(str_form, _type) (struct Token) { \
-    .raw = str_form, .raw_len = strlen(str_form), \
-    .origin = "<native code>", .origin_len = 13, \
-    .type = _type, .line = pseudo_line, \
-    .index = pseudo_index += strlen(str_form) + 1, \
-}
+
 #define try_add_ctn(name, id, ...) do { \
     ++pseudo_line; \
     struct Token id##_tkns[] = { __VA_ARGS__ }; \
@@ -84,7 +84,6 @@ ERROR init_globals() {
     if (mm_new(16, &global_funcs) != NO_ERROR) {
         return STL_GLB_INIT_MM_NEW_FAIL;
     }
-    size_t pseudo_line = 0, pseudo_index = 0;
     ERROR err;
     try_add_ctn("*puts", any_puts,
                 tkn(">string", TKN_WORD), tkn("puts", TKN_WORD));
