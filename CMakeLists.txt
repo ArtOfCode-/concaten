@@ -4,7 +4,7 @@ project(concaten C)
 set(CMAKE_C_STANDARD 11)
 
 set(NORMAL_FLAGS "-Wall -Wextra -Werror -pedantic -O3 -std=c11")
-set(NORMAL_LIBS)
+set(NORMAL_LIBS m)
 
 set(TEST_FLAGS "-g")
 set(TEST_LIBS)
