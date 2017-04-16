@@ -54,7 +54,7 @@ bool normal_parse(char *filepath) {
                         return false;
                     }
                     err = rn_run(trying, &dst, &sst, &tst);
-                    if (err == ARGUMENT_TYPE_MISMATCH_FAIL) {
+                    if (err == ARGUMENT_MISMATCH_FAIL) {
                         /* nop */
                     } else if (err != NO_ERROR) {
                         eprint("Failed to run: "EFMT"\n", err);
@@ -89,7 +89,7 @@ bool normal_parse(char *filepath) {
                 }
                 
                 err = rn_run(candidates[i], &dst, &sst, &tst);
-                if (err == ARGUMENT_TYPE_MISMATCH_FAIL) {
+                if (err == ARGUMENT_MISMATCH_FAIL) {
                     if ((err = tst_restore_state(&tst)) != NO_ERROR) {
                         eprint("Failed to restore token stack: "EFMT"\n", err);
                     }
@@ -107,7 +107,7 @@ bool normal_parse(char *filepath) {
                     break;
                 }
             }
-            if (err == ARGUMENT_TYPE_MISMATCH_FAIL) {
+            if (err == ARGUMENT_MISMATCH_FAIL) {
                 eprint("Argument types all failed to match.\n");
                 return false;
             }

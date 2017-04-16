@@ -10,8 +10,8 @@ typedef signed long long integral;
 typedef double real;
 
 #define all_types_X \
-    X(integral, Integral) \
-    X(real, signed Real) \
+    X(integral, integral) \
+    X(real, real) \
     X(boolean, bool) \
     X(dataStack, struct DataStack) \
     X(tokenStack, struct TokenStack) \

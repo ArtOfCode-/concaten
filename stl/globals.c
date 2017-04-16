@@ -57,8 +57,8 @@ struct MethodMap global_funcs;
 } while (0)
 #define try_add_c(name, v) do {\
     struct Runnable rn_##v; \
-    try(rn_from_c(v, &rn_##v), STL_INT_INIT_RN_FROM_C_FAIL); \
-    try(mm_set(&global_funcs, name, rn_##v), STL_INT_INIT_MM_SET_FAIL); \
+    try(rn_from_c(v, &rn_##v), STL_INIT_RN_FROM_C_FAIL); \
+    try(mm_set(&global_funcs, name, rn_##v), STL_INIT_MM_SET_FAIL); \
 } while (0)
 // normally, string literals are bad, but the way these specific tokens are
 // used means it's fine to put literals, as long as I don't `tkn_free`.
