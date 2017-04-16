@@ -95,13 +95,17 @@ bool normal_parse(char *filepath) {
                 if (err == ARGUMENT_MISMATCH_FAIL) {
                     if ((err = tst_restore_state(&tst)) != NO_ERROR) {
                         eprint("Failed to restore token stack: "EFMT"\n", err);
+                        goto error;
                     }
                     if ((err = sst_restore_state(&sst)) != NO_ERROR) {
                         eprint("Failed to restore scope stack: "EFMT"\n", err);
+                        goto error;
                     }
                     if ((err = dst_copy(dst_c, &dst)) != NO_ERROR) {
                         eprint("Failed to restore data stack: "EFMT"\n", err);
+                        goto error;
                     }
+                    dst_free(&dst_c);
                     continue;
                 } else if (err != NO_ERROR) {
                     eprint("Failed to run: "EFMT"\n", err);
