@@ -65,7 +65,7 @@ ERROR real_add(struct DataStack *d, struct ScopeStack *s,
     if (second_o->is_literal) {
         if (second_o->data.literal.type == LTL_integral) {
             integral *second_v = ctno_to(second_o, integral);
-            real res = *top_v + *second_v;
+            real res = *second_v+ *top_v;
             ctno_free(top_o);
             ctno_free(second_o);
             if (!res_o) {
@@ -83,7 +83,7 @@ ERROR real_add(struct DataStack *d, struct ScopeStack *s,
             }
         } else if (second_o->data.literal.type == LTL_real) {
             real *second_v = ctno_to(second_o, real);
-            real res = *top_v + *second_v;
+            real res = *second_v+ *top_v;
             ctno_free(top_o);
             ctno_free(second_o);
             if (!res_o) {
@@ -130,7 +130,7 @@ ERROR real_sub(struct DataStack *d, struct ScopeStack *s,
     if (second_o->is_literal) {
         if (second_o->data.literal.type == LTL_integral) {
             integral *second_v = ctno_to(second_o, integral);
-            real res = *top_v - *second_v;
+            real res = *second_v- *top_v;
             ctno_free(top_o);
             ctno_free(second_o);
             if (!res_o) {
@@ -143,7 +143,7 @@ ERROR real_sub(struct DataStack *d, struct ScopeStack *s,
             }
         } else if (second_o->data.literal.type == LTL_real) {
             real *second_v = ctno_to(second_o, real);
-            real res = *top_v - *second_v;
+            real res = *second_v- *top_v;
             ctno_free(top_o);
             ctno_free(second_o);
             if (!res_o) {
@@ -187,7 +187,7 @@ ERROR real_mul(struct DataStack *d, struct ScopeStack *s,
     if (second_o->is_literal) {
         if (second_o->data.literal.type == LTL_integral) {
             integral *second_v = ctno_to(second_o, integral);
-            real res = *top_v * (*second_v);
+            real res = *second_v* (*top_v);
             ctno_free(top_o);
             ctno_free(second_o);
             if (!res_o) {
@@ -200,7 +200,7 @@ ERROR real_mul(struct DataStack *d, struct ScopeStack *s,
             }
         } else if (second_o->data.literal.type == LTL_real) {
             real *second_v = ctno_to(second_o, real);
-            real res = *top_v * (*second_v);
+            real res = *second_v* (*top_v);
             ctno_free(top_o);
             ctno_free(second_o);
             if (!res_o) {
@@ -248,13 +248,13 @@ ERROR real_div(struct DataStack *d, struct ScopeStack *s,
             if (*second_v == 0) {
                 return STL_DIV_BY_ZERO_FAIL;
             }
-            res = *top_v / (real) *second_v;
+            res = *second_v/ (real) *top_v;
         } else if (second_o->data.literal.type == LTL_real) {
             real *second_v = ctno_to(second_o, real);
             if (*second_v == 0) {
                 return STL_DIV_BY_ZERO_FAIL;
             }
-            res = *top_v / *second_v;
+            res = *second_v/ *top_v;
         } else {
             return ARGUMENT_MISMATCH_FAIL;
         }
@@ -308,13 +308,13 @@ ERROR real_mod(struct DataStack *d, struct ScopeStack *s,
             if (*second_v == 0) {
                 return STL_DIV_BY_ZERO_FAIL;
             }
-            res = real_euclid_mod(*top_v, (real) *second_v);
+            res = real_euclid_mod(*second_v, (real) *top_v);
         } else if (second_o->data.literal.type == LTL_real) {
             real *second_v = ctno_to(second_o, real);
             if (*second_v == 0) {
                 return STL_DIV_BY_ZERO_FAIL;
             }
-            res = real_euclid_mod(*top_v, *second_v);
+            res = real_euclid_mod(*second_v, *top_v);
         } else {
             return ARGUMENT_MISMATCH_FAIL;
         }
