@@ -80,7 +80,9 @@ static inline struct Token tkn(char *val, enum TokenType tt) {
     try(mm_set(&global_funcs, name, rn_##id), STL_GLB_INIT_MM_SET_FAIL); \
 } while(0)
 
-ERROR init_globals() {
+ERROR init_globals(int argc, char **argv) {
+    // TODO make lists so that we can make `args`
+    (void) argc; (void) argv;
     if (mm_new(16, &global_funcs) != NO_ERROR) {
         return STL_GLB_INIT_MM_NEW_FAIL;
     }

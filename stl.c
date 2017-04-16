@@ -1,8 +1,8 @@
 #include "stl.h"
 
-ERROR init_stl() {
+ERROR init_stl(int argc, char **argv) {
     ERROR err;
-    err = init_globals();
+    err = init_globals(argc, argv);
     if (err != NO_ERROR) {
         return err;
     }

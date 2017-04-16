@@ -10,8 +10,8 @@ X(string, _)
 #undef X
 
 struct MethodMap global_funcs;
-ERROR init_globals();
+ERROR init_globals(int argc, char **argv);
 
-ERROR init_stl();
+ERROR init_stl(int argc, char **argv);
 
 #endif //CONCATEN_STL_H

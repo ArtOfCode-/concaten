@@ -40,21 +40,27 @@ bool parse(struct Tokenizer tknr, struct MethodMap globals) {
             if (!dst_empty(dst)) {
                 struct Object *top;
                 if ((err = dst_peek(&dst, &top)) != NO_ERROR) {
-                    eprint("Failed to retrieve data top: "EFMT"\n", err);
+                    eprint("Failed to retrieve data top: "
+                                   EFMT
+                                   "\n", err);
                     goto error;
                 }
                 if (mm_is_key(*top->methods, ctkn.raw)) {
                     struct Runnable trying;
                     if ((err = mm_get(*top->methods, ctkn.raw, &trying))
-                            != NO_ERROR) {
-                        eprint("Failed to get existing key: "EFMT"\n", err);
+                        != NO_ERROR) {
+                        eprint("Failed to get existing key: "
+                                       EFMT
+                                       "\n", err);
                         goto error;
                     }
                     err = rn_run(trying, &dst, &sst, &tst);
                     if (err == ARGUMENT_MISMATCH_FAIL) {
                         /* nop */
                     } else if (err != NO_ERROR) {
-                        eprint("Failed to run: "EFMT"\n", err);
+                        eprint("Failed to run: "
+                                       EFMT
+                                       "\n", err);
                         goto error;
                     } else {
                         continue;
@@ -72,37 +78,51 @@ bool parse(struct Tokenizer tknr, struct MethodMap globals) {
             }
             for (size_t i = 0; i < cands_count; ++i) {
                 if ((err = sst_save_state(&sst)) != NO_ERROR) {
-                    eprint("Failed to save scope stack: "EFMT"\n", err);
+                    eprint("Failed to save scope stack: "
+                                   EFMT
+                                   "\n", err);
                     goto error;
                 }
                 if ((err = tst_save_state(&tst)) != NO_ERROR) {
-                    eprint("Failed to save token stack: "EFMT"\n", err);
+                    eprint("Failed to save token stack: "
+                                   EFMT
+                                   "\n", err);
                     goto error;
                 }
                 struct DataStack dst_c;
                 if ((err = dst_copy(dst, &dst_c)) != NO_ERROR) {
-                    eprint("Failed to copy data stack: "EFMT"\n", err);
+                    eprint("Failed to copy data stack: "
+                                   EFMT
+                                   "\n", err);
                     goto error;
                 }
                 
                 err = rn_run(candidates[i], &dst, &sst, &tst);
                 if (err == ARGUMENT_MISMATCH_FAIL) {
                     if ((err = tst_restore_state(&tst)) != NO_ERROR) {
-                        eprint("Failed to restore token stack: "EFMT"\n", err);
+                        eprint("Failed to restore token stack: "
+                                       EFMT
+                                       "\n", err);
                         goto error;
                     }
                     if ((err = sst_restore_state(&sst)) != NO_ERROR) {
-                        eprint("Failed to restore scope stack: "EFMT"\n", err);
+                        eprint("Failed to restore scope stack: "
+                                       EFMT
+                                       "\n", err);
                         goto error;
                     }
                     if ((err = dst_copy(dst_c, &dst)) != NO_ERROR) {
-                        eprint("Failed to restore data stack: "EFMT"\n", err);
+                        eprint("Failed to restore data stack: "
+                                       EFMT
+                                       "\n", err);
                         goto error;
                     }
                     dst_free(&dst_c);
                     continue;
                 } else if (err != NO_ERROR) {
-                    eprint("Failed to run: "EFMT"\n", err);
+                    eprint("Failed to run: "
+                                   EFMT
+                                   "\n", err);
                     goto error;
                 } else {
                     break;
@@ -118,11 +138,15 @@ bool parse(struct Tokenizer tknr, struct MethodMap globals) {
                 eprint("Failed to allocate space for new object.\n");
             }
             if ((err = tkn_value(&ctkn, new_val)) != NO_ERROR) {
-                eprint("Failed to get token's value: "EFMT"\n", err);
+                eprint("Failed to get token's value: "
+                               EFMT
+                               "\n", err);
                 goto error;
             }
             if ((err = dst_push(&dst, new_val)) != NO_ERROR) {
-                eprint("Failed to push token's value: "EFMT"\n", err);
+                eprint("Failed to push token's value: "
+                               EFMT
+                               "\n", err);
                 goto error;
             }
         }
@@ -135,12 +159,13 @@ bool parse(struct Tokenizer tknr, struct MethodMap globals) {
     sst_free(&sst);
     tst_free(&tst);
     return true;
-error:;
+  error:;
     dst_free(&dst);
     sst_free(&sst);
     tst_free(&tst);
     return false;
 }
+
 
 int main(int argc, char **argv) {
     if (argc <= 0) {
@@ -151,22 +176,17 @@ int main(int argc, char **argv) {
         return 1;
     }
     ERROR err;
-    if ((err = init_stl()) != NO_ERROR) {
-        fprintf(stderr, "Failed to init standard library: "EFMT"\n", err);
-    }
-    for (int ai = 0; ai < argc; ++ai) {
-        puts(argv[ai]);
-    }
-    puts("---");
-    
     if (argv[1][0] == '-') {
         if (argv[1][1] == 'e') {
             if (argc == 2) {
                 puts("-e expects an argument; none provided.");
             }
+            if ((err = init_stl(argc - 3, argv + 3)) != NO_ERROR) {
+                fprintf(stderr, "Failed to init stl: "EFMT"\n", err);
+            }
             struct Tokenizer tknr;
             if ((err = tknr_from_string(argv[2], "<cli>", &tknr))
-                    != NO_ERROR) {
+                != NO_ERROR) {
                 fprintf(stderr, "Couldn't tokenize `%s`: "EFMT,
                         argv[1], err);
                 if (err == TKNR_CTOR_FILE_FOPEN_FAIL) {
@@ -182,8 +202,10 @@ int main(int argc, char **argv) {
                 return -1;
             }
         }
-    }
-    else {
+    } else {
+        if ((err = init_stl(argc - 3, argv + 3)) != NO_ERROR) {
+            fprintf(stderr, "Failed to init stl: "EFMT"\n", err);
+        }
         struct Tokenizer tknr;
         if ((err = tknr_from_filepath(argv[1], &tknr)) != NO_ERROR) {
             fprintf(stderr, "Couldn't tokenize %s: "EFMT, argv[1], err);
