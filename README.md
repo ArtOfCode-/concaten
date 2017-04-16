@@ -54,18 +54,28 @@ For an example of how the language will probably look, see `test.ctn`.
   specced out, actual usage might reveal things that I didn't consider, and
   therefore need to add in, remove, or change.
 
+### Installing
+
+Installing Concaten is simple if you have `git`, `cmake` and `make` installed.
+Just run this command:
+
+    git clone https://github.com/nic-hartley/concaten.git && \
+    cd concaten && cmake . && make
+
+This will clone the `master` branch of the repositiory (which has the latest
+stable version) and build it. If you'd like the bleeding-edge version, which
+might not always compile, let alone function correctly, do `git checkout dev`
+immediately after `cd`ing.
+
+If you discover any issues, please report them on GitHub.
+
 ### Helping out
 
 If you want to contribute code, awesome! Be sure to check out `CODE_STYLE.md`.
 
-If you don't feel like contributing code, but want to help, run this command,
-which should work on any shell with `git`, `cmake`, and `make` installed:
-
-    git clone https://github.com/nic-hartley/concaten.git -b dev && \
-    cd concaten && cmake . && make && ./tester
-
-Then send me the output (presumably, you can get to me somehow; I doubt you
-found this on your own). 
+If you don't feel like contributing code, but want to help, first install
+Concaten as described above, then run `./tester`. Then, send me the output
+(presumably, you can get to me somehow; I doubt you found this on your own). 
 
 If everything succeeds, the output will look something like this:
 
@@ -79,7 +89,10 @@ If everything succeeds, the output will look something like this:
     Testing tokenizer...        28 succeeded in  426 us.
     Done with all tests
 
-If it failed at any stage, you'll see something like this in the middle:
+The numbers may be different; I'd appreciate a copy/paste so I can see
+(roughly) how fast different things are on different machines.
+
+If it failed at any stage, you'll see something like this:
 
     /path/to/dir/tests/foo.c:123: Failed something-or-other
     1 failed in 12 us.
