@@ -8,6 +8,7 @@
 #include "tokenizer.h"
 #include "object.h"
 #include "stl.h"
+#include "ctno_ctors.h"
 
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wunused-parameter"
@@ -164,7 +165,7 @@ ERROR tkn_value_string(struct Token *from, struct Object *into) {
     if (mm_claim(string_methods) != NO_ERROR) {
         return TTO_MM_CLAIM_FAIL;
     }
-    ERROR err = ctno_literal(esc, esc_len, LTL_string, string_methods, into);
+    ERROR err = ctno_from_cstring(esc, esc_len, into);
     --from->raw;
     tkn_free(from);
     free(esc);
@@ -217,8 +218,7 @@ ERROR tkn_value_integral(struct Token *from, struct Object *into) {
     if (mm_claim(integral_methods) != NO_ERROR) {
         return TTO_MM_CLAIM_FAIL;
     }
-    ERROR err = ctno_literal(&val, sizeof(val), LTL_integral,
-                             integral_methods, into);
+    ERROR err = ctno_from_integral(val, into);
     tkn_free(from);
     return err;
 }
@@ -233,7 +233,7 @@ ERROR tkn_value_real(struct Token *from, struct Object *into) {
     if (end != from->raw + from->raw_len) {
         return TTO_INVALID_DIGIT_FAIL;
     }
-    ERROR err = ctno_literal(&val, sizeof(val), LTL_real, NULL, into);
+    ERROR err = ctno_from_real(val, into);
     tkn_free(from);
     return err;
 }

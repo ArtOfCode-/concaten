@@ -1,4 +1,4 @@
-#include "globals.h"
+#include "../stl.h"
 #include <stdlib.h>
 #include <string.h>
 #include "../tokenizer.h"

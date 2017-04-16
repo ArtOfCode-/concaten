@@ -10,6 +10,7 @@ static const ERROR NO_ERROR = 0;
  * Core class errors *
  *********************/
 
+// TODO generalize error codes
 static const ERROR ARGUMENT_MISMATCH_FAIL           =    1;
 static const ERROR USER_DEFINED_ERROR               =   99;
 static const ERROR CB_CTOR_MALLOC_FAIL              =  101;
@@ -140,7 +141,6 @@ static const ERROR RN_RUN_TST_PUSH_FAIL             =  902;
 static const ERROR RN_NEW_CTNO_CLAIM_FAIL           =  903;
 static const ERROR RN_RUN_DST_PUSH_FAIL             =  904;
 static const ERROR RN_COPY_CTNO_CLAIM_FAIL          =  905;
-// TODO generalize these error codes
 static const ERROR STL_INIT_MM_NEW_FAIL             = 1000;
 static const ERROR STL_INIT_RN_FROM_C_FAIL          = 1001;
 static const ERROR STL_INIT_MM_SET_FAIL             = 1002;
@@ -160,5 +160,6 @@ static const ERROR STL_GLB_CURLY_MALLOC_FAIL        = 1020;
 static const ERROR STL_GLB_CURLY_CTNO_NEW_FAIL      = 1021;
 static const ERROR STL_GLB_CURLY_DSPUSH_FAIL        = 1022;
 static const ERROR STL_INT_ADD_PUSH_FAIL            = 1023;
+static const ERROR STL_DIV_BY_ZERO_FAIL             = 1024;
 
 #endif //CONCATEN_ERROR_H

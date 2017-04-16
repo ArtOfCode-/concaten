@@ -1,5 +1,4 @@
-#include "string.h"
-
+#include "../stl.h"
 #include "../method_map.h"
 #include "../object.h"
 
