@@ -23,11 +23,14 @@ bool normal_parse(char *filepath) {
     struct DataStack dst;
     if ((err = dst_new(&dst)) != NO_ERROR) {
         fprintf(stderr, "Failed to initialize data stack: "EFMT"\n", err);
+        tst_free(&tst);
         return false;
     }
     struct ScopeStack sst;
     if ((err = sst_new(8, &sst)) != NO_ERROR) {
         fprintf(stderr, "Failed to initialize scope stack: "EFMT"\n", err);
+        dst_free(&dst);
+        tst_free(&tst);
         return false;
     }
     sst.layers[0] = global_funcs;
@@ -44,21 +47,21 @@ bool normal_parse(char *filepath) {
                 struct Object *top;
                 if ((err = dst_peek(&dst, &top)) != NO_ERROR) {
                     eprint("Failed to retrieve data top: "EFMT"\n", err);
-                    return false;
+                    goto error;
                 }
                 if (mm_is_key(*top->methods, ctkn.raw)) {
                     struct Runnable trying;
                     if ((err = mm_get(*top->methods, ctkn.raw, &trying))
                             != NO_ERROR) {
                         eprint("Failed to get existing key: "EFMT"\n", err);
-                        return false;
+                        goto error;
                     }
                     err = rn_run(trying, &dst, &sst, &tst);
                     if (err == ARGUMENT_MISMATCH_FAIL) {
                         /* nop */
                     } else if (err != NO_ERROR) {
                         eprint("Failed to run: "EFMT"\n", err);
-                        return false;
+                        goto error;
                     } else {
                         continue;
                     }
@@ -71,21 +74,21 @@ bool normal_parse(char *filepath) {
             sst_get_all(sst, ctkn.raw, &candidates, &cands_count);
             if (cands_count == 0) {
                 eprint("No word found.\n");
-                return false;
+                goto error;
             }
             for (size_t i = 0; i < cands_count; ++i) {
                 if ((err = sst_save_state(&sst)) != NO_ERROR) {
                     eprint("Failed to save scope stack: "EFMT"\n", err);
-                    return false;
+                    goto error;
                 }
                 if ((err = tst_save_state(&tst)) != NO_ERROR) {
                     eprint("Failed to save token stack: "EFMT"\n", err);
-                    return false;
+                    goto error;
                 }
                 struct DataStack dst_c;
                 if ((err = dst_copy(dst, &dst_c)) != NO_ERROR) {
                     eprint("Failed to copy data stack: "EFMT"\n", err);
-                    return false;
+                    goto error;
                 }
                 
                 err = rn_run(candidates[i], &dst, &sst, &tst);
@@ -102,14 +105,14 @@ bool normal_parse(char *filepath) {
                     continue;
                 } else if (err != NO_ERROR) {
                     eprint("Failed to run: "EFMT"\n", err);
-                    return false;
+                    goto error;
                 } else {
                     break;
                 }
             }
             if (err == ARGUMENT_MISMATCH_FAIL) {
                 eprint("Argument types all failed to match.\n");
-                return false;
+                goto error;
             }
         } else {
             struct Object *new_val = malloc(sizeof(*new_val));
@@ -118,19 +121,24 @@ bool normal_parse(char *filepath) {
             }
             if ((err = tkn_value(&ctkn, new_val)) != NO_ERROR) {
                 eprint("Failed to get token's value: "EFMT"\n", err);
-                return false;
+                goto error;
             }
             if ((err = dst_push(&dst, new_val)) != NO_ERROR) {
                 eprint("Failed to push token's value: "EFMT"\n", err);
-                return false;
+                goto error;
             }
         }
     }
     if (err != TST_POP_EMPTY_FAIL) {
         fprintf(stderr, "Failed to get next token: "EFMT"\n", err);
-        return false;
+        goto error;
     }
     return true;
+error:;
+    dst_free(&dst);
+    sst_free(&sst);
+    tst_free(&tst);
+    return false;
 }
 
 int main(int argc, char **argv) {
