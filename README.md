@@ -117,7 +117,6 @@ Versions only apply to that branch. For example, dev might be at 1.6.3, while
 
 This should have been done a while ago, but I forgot to add it to the roadmap.
 
-* `type.h` - 0.9  
   Just a list of strings, really. Well, *identifiers*, but those are strings
     with a special flag behind the scenes.
   * [x] Define interface - 0.9.0
@@ -127,12 +126,12 @@ This should have been done a while ago, but I forgot to add it to the roadmap.
   * [x] Test them - 0.9.2  
     This will require some fanciness with methods on objects, but shouldn't be
       super hard.
-
-### Upcoming milestones
 * [ ] Minimal standard library - 0.10  
   Words like `if`, `{`, and `puts` so we can play with the language at all.
   * When designing/adding arrays, add the same methods to `CodeBlock`
   * If necessary, create `ctno_mk_` family to automatically create things
+
+### Upcoming milestones
 * [ ] Misc. required updates as needed - 0.11
   * [ ] Thorough code review  
     Finding places where the code is needlessly complicated, duplicated, or
@@ -248,3 +247,18 @@ This should have been done a while ago, but I forgot to add it to the roadmap.
   The code is getting a little out of hand. I have some things I want to do to
     clean it up. (Fun fact: This bit took more time than any other milestone,
     I think. Just goes to show how important planning in advance is.)
+* [x] `runnable.h` - 0.6  
+  A combination object so I can either define things in Concaten, through
+    code blocks, or in C, through functions with a certain signature, and
+    call them without worrying about which is which. This layer of abstraction
+    will make it much easier to implement user-defined words.
+* [x] `scope_stack.h` - 0.7  
+  Contains the list of words. This is a stack so we can sensibly implement
+    things like local variables. Shouldn't be too much trouble; it'll mostly
+    be combining `PropMap` and `DataStack`.
+* [x] Main method - 0.8
+  Simple main method; untestable without the standard library.
+* [x] `type.h` - 0.9  
+  A simple class to contain the types, which are basically interfaces (I call
+  them fail-fast ducktypes, to sound unique).  
+  This should have been done earlier, but it was forgotten. Whoops.
