@@ -141,6 +141,10 @@ Versions only apply to that branch. For example, dev might be at 1.6.3, while
     Design some code that'll test as many features as possible, as strenuously
       as possible, so that we have a good program to benchmark and profile
       with. I want to optimize the slowest parts.
+  * [ ] Make sure nothing leaks memory.  
+    There are a lot of places where memory could get leaked, especially in the
+      standard library. Go through and make sure none of them are actually
+      leaking anything.
   * [ ] Benchmarking between Concaten and equivalent-level languages  
     Probably Python or Ruby. I want at most 3x time taken, and for that value
       to be as low as possible.
