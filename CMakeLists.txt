@@ -11,7 +11,7 @@ set(TEST_LIBS)
 
 # to enable ASan, add -fsanitize=address -fno-omit-frame-pointer and asan lib
 # it doesn't work on WSL, so it's not added by default
-set(PROFILE_FLAGS "-O0")
+set(PROFILE_FLAGS "-g -O0")
 set(PROFILE_LIBS)
 
 set(NORMAL_SRCS
