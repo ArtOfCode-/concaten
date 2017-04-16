@@ -7,14 +7,8 @@
 #include "object.h"
 #include "stl.h"
 
-bool normal_parse(char *filepath) {
+bool parse(struct Tokenizer tknr, struct MethodMap globals) {
     ERROR err;
-    struct Tokenizer tknr;
-    if ((err = tknr_from_filepath(filepath, &tknr)) != NO_ERROR) {
-        fprintf(stderr, "%s could not be tokenized: "EFMT"%s\n", filepath, err,
-                err == TKNR_CTOR_FILE_FOPEN_FAIL ? " (is it readable?)" : "");
-        return false;
-    }
     struct TokenStack tst;
     if ((err = tst_new(tknr, &tst)) != NO_ERROR) {
         fprintf(stderr, "Failed to initialize token stack: "EFMT"\n", err);
@@ -33,7 +27,7 @@ bool normal_parse(char *filepath) {
         tst_free(&tst);
         return false;
     }
-    sst.layers[0] = global_funcs;
+    sst.layers[0] = globals;
     #define eprint(...) do {\
         fprintf(stderr, "%s@%zu:%zu: Error while parsing '%s': ", \
             ctkn.origin, ctkn.line, ctkn.index, ctkn.raw); \
@@ -140,13 +134,11 @@ bool normal_parse(char *filepath) {
     dst_free(&dst);
     sst_free(&sst);
     tst_free(&tst);
-    tknr_free(&tknr);
     return true;
 error:;
     dst_free(&dst);
     sst_free(&sst);
     tst_free(&tst);
-    tknr_free(&tknr);
     return false;
 }
 
@@ -162,11 +154,52 @@ int main(int argc, char **argv) {
     if ((err = init_stl()) != NO_ERROR) {
         fprintf(stderr, "Failed to init standard library: "EFMT"\n", err);
     }
-    for (int argidx = 1; argidx < argc; ++argidx) {
-        int res = normal_parse(argv[argidx]);
-        if (!res) {
-            return argidx;
+    for (int ai = 0; ai < argc; ++ai) {
+        puts(argv[ai]);
+    }
+    puts("---");
+    
+    if (argv[1][0] == '-') {
+        if (argv[1][1] == 'e') {
+            if (argc == 2) {
+                puts("-e expects an argument; none provided.");
+            }
+            struct Tokenizer tknr;
+            if ((err = tknr_from_string(argv[2], "<cli>", &tknr))
+                    != NO_ERROR) {
+                fprintf(stderr, "Couldn't tokenize `%s`: "EFMT,
+                        argv[1], err);
+                if (err == TKNR_CTOR_FILE_FOPEN_FAIL) {
+                    puts(" (is it readable?)");
+                } else {
+                    puts("");
+                }
+                return false;
+            }
+            bool res = parse(tknr, global_funcs);
+            tknr_free(&tknr);
+            if (!res) {
+                return -1;
+            }
         }
     }
+    else {
+        struct Tokenizer tknr;
+        if ((err = tknr_from_filepath(argv[1], &tknr)) != NO_ERROR) {
+            fprintf(stderr, "Couldn't tokenize %s: "EFMT, argv[1], err);
+            if (err == TKNR_CTOR_FILE_FOPEN_FAIL) {
+                puts(" (is it readable?)");
+            } else {
+                puts("");
+            }
+            return false;
+        }
+        bool res = parse(tknr, global_funcs);
+        tknr_free(&tknr);
+        if (!res) {
+            return -1;
+        }
+    }
+    
     return 0;
 }
