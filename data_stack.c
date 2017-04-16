@@ -68,6 +68,10 @@ ERROR dst_copy(const struct DataStack dst, struct DataStack *into) {
     return NO_ERROR;
 }
 
+bool dst_empty(const struct DataStack this) {
+    return this.head == NULL;
+}
+
 void dst_free(struct DataStack *dst) {
     struct DST_Node *cur = dst->head;
     while (cur) {

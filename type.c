@@ -68,12 +68,12 @@ ERROR tp_copy(const struct Type from, struct Type *into) {
     return NO_ERROR;
 }
 
-bool tp_matches(const struct Type this, const struct Object checking) {
+bool tp_matches(const struct Type this, const struct Object *checking) {
     // we're checking that the methods in the type are a subset of the methods
     // that the object has, not vice versa. Having extra methods is fine, but
     // the object has to have all ofthem.
     for (size_t midx = 0; midx < this.mthds_count; ++midx) {
-        if (!mm_is_key(*checking.methods, this.mthds[midx])) {
+        if (!mm_is_key(*checking->methods, this.mthds[midx])) {
             return false;
         }
     }

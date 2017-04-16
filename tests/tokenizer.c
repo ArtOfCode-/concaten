@@ -103,8 +103,8 @@ struct TestResult test_tokenizer() {
                     .is_from_file = false,
                     .code = NO_ERROR,
                     .types = (enum TokenType[]) {
-                            TKN_WORD, TKN_STRING, TKN_INTEGER, TKN_INTEGER,
-                            TKN_INTEGER, TKN_INTEGER, TKN_REAL,
+                            TKN_WORD, TKN_STRING, TKN_INTEGRAL, TKN_INTEGRAL,
+                            TKN_INTEGRAL, TKN_INTEGRAL, TKN_REAL,
                             TKN_IDENTIFIER, TKN_WORD, TKN_WORD, TKN_WORD,
                             TKN_REGEX
                     },
@@ -115,7 +115,7 @@ struct TestResult test_tokenizer() {
                     .is_from_file = true,
                     .code = NO_ERROR,
                     .types = NULL,
-                    .token_count = 72
+                    .token_count = 82
             }
     };
     size_t test_num = sizeof(tests) / sizeof(tests[0]);

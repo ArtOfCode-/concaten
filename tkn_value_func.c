@@ -3,9 +3,12 @@
 #include <limits.h>
 #include <errno.h>
 #include <math.h>
+
 #include "error.h"
 #include "tokenizer.h"
 #include "object.h"
+#include "stl.h"
+#include "ctno_ctors.h"
 
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wunused-parameter"
@@ -141,7 +144,7 @@ ERROR tto_escape_string(const char *str, size_t val_len,
         }
     }
     *ret_pos = 0;
-    ++ret_pos;
+    ++ret_pos; // ret_pos is on the null terminator before this
     *out = ret;
     *out_len = ret_pos - ret;
     return NO_ERROR;
@@ -151,7 +154,7 @@ ERROR tto_escape_string(const char *str, size_t val_len,
 }
 
 ERROR tkn_value_string(struct Token *from, struct Object *into) {
-    size_t val_len = from->raw_len - 2;
+    size_t val_len = from->raw_len - 1;
     ++from->raw;
     from->raw[val_len] = '\0';
     char *esc;
@@ -159,14 +162,17 @@ ERROR tkn_value_string(struct Token *from, struct Object *into) {
     if (tto_escape_string(from->raw, val_len, &esc, &esc_len) != NO_ERROR) {
         return TTO_STRING_ESCAPE_FAIL;
     }
-    ERROR err = ctno_literal(esc, esc_len, LTL_string, NULL, into);
+    if (mm_claim(string_methods) != NO_ERROR) {
+        return TTO_MM_CLAIM_FAIL;
+    }
+    ERROR err = ctno_from_cstring(esc, esc_len, into);
     --from->raw;
     tkn_free(from);
     free(esc);
     return err;
 }
 
-ERROR tkn_value_integer(struct Token *from, struct Object *into) {
+ERROR tkn_value_integral(struct Token *from, struct Object *into) {
     int b = 10;
     char *raw = from->raw;
     size_t len = from->raw_len;
@@ -206,10 +212,13 @@ ERROR tkn_value_integer(struct Token *from, struct Object *into) {
     if ((val == LLONG_MAX || val == LLONG_MIN) && errno == ERANGE) {
         return TTO_OUT_OF_RANGE_FAIL;
     }
-    if (num_end != raw + len - 1) {
+    if (num_end != raw + len) {
         return TTO_INVALID_DIGIT_FAIL;
     }
-    ERROR err = ctno_literal(&val, sizeof(val), LTL_integral, NULL, into);
+    if (mm_claim(integral_methods) != NO_ERROR) {
+        return TTO_MM_CLAIM_FAIL;
+    }
+    ERROR err = ctno_from_integral(val, into);
     tkn_free(from);
     return err;
 }
@@ -221,16 +230,16 @@ ERROR tkn_value_real(struct Token *from, struct Object *into) {
     if ((val == 0 || val == HUGE_VAL) && errno != 0) {
         return TTO_FLP_CONVERT_FAIL;
     }
-    if (end != from->raw + from->raw_len - 1) {
+    if (end != from->raw + from->raw_len) {
         return TTO_INVALID_DIGIT_FAIL;
     }
-    ERROR err = ctno_literal(&val, sizeof(val), LTL_real, NULL, into);
+    ERROR err = ctno_from_real(val, into);
     tkn_free(from);
     return err;
 }
 
 ERROR tkn_value_identifier(struct Token *from, struct Object *into) {
-    ERROR err = ctno_literal(from->raw + 1, from->raw_len - 1, LTL_identifier,
+    ERROR err = ctno_literal(from->raw + 1, from->raw_len, LTL_identifier,
                              NULL, into);
     tkn_free(from);
     return err;
@@ -254,8 +263,8 @@ ERROR tkn_value(struct Token *from, struct Object *into) {
             return tkn_value_string(from, into);
         case TKN_REGEX:
             return tkn_value_regex(from, into);
-        case TKN_INTEGER:
-            return tkn_value_integer(from, into);
+        case TKN_INTEGRAL:
+            return tkn_value_integral(from, into);
         case TKN_REAL:
             return tkn_value_real(from, into);
         case TKN_IDENTIFIER:

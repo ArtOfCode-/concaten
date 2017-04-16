@@ -6,21 +6,24 @@ set(CMAKE_C_STANDARD 11)
 set(NORMAL_FLAGS "-Wall -Wextra -Werror -pedantic -O3 -std=c11")
 set(NORMAL_LIBS)
 
-set(TEST_FLAGS "-g -O0")
+set(TEST_FLAGS "-g")
 set(TEST_LIBS)
 
 # to enable ASan, add -fsanitize=address -fno-omit-frame-pointer and asan lib
 # it doesn't work on WSL, so it's not added by default
-set(PROFILE_FLAGS "")
+set(PROFILE_FLAGS "-O0")
 set(PROFILE_LIBS)
 
 set(NORMAL_SRCS
         tokenizer.c stringbuilder.c method_map.c prop_map.c object.c
-        data_stack.c token_stack.c code_block.c tkn_value_func.c runnable.c scope_stack.c type.c)
+        data_stack.c token_stack.c code_block.c tkn_value_func.c runnable.c
+        scope_stack.c type.c stl.c stl/integral.c stl/string.c stl/globals.c
+        ctno_ctors.c stl/real.c)
 set(TEST_SRCS
         tests/prop_map.c tests/tokenizer.c tests/method_map.c tests/object.c
         tests/data_stack.c tests/token_stack.c tests/code_block.c
-        tests/stringbuilder.c tests/tkn_value_func.c tests/runnable.c tests/scope_stack.c tests/type.c)
+        tests/stringbuilder.c tests/tkn_value_func.c tests/runnable.c
+        tests/scope_stack.c tests/type.c)
 
 add_executable(concaten main.c ${NORMAL_SRCS})
 set_target_properties(concaten PROPERTIES COMPILE_FLAGS

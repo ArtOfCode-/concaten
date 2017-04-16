@@ -41,7 +41,7 @@ struct Tokenizer {
 
 enum TokenType {
     TKN_UNKNOWN, TKN_WORD, TKN_STRING, TKN_REGEX,
-    TKN_INTEGER, TKN_REAL, TKN_IDENTIFIER
+    TKN_INTEGRAL, TKN_REAL, TKN_IDENTIFIER
 };
 struct Token {
     char *raw;

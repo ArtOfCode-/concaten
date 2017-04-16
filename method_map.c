@@ -10,7 +10,7 @@ struct MM_KeyValPair mm_kvp_zero() {
             .key = NULL,
             .func = (struct Runnable) {
                     .code.c = NULL,
-                    .is_c = false
+                    .type = RNT_C_CODE
             }
     };
 }
@@ -85,7 +85,7 @@ ERROR mm_set(struct MethodMap *mm, const char *key, MM_VALUE_TYPE f) {
     }
     bucket->items[bucket->count] = (struct MM_KeyValPair) {
             .key = key,
-            .key_len = strlen(key),
+            .key_len = key_len,
             .func = f
     };
     ++bucket->count;

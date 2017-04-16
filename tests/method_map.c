@@ -67,7 +67,7 @@ struct TestResult test_method_map() {
     tassert(rn_eq(val, f12), "unexpected value for " "thirteenth");
     tassert(mm_remove(&mm, "thirteenth") == NO_ERROR, "failed to remove");
     tassert(!mm_is_value(mm, f12), "f12 is a value!");
-    tassert(mm_set(&mm, "fourteenth", f13) == NO_ERROR, "assignment failed");
+    tassert(mm_set(&mm, ">string", f13) == NO_ERROR, "assignment failed");
     tassert(mm_set(&mm, "fifteenth", f14) == NO_ERROR, "assignment failed");
     tassert(!mm_is_key(mm, "thirteenth"), "thirteenth is a key!");
     tassert(mm_get(mm, "thirteenth", &val) != NO_ERROR, "got for thirteenth");

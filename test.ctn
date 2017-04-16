@@ -1,10 +1,16 @@
+"Hello, World!" puts
+12 >string puts
+-12 *puts
+0xF >string puts
+
+
 # Fibonacci sequence
 { int -> n
     { 1 } else
     # We're doing the recursive version
     { n 1 - fib n 2 - fib + } then
     { n > 2 } if
-} :fib defun
+} :fib >func
 
 # testing it!
 1 fib puts*

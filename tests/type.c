@@ -10,8 +10,9 @@
     tassert(mm_new(8, &m##n) == NO_ERROR, "mm_new"); \
     for (size_t i = 0; i < t##n##_c; ++i) \
         tassert(mm_set(&m##n, t##n##_s[i], testrn) == NO_ERROR, "mm_set"); \
-    struct Object o##n; \
-    tassert(ctno_literal(&r, sizeof(integral), LTL_integral, &m##n, &o##n) \
+    struct Object *o##n = malloc(sizeof(*o##n)); \
+    tassert(o##n, "failed to allocate space for %d", n); \
+    tassert(ctno_literal(&r, sizeof(integral), LTL_integral, &m##n, o##n) \
             == NO_ERROR, \
         "ctno_new");
 
