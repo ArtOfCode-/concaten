@@ -133,6 +133,9 @@ bool normal_parse(char *filepath) {
         fprintf(stderr, "Failed to get next token: "EFMT"\n", err);
         goto error;
     }
+    dst_free(&dst);
+    sst_free(&sst);
+    tst_free(&tst);
     return true;
 error:;
     dst_free(&dst);
