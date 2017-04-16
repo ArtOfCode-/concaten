@@ -136,6 +136,7 @@ bool normal_parse(char *filepath) {
     dst_free(&dst);
     sst_free(&sst);
     tst_free(&tst);
+    tknr_free(&tknr);
     return true;
 error:;
     dst_free(&dst);

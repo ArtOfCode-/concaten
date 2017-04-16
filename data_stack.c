@@ -1,4 +1,5 @@
 #include "data_stack.h"
+#include "object.h"
 
 #include <stdlib.h>
 
@@ -7,6 +8,7 @@ void dst_node_free(struct DST_Node *nd) {
         --nd->refcount;
         if (nd->refcount == 0) {
             struct DST_Node *next = nd->next;
+            ctno_free(nd->value);
             free(nd);
             nd = next;
         } else {
@@ -45,6 +47,8 @@ ERROR dst_pop(struct DataStack *dst, struct Object **into) {
     struct DST_Node *next = dst->head->next;
     // claim for top of stack
     if (next) ++next->refcount;
+    // we're passing control to the caller, so refcount goes up
+    ++dst->head->value->refcount;
     dst_node_free(dst->head);
     dst->head = next;
     if (into) *into = ret;
