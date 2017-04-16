@@ -10,7 +10,7 @@
     # We're doing the recursive version
     { n 1 - fib n 2 - fib + } then
     { n > 2 } if
-} :fib defun
+} :fib >func
 
 # testing it!
 1 fib puts*

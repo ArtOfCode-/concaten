@@ -1,0 +1,5 @@
+"Hello, World!" puts
+12 *puts
+-12 >string 14 *puts puts
+
+
