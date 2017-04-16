@@ -201,6 +201,12 @@ void mm_free(struct MethodMap *mm) {
     if (mm) {
         --mm->refcount;
         if (!mm->refcount) {
+            for (size_t bidx = 0; bidx < mm->bucket_count; ++bidx) {
+                struct MM_Bucket bk = mm->buckets[bidx];
+                for (size_t iidx = 0; iidx < bk.count; ++iidx) {
+                    rn_free(&bk.items[iidx].func);
+                }
+            }
             free(mm->buckets);
             mm->buckets = NULL;
         }
