@@ -194,12 +194,12 @@ int main(int argc, char **argv) {
                 } else {
                     puts("");
                 }
-                return false;
+                return 1;
             }
             bool res = parse(tknr, global_funcs);
             tknr_free(&tknr);
             if (!res) {
-                return -1;
+                return 1;
             }
         }
     } else {
@@ -214,12 +214,12 @@ int main(int argc, char **argv) {
             } else {
                 puts("");
             }
-            return false;
+            return 1;
         }
         bool res = parse(tknr, global_funcs);
         tknr_free(&tknr);
         if (!res) {
-            return -1;
+            return 1;
         }
     }
     free_stl();
