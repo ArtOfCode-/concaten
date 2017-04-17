@@ -25,6 +25,9 @@ ERROR dst_new(struct DataStack *into) {
 }
 
 ERROR dst_push(struct DataStack *dst, struct Object *pushing) {
+    if (ctno_claim(pushing) != NO_ERROR) {
+        return DST_PUSH_CLAIM_FAIL;
+    }
     struct DST_Node *val = malloc(sizeof(*val));
     if (!val) {
         return DST_PUSH_MALLOC_FAIL;
@@ -47,8 +50,6 @@ ERROR dst_pop(struct DataStack *dst, struct Object **into) {
     struct DST_Node *next = dst->head->next;
     // claim for top of stack
     if (next) ++next->refcount;
-    // we're passing control to the caller, so refcount goes up
-    ++dst->head->value->refcount;
     dst_node_free(dst->head);
     dst->head = next;
     if (into) *into = ret;
