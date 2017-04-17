@@ -160,7 +160,6 @@ bool parse(struct Tokenizer tknr, struct MethodMap globals) {
     return false;
 }
 
-#define _return(x)
 int main(int argc, char **argv) {
     if (argc <= 0) {
         fputs("Usage: /path/to/concaten paths...", stderr);

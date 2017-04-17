@@ -1,8 +1,6 @@
 #include "data_stack.h"
 #include "object.h"
 
-#include <stdlib.h>
-
 void dst_node_free(struct DST_Node *nd) {
     while (nd) {
         --nd->refcount;

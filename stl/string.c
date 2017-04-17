@@ -1,6 +1,4 @@
 #include "../stl.h"
-#include "../method_map.h"
-#include "../object.h"
 
 ERROR ctn_puts(struct DataStack *d, struct ScopeStack *s, struct TokenStack *t) {
     (void)s;(void)t;
