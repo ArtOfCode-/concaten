@@ -109,8 +109,6 @@ struct TestResult test_runnable() {
     tassert(rn_run(c1, &test_ds, NULL, &test_ts) == NO_ERROR, "failed to run c`");
     
     dst_free(&test_ds);
-    ctno_free(lit);
-    ctno_free(dyn);
     pm_free(&pm);
     tknr_free(&test_ts_tknr);
     tst_free(&test_ts);
