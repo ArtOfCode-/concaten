@@ -13,5 +13,6 @@ struct MethodMap global_funcs;
 ERROR init_globals(int argc, char **argv);
 
 ERROR init_stl(int argc, char **argv);
+void free_stl();
 
 #endif //CONCATEN_STL_H
