@@ -33,10 +33,8 @@ struct TestResult test_object() {
     tassert(ctno_set_prop(t3, "2", t2) == NO_ERROR, "failed to set val");
     tassert(*ctno_to(t1, integral) == val, "t1->long bad value");
     assert_eq(ctno_to(t2, char), name, "t2->char*");
-    struct Object *t3g1 = malloc(sizeof(*t3g1));
-    tassert(t3g1, "failed to allocate space for t3g1");
-    struct Object *t3g2 = malloc(sizeof(*t3g2));
-    tassert(t3g2, "failed to allocate space for t3g2");
+    struct Object *t3g1;
+    struct Object *t3g2;
     tassert(ctno_get_prop(t3, "1", &t3g1) == NO_ERROR, "failed to get val");
     tassert(ctno_get_prop(t3, "2", &t3g2) == NO_ERROR, "failed to get val");
     tassert(*ctno_to(t3g1, integral) == val, "t3g1->long bad value");
@@ -50,9 +48,8 @@ struct TestResult test_object() {
     // they should still exist, because t3 has a reference to them!
     tassert(*ctno_to(t1, integral) == val, "t1->long 2 bad value");
     assert_eq(ctno_to(t2, char), name, "t2->char* 2");
-    struct Object *t3g3 = malloc(sizeof(*t3g3));
-    tassert(t3g3, "failed to allocate spot for t3g3");
-    struct Object *t3g4 = malloc(sizeof(*t3g4));
+    struct Object *t3g3;
+    struct Object *t3g4;
     tassert(ctno_get_prop(t3, "1", &t3g3) == NO_ERROR, "failed to get val");
     tassert(ctno_get_prop(t3, "2", &t3g4) == NO_ERROR, "failed to get val");
     tassert(*ctno_to(t3g3, integral) == val, "t3g3->long bad value");
@@ -77,8 +74,7 @@ struct TestResult test_object() {
     tassert(t3->data.properties.buckets != t5->data.properties.buckets,
             "reference copy, not real copy");
     tassert(ctno_eq(t3, t5), "copy produced unequal objects");
-    struct Object *t5g1 = malloc(sizeof(*t5g1));
-    tassert(t5g1, "failed to allocate memory for t561");
+    struct Object *t5g1;
     tassert(ctno_get_prop(t5, "1", &t5g1) == NO_ERROR, "failed to get");
     tassert(t5g1->data.literal.value == t1->data.literal.value,
             "failed to get identical object");
