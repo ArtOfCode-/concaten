@@ -115,15 +115,19 @@ bool parse(struct Tokenizer tknr, struct MethodMap globals) {
                     break;
                 }
             }
+            free(candidates);
             if (err == ARGUMENT_MISMATCH_FAIL) {
                 eprint("Argument types all failed to match.\n");
                 free(candidates);
+                goto error;
+            } else if (err != NO_ERROR) {
+                eprint("Candidate returned error: "EFMT"\n", err);
                 goto error;
             }
         } else {
             struct Object *new_val = malloc(sizeof(*new_val));
             if (!new_val) {
-                fprintf(stderr, "Failed to allocate space for new object.\n");
+                eprint("Failed to allocate space for new object.\n");
                 goto error;
             }
             if ((err = tkn_value(&ctkn, new_val)) != NO_ERROR) {
