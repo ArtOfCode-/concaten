@@ -40,17 +40,17 @@ const char *tkn_type_name(enum TokenType t) {
 }
 
 ERROR tkn_copy(const struct Token from, struct Token *into) {
-    char *new_raw = malloc(from.raw_len);
+    char *new_raw = malloc(from.raw_len + 1);
     if (!new_raw) {
         return TKNR_TKN_COPY_MALLOC_RAW_FAIL;
     }
-    strncpy(new_raw, from.raw, from.raw_len);
-    char *new_origin = malloc(from.origin_len);
+    strncpy(new_raw, from.raw, from.raw_len + 1);
+    char *new_origin = malloc(from.origin_len + 1);
     if (!new_origin) {
         free(new_raw);
         return TKNR_TKN_COPY_MALLOC_ORG_FAIL;
     }
-    strncpy(new_origin, from.origin, from.origin_len);
+    strncpy(new_origin, from.origin, from.origin_len + 1);
     *into = (struct Token) {
             .origin_len = from.origin_len,
             .origin = new_origin,
