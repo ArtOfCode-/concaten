@@ -7,8 +7,7 @@
     tassert(dst_pop(&dst##num, &dst##num##_got) == NO_ERROR, \
             "failed to pop"); \
     tassert(dst##num##_got == what, \
-            str(__LINE__) ": " str(num) " got bad result"); \
-    ctno_free(dst##num##_got);
+            str(__LINE__) ": " str(num) " got bad result");
 
 #define assert_no_pop(num) \
     tassert(dst_pop(&dst##num, NULL) == DST_POP_EMPTY_FAIL, \
@@ -76,6 +75,8 @@ struct TestResult test_data_stack() {
     ctno_free(bar);
     ctno_free(baz);
     ctno_free(wuf);
+    ctno_free(dst2_got);
+    ctno_free(dst1_got);
     
     return (struct TestResult) { .successes = successes, .total = total };
 }
