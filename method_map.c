@@ -54,11 +54,12 @@ ERROR mm_new(size_t width, struct MethodMap *into) {
 ERROR mm_copy(const struct MethodMap mm, struct MethodMap *into) {
     struct MM_Bucket *b_c = malloc(sizeof(*b_c) * mm.bucket_count);
     for (size_t i = 0; i < mm.bucket_count; ++i) {
-        
         struct MM_Bucket copy = (struct MM_Bucket) {
-                .count = mm.buckets[i].count,
-                .items = mm.buckets[i].items
+                .count = mm.buckets[i].count
         };
+        for (size_t j = 0; j < copy.count; ++j) {
+            
+        }
         b_c[i] = mm.buckets[i];
     }
     *into = (struct MethodMap) {
