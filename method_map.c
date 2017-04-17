@@ -51,13 +51,22 @@ ERROR mm_new(size_t width, struct MethodMap *into) {
     return NO_ERROR;
 }
 
-ERROR mm_claim(struct MethodMap *mm) {
-    // TODO Remove this check in prod.
-    // in test, I don't care about methods, so I set them to NULL
-    // in prod, every object must have methods; if it doesn't, it
-    // should fail.
-    if (mm == NULL) return NO_ERROR;
-    ++mm->refcount;
+ERROR mm_copy(const struct MethodMap mm, struct MethodMap *into) {
+    struct MM_Bucket *b_c = malloc(sizeof(*b_c) * mm.bucket_count);
+    for (size_t i = 0; i < mm.bucket_count; ++i) {
+        
+        struct MM_Bucket copy = (struct MM_Bucket) {
+                .count = mm.buckets[i].count,
+                .items = mm.buckets[i].items
+        };
+        b_c[i] = mm.buckets[i];
+    }
+    *into = (struct MethodMap) {
+            .bucket_count = mm.bucket_count,
+            .item_count = mm.item_count,
+            .bk_gr_pref = mm.bk_gr_pref,
+            .buckets = b_c
+    };
     return NO_ERROR;
 }
 

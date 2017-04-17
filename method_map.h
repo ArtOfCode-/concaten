@@ -33,7 +33,7 @@ struct MethodMap {
 };
 
 ERROR mm_new(size_t, struct MethodMap *);
-ERROR mm_claim(struct MethodMap *);
+ERROR mm_copy(const struct MethodMap, struct MethodMap *);
 ERROR mm_set(struct MethodMap *, const char *, MM_VALUE_TYPE);
 ERROR mm_get(const struct MethodMap, const char *, MM_VALUE_TYPE *);
 // NB: `true` means it was removed, `false` means it wasn't there
