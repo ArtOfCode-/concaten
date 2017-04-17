@@ -24,6 +24,7 @@ ERROR sst_new(size_t init_cap, struct MethodMap globals,
             .layers = layer_space
     };
     sst_push_scope(&ret);
+    layer_space[0] = globals;
     *out = ret;
     return NO_ERROR;
 }
