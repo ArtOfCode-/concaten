@@ -45,7 +45,7 @@ bool parse(struct Tokenizer tknr, struct MethodMap globals) {
                 if (mm_is_key(*top->methods, ctkn.raw)) {
                     struct Runnable trying;
                     if ((err = mm_get(*top->methods, ctkn.raw, &trying))
-                        != NO_ERROR) {
+                            != NO_ERROR) {
                         eprint("Failed to get existing key: "EFMT"\n", err);
                         goto error;
                     }
@@ -64,7 +64,10 @@ bool parse(struct Tokenizer tknr, struct MethodMap globals) {
             // then we look at the scopes
             struct Runnable *candidates;
             size_t cands_count;
-            sst_get_all(sst, ctkn.raw, &candidates, &cands_count);
+            if ((err = sst_get_all(sst, ctkn.raw, &candidates, &cands_count))
+                    != NO_ERROR) {
+                eprint("Failed to get candidates: "EFMT"\n", err);
+            }
             if (cands_count == 0) {
                 eprint("No word found.\n");
                 free(candidates);
@@ -100,6 +103,7 @@ bool parse(struct Tokenizer tknr, struct MethodMap globals) {
                         free(candidates);
                         goto error;
                     }
+                    dst_free(&dst);
                     if ((err = dst_copy(dst_c, &dst)) != NO_ERROR) {
                         eprint("Failed to restore data stack: "EFMT"\n", err);
                         free(candidates);
@@ -138,6 +142,7 @@ bool parse(struct Tokenizer tknr, struct MethodMap globals) {
                 eprint("Failed to push token's value: "EFMT"\n", err);
                 goto error;
             }
+            ctno_free(new_val); // we're relinquishing control of it
         }
     }
     if (err != TST_POP_EMPTY_FAIL) {
