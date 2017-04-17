@@ -270,7 +270,7 @@ bool is_ws(char c) {
 
 bool skip_ws(struct Tokenizer *from) {
     bool skipped = false;
-    while (is_ws((from)->next_char) && !tknr_end(*from)) {
+    while (is_ws(from->next_char) && !tknr_end(*from)) {
         skipped = true;
         if (skip_char(from) != NO_ERROR) { return false; }
     }
@@ -278,10 +278,10 @@ bool skip_ws(struct Tokenizer *from) {
 }
 
 bool skip_slc(struct Tokenizer *from) {
-    if ((from)->next_char != '#') {
+    if (from->next_char != '#') {
         return false;
     }
-    while ((from)->next_char != '\n' && !tknr_end(*from)) {
+    while (from->next_char != '\n' && !tknr_end(*from)) {
         if (skip_char(from) != NO_ERROR) { return false; }
     }
     // skip the newline, too
@@ -305,10 +305,10 @@ bool in_ranges(char c, char *begins, char *ends, size_t count) {
 ERROR add_while_in_ranges(struct Tokenizer *from, struct StringBuilder *raw,
                           char *next_char, char *begins, char *ends,
                           size_t num_ranges) {
-    *next_char = (from)->next_char;
+    *next_char = from->next_char;
     ERROR err;
     while (in_ranges(*next_char, begins, ends, num_ranges)) {
-        err = sb_append(raw, (from)->next_char);
+        err = sb_append(raw, from->next_char);
         if (err != NO_ERROR) {
             return err;
         }
@@ -316,7 +316,7 @@ ERROR add_while_in_ranges(struct Tokenizer *from, struct StringBuilder *raw,
         if (err != NO_ERROR) {
             return err;
         }
-        *next_char = (from)->next_char;
+        *next_char = from->next_char;
     }
     return NO_ERROR;
 }
@@ -336,7 +336,7 @@ ERROR get_string(struct Tokenizer *from, struct Token partial,
         return TKNR_NT_NEW_SB_FAIL;
     }
     while (1) {
-        err = sb_append(&raw, (from)->next_char);
+        err = sb_append(&raw, from->next_char);
         if (err) { goto error_handler; }
         err = skip_char(from);
         if (err) { goto error_handler; }
@@ -344,14 +344,14 @@ ERROR get_string(struct Tokenizer *from, struct Token partial,
             err = TKNR_SYN_UNEXPECTED_END_FAIL;
             goto error_handler;
         }
-        char next_char = (from)->next_char;
+        char next_char = from->next_char;
         if (next_char == '\\') {
-            err = sb_append(&raw, (from)->next_char);
+            err = sb_append(&raw, from->next_char);
             if (err != NO_ERROR) { goto error_handler; }
             err = skip_char(from);
             if (err != NO_ERROR) { goto error_handler; }
             // we don't do escaping at this level
-            err = sb_append(&raw, (from)->next_char);
+            err = sb_append(&raw, from->next_char);
             if (err != NO_ERROR) { goto error_handler; }
             err = skip_char(from);
             if (err != NO_ERROR) { goto error_handler; }
@@ -362,7 +362,7 @@ ERROR get_string(struct Tokenizer *from, struct Token partial,
         }
         if (next_char == '"') {
             // add the quote
-            err = sb_append(&raw, (from)->next_char);
+            err = sb_append(&raw, from->next_char);
             if (err != NO_ERROR) { goto error_handler; }
             err = skip_char(from);
             if (err != NO_ERROR) { goto error_handler; }
@@ -390,7 +390,7 @@ ERROR get_number(struct Tokenizer *from, struct Token partial, bool neg,
                  struct Token *out) {
     ERROR err;
     struct StringBuilder raw;
-    char next_char = (from)->next_char;
+    char next_char = from->next_char;
     if (sb_new(STARTING_RAW_MEM, &raw) != NO_ERROR) {
         err = TKNR_NT_NEW_SB_FAIL;
         goto error_handler;
@@ -404,11 +404,11 @@ ERROR get_number(struct Tokenizer *from, struct Token partial, bool neg,
         B2, B8, B10, B16
     } base = B10;
     if (next_char == '0') {
-        err = sb_append(&raw, (from)->next_char);
+        err = sb_append(&raw, from->next_char);
         if (err != NO_ERROR) { goto error_handler; }
         err = skip_char(from);
         if (err != NO_ERROR) { goto error_handler; }
-        next_char = (from)->next_char;
+        next_char = from->next_char;
         if (next_char == 'x') {
             base = B16;
         } else if (next_char == 'o') {
@@ -416,7 +416,7 @@ ERROR get_number(struct Tokenizer *from, struct Token partial, bool neg,
         } else if (next_char == 'b') {
             base = B2;
         }
-        err = sb_append(&raw, (from)->next_char);
+        err = sb_append(&raw, from->next_char);
         if (err != NO_ERROR) { goto error_handler; }
         err = skip_char(from);
         if (err != NO_ERROR) { goto error_handler; }
@@ -438,7 +438,7 @@ ERROR get_number(struct Tokenizer *from, struct Token partial, bool neg,
         // un punto
         if (next_char == '.') {
             decimal = true;
-            err = sb_append(&raw, (from)->next_char);
+            err = sb_append(&raw, from->next_char);
             if (err != NO_ERROR) { goto error_handler; }
             err = skip_char(from);
             if (err != NO_ERROR) { goto error_handler; }
@@ -448,7 +448,7 @@ ERROR get_number(struct Tokenizer *from, struct Token partial, bool neg,
         // exponents
         if (next_char == 'e') {
             decimal = true;
-            err = sb_append(&raw, (from)->next_char);
+            err = sb_append(&raw, from->next_char);
             if (err != NO_ERROR) { goto error_handler; }
             err = skip_char(from);
             if (err != NO_ERROR) { goto error_handler; }
@@ -484,14 +484,14 @@ bool is_flag(char c) {
 ERROR get_regex(struct Tokenizer *from, struct StringBuilder raw,
                 struct Token ret, struct Token *out) {
     ERROR err;
-    err = sb_append(&raw, (from)->next_char);
+    err = sb_append(&raw, from->next_char);
     if (err != NO_ERROR) { goto error_handler; }
     err = skip_char(from);
     if (err != NO_ERROR) { goto error_handler; }
-    char next_char = (from)->next_char;
+    char next_char = from->next_char;
     while (true) {
         if (next_char == '\\') {
-            err = sb_append(&raw, (from)->next_char);
+            err = sb_append(&raw, from->next_char);
             if (err != NO_ERROR) { goto error_handler; }
             err = skip_char(from);
             if (err) { goto error_handler; }
@@ -499,7 +499,7 @@ ERROR get_regex(struct Tokenizer *from, struct StringBuilder raw,
                 err = TKNR_SYN_UNEXPECTED_END_FAIL;
                 goto error_handler;
             }
-            err = sb_append(&raw, (from)->next_char);
+            err = sb_append(&raw, from->next_char);
             if (err != NO_ERROR) { goto error_handler; }
             err = skip_char(from);
             if (err) { goto error_handler; }
@@ -509,13 +509,13 @@ ERROR get_regex(struct Tokenizer *from, struct StringBuilder raw,
             }
         }
         if (next_char == '/') {
-            err = sb_append(&raw, (from)->next_char);
+            err = sb_append(&raw, from->next_char);
             if (err != NO_ERROR) { goto error_handler; }
             err = skip_char(from);
             if (err) { goto error_handler; }
             break;
         }
-        err = sb_append(&raw, (from)->next_char);
+        err = sb_append(&raw, from->next_char);
         if (err != NO_ERROR) { goto error_handler; }
         err = skip_char(from);
         if (err) { goto error_handler; }
@@ -523,15 +523,15 @@ ERROR get_regex(struct Tokenizer *from, struct StringBuilder raw,
             err = TKNR_SYN_UNEXPECTED_END_FAIL;
             goto error_handler;
         }
-        next_char = (from)->next_char;
+        next_char = from->next_char;
     }
-    next_char = (from)->next_char;
+    next_char = from->next_char;
     while (is_flag(next_char)) {
-        err = sb_append(&raw, (from)->next_char);
+        err = sb_append(&raw, from->next_char);
         if (err != NO_ERROR) { goto error_handler; }
         err = skip_char(from);
         if (err) { return err; }
-        next_char = (from)->next_char;
+        next_char = from->next_char;
     }
     if (!is_ws(next_char) && !tknr_end(*from)) {
         err = TKNR_SYN_RGX_BAD_FLAG_FAIL;
@@ -578,7 +578,7 @@ ERROR tknr_next(struct Tokenizer *from, struct Token *out) {
         goto error_handler;
     }
     strncpy(ret.origin, from->origin, from->origin_len);
-    char next_char = (from)->next_char;
+    char next_char = from->next_char;
     if (next_char == '"') { // single-line string
         return get_string(from, ret, out);
     } else if ('0' <= next_char && next_char <= '9') {
@@ -596,27 +596,27 @@ ERROR tknr_next(struct Tokenizer *from, struct Token *out) {
         if (err != NO_ERROR) { goto error_handler; }
         err = skip_char(from);
         if (err != NO_ERROR) { goto error_handler; }
-        next_char = (from)->next_char;
+        next_char = from->next_char;
         if ('0' <= next_char && next_char <= '9') {
             sb_free(&raw);
             return get_number(from, ret, true, out);
         }
     } else if (next_char == 'r') {
-        err = sb_append(&raw, (from)->next_char);
+        err = sb_append(&raw, from->next_char);
         if (err != NO_ERROR) { goto error_handler; }
         err = skip_char(from);
         if (err != NO_ERROR) { goto error_handler; }
-        next_char = (from)->next_char;
+        next_char = from->next_char;
         if (next_char == '/') {
             return get_regex(from, raw, ret, out);
         }
     }
     while (!is_ws(next_char) && !tknr_end(*from)) {
-        err = sb_append(&raw, (from)->next_char);
+        err = sb_append(&raw, from->next_char);
         if (err != NO_ERROR) { goto error_handler; }
         err = skip_char(from);
         if (err != NO_ERROR) { goto error_handler; }
-        next_char = (from)->next_char;
+        next_char = from->next_char;
     }
     if (ret.type == TKN_UNKNOWN) { ret.type = TKN_WORD; }
     ret.raw_len = raw.count;
