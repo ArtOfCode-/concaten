@@ -75,8 +75,6 @@ struct TestResult test_data_stack() {
     ctno_free(bar);
     ctno_free(baz);
     ctno_free(wuf);
-    ctno_free(dst2_got);
-    ctno_free(dst1_got);
     
     return (struct TestResult) { .successes = successes, .total = total };
 }
