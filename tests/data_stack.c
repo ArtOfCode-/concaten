@@ -23,27 +23,23 @@ struct TestResult test_data_stack() {
     integral val = 12;
     struct Object *foo = malloc(sizeof(*foo));
     tassert(foo, "failed to malloc space for object");
+    tassert(ctno_literal(&val, sizeof(val), LTL_integral, NULL, foo) ==
+                    NO_ERROR, "failed to initialize foo");
+    ++val;
     struct Object *bar = malloc(sizeof(*bar));
     tassert(bar, "failed to malloc space for object");
+    tassert(ctno_literal(&val, sizeof(val), LTL_integral, NULL, bar) ==
+                    NO_ERROR, "failed to initialize bar");
+    ++val;
     struct Object *baz = malloc(sizeof(*baz));
     tassert(baz, "failed to malloc space for object");
+    tassert(ctno_literal(&val, sizeof(val), LTL_integral, NULL, baz) ==
+                    NO_ERROR, "failed to initialize baz");
+    ++val;
     struct Object *wuf = malloc(sizeof(*wuf));
     tassert(wuf, "failed to malloc space for object");
-    tassert(ctno_literal(&val, sizeof(val), LTL_integral, NULL, foo) ==
-                    NO_ERROR,
-            "failed to initialize foo");
-    ++val;
-    tassert(ctno_literal(&val, sizeof(val), LTL_integral, NULL, bar) ==
-                    NO_ERROR,
-            "failed to initialize bar");
-    ++val;
-    tassert(ctno_literal(&val, sizeof(val), LTL_integral, NULL, baz) ==
-                    NO_ERROR,
-            "failed to initialize baz");
-    ++val;
     tassert(ctno_literal(&val, sizeof(val), LTL_integral, NULL, wuf) ==
-                    NO_ERROR,
-            "failed to initialize wuf");
+                    NO_ERROR, "failed to initialize wuf");
     ++val;
     tassert(dst_push(&dst1, foo) == NO_ERROR, "failed to push");
     tassert(dst_push(&dst1, bar) == NO_ERROR, "failed to push");
