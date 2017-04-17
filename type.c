@@ -95,4 +95,8 @@ bool tp_eq(const struct Type lhs, const struct Type rhs) {
 
 void tp_free(struct Type *this) {
     free(this->mthd_lens);
+    for (size_t i = 0; i < this->mthds_count; ++i) {
+        free(this->mthds[i]);
+    }
+    free(this->mthds);
 }
