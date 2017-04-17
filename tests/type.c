@@ -49,6 +49,7 @@ struct TestResult test_type() {
     tp_free(&t1);
     tp_free(&t2);
     tp_free(&t3);
+    tp_free(&t2c);
     ctno_free(o1);
     ctno_free(o2);
     
