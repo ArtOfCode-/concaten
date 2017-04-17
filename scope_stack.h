@@ -26,7 +26,7 @@ struct ScopeStack {
     bool saving_state;
     struct SS_ChangeNode *change_head;
 };
-ERROR sst_new(size_t, struct ScopeStack *);
+ERROR sst_new(size_t, struct MethodMap, struct ScopeStack *);
 ERROR sst_save_state(struct ScopeStack *);
 ERROR sst_restore_state(struct ScopeStack *);
 ERROR sst_get(const struct ScopeStack, const char *, struct Runnable *);

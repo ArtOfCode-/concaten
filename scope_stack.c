@@ -10,7 +10,8 @@ bool sst_push_change(struct ScopeStack *this, struct SS_ChangeNode cn) {
     return true;
 }
 
-ERROR sst_new(size_t init_cap, struct ScopeStack *out) {
+ERROR sst_new(size_t init_cap, struct MethodMap globals,
+              struct ScopeStack *out) {
     struct MethodMap *layer_space = malloc(sizeof(*layer_space) * init_cap);
     if (!layer_space) {
         return SST_CTOR_MALLOC_FAIL;
@@ -205,7 +206,8 @@ ERROR sst_pop_scope(struct ScopeStack *this) {
 }
 
 void sst_free(struct ScopeStack *this) {
-    for (size_t i = 0; i < this->count; ++i) {
+    // start at 1 so we don't free the globals
+    for (size_t i = 1; i < this->count; ++i) {
         mm_free(&this->layers[i]);
     }
     free(this->layers);

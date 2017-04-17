@@ -21,13 +21,12 @@ bool parse(struct Tokenizer tknr, struct MethodMap globals) {
         return false;
     }
     struct ScopeStack sst;
-    if ((err = sst_new(8, &sst)) != NO_ERROR) {
+    if ((err = sst_new(8, globals, &sst)) != NO_ERROR) {
         fprintf(stderr, "Failed to initialize scope stack: "EFMT"\n", err);
         dst_free(&dst);
         tst_free(&tst);
         return false;
     }
-    sst.layers[0] = globals;
     #define eprint(...) do {\
         fprintf(stderr, "%s@%zu:%zu: Error while parsing '%s': ", \
             ctkn.origin, ctkn.line, ctkn.index, ctkn.raw); \
@@ -40,27 +39,21 @@ bool parse(struct Tokenizer tknr, struct MethodMap globals) {
             if (!dst_empty(dst)) {
                 struct Object *top;
                 if ((err = dst_peek(&dst, &top)) != NO_ERROR) {
-                    eprint("Failed to retrieve data top: "
-                                   EFMT
-                                   "\n", err);
+                    eprint("Failed to retrieve data top: "EFMT"\n", err);
                     goto error;
                 }
                 if (mm_is_key(*top->methods, ctkn.raw)) {
                     struct Runnable trying;
                     if ((err = mm_get(*top->methods, ctkn.raw, &trying))
                         != NO_ERROR) {
-                        eprint("Failed to get existing key: "
-                                       EFMT
-                                       "\n", err);
+                        eprint("Failed to get existing key: "EFMT"\n", err);
                         goto error;
                     }
                     err = rn_run(trying, &dst, &sst, &tst);
                     if (err == ARGUMENT_MISMATCH_FAIL) {
                         /* nop */
                     } else if (err != NO_ERROR) {
-                        eprint("Failed to run: "
-                                       EFMT
-                                       "\n", err);
+                        eprint("Failed to run: "EFMT"\n", err);
                         goto error;
                     } else {
                         continue;
@@ -78,51 +71,37 @@ bool parse(struct Tokenizer tknr, struct MethodMap globals) {
             }
             for (size_t i = 0; i < cands_count; ++i) {
                 if ((err = sst_save_state(&sst)) != NO_ERROR) {
-                    eprint("Failed to save scope stack: "
-                                   EFMT
-                                   "\n", err);
+                    eprint("Failed to save scope stack: "EFMT"\n", err);
                     goto error;
                 }
                 if ((err = tst_save_state(&tst)) != NO_ERROR) {
-                    eprint("Failed to save token stack: "
-                                   EFMT
-                                   "\n", err);
+                    eprint("Failed to save token stack: "EFMT"\n", err);
                     goto error;
                 }
                 struct DataStack dst_c;
                 if ((err = dst_copy(dst, &dst_c)) != NO_ERROR) {
-                    eprint("Failed to copy data stack: "
-                                   EFMT
-                                   "\n", err);
+                    eprint("Failed to copy data stack: "EFMT"\n", err);
                     goto error;
                 }
                 
                 err = rn_run(candidates[i], &dst, &sst, &tst);
                 if (err == ARGUMENT_MISMATCH_FAIL) {
                     if ((err = tst_restore_state(&tst)) != NO_ERROR) {
-                        eprint("Failed to restore token stack: "
-                                       EFMT
-                                       "\n", err);
+                        eprint("Failed to restore token stack: "EFMT"\n", err);
                         goto error;
                     }
                     if ((err = sst_restore_state(&sst)) != NO_ERROR) {
-                        eprint("Failed to restore scope stack: "
-                                       EFMT
-                                       "\n", err);
+                        eprint("Failed to restore scope stack: "EFMT"\n", err);
                         goto error;
                     }
                     if ((err = dst_copy(dst_c, &dst)) != NO_ERROR) {
-                        eprint("Failed to restore data stack: "
-                                       EFMT
-                                       "\n", err);
+                        eprint("Failed to restore data stack: "EFMT"\n", err);
                         goto error;
                     }
                     dst_free(&dst_c);
                     continue;
                 } else if (err != NO_ERROR) {
-                    eprint("Failed to run: "
-                                   EFMT
-                                   "\n", err);
+                    eprint("Failed to run: "EFMT"\n", err);
                     goto error;
                 } else {
                     break;
@@ -138,15 +117,11 @@ bool parse(struct Tokenizer tknr, struct MethodMap globals) {
                 eprint("Failed to allocate space for new object.\n");
             }
             if ((err = tkn_value(&ctkn, new_val)) != NO_ERROR) {
-                eprint("Failed to get token's value: "
-                               EFMT
-                               "\n", err);
+                eprint("Failed to get token's value: "EFMT"\n", err);
                 goto error;
             }
             if ((err = dst_push(&dst, new_val)) != NO_ERROR) {
-                eprint("Failed to push token's value: "
-                               EFMT
-                               "\n", err);
+                eprint("Failed to push token's value: "EFMT"\n", err);
                 goto error;
             }
         }
