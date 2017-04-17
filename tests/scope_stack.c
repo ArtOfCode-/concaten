@@ -22,7 +22,9 @@ struct TestResult test_scope_stack() {
 #undef X
     struct ScopeStack ss;
     struct Runnable out;
-    tassert(sst_new(2, &ss) == NO_ERROR, "failed to init ss");
+    struct MethodMap globals;
+    tassert(mm_new(1, &globals) == NO_ERROR, "failed to init fake mm");
+    tassert(sst_new(2, globals, &ss) == NO_ERROR, "failed to init ss");
     tassert(sst_push_scope(&ss) == NO_ERROR, "failed to push scope");
     tassert(sst_pop_scope(&ss) == NO_ERROR, "failed to pop scope");
     tassert(sst_set(&ss, "r0", r0) == NO_ERROR, "failed to set r0");
@@ -86,6 +88,7 @@ struct TestResult test_scope_stack() {
 #define X(n) rn_free(&r##n);
     rn_x
 #undef X
+    mm_free(&globals);
     sst_free(&ss);
     
     return (struct TestResult) { .total = total, .successes = successes };

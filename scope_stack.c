@@ -17,13 +17,12 @@ ERROR sst_new(size_t init_cap, struct MethodMap globals,
         return SST_CTOR_MALLOC_FAIL;
     }
     struct ScopeStack ret = (struct ScopeStack) {
-            .count = 0,
+            .count = 1,
             .cap = init_cap,
             .change_head = NULL,
             .saving_state = false,
             .layers = layer_space
     };
-    sst_push_scope(&ret);
     layer_space[0] = globals;
     *out = ret;
     return NO_ERROR;
