@@ -50,6 +50,9 @@ ERROR dst_pop(struct DataStack *dst, struct Object **into) {
     struct DST_Node *next = dst->head->next;
     // claim for top of stack
     if (next) ++next->refcount;
+    if (ctno_claim(ret) != NO_ERROR) {
+        return DST_POP_PRECLAIM_FAIL;
+    }
     dst_node_free(dst->head);
     dst->head = next;
     if (into) *into = ret;

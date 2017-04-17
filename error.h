@@ -28,6 +28,7 @@ static const ERROR DST_PUSH_MALLOC_FAIL             =  201;
 static const ERROR DST_POP_EMPTY_FAIL               =  202;
 static const ERROR DST_PEEK_EMPTY_FAIL              =  203;
 static const ERROR DST_PUSH_CLAIM_FAIL              =  204;
+static const ERROR DST_POP_PRECLAIM_FAIL            =  205;
 static const ERROR TST_PUSH_MALLOC_FAIL             =  301;
 static const ERROR TST_PUSH_SAVE_FAIL               =  302;
 static const ERROR TST_POP_EMPTY_FAIL               =  303;
