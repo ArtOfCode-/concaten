@@ -77,11 +77,6 @@ bool dst_empty(const struct DataStack this) {
 }
 
 void dst_free(struct DataStack *dst) {
-    struct DST_Node *cur = dst->head;
-    while (cur) {
-        struct DST_Node *next = cur->next;
-        dst_node_free(cur);
-        cur = next;
-    }
-    dst->head = cur;
+    dst_node_free(dst->head);
+    dst->head = NULL;
 }
