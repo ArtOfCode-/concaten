@@ -60,11 +60,11 @@ struct TestResult test_runnable() {
     struct CodeBlock cb1, cb2;
     tassert(cb_new(1, &cb1) == NO_ERROR, "failed to init cb1");
     tassert(cb_append(&cb1, (struct Token) {
-            .type = TKN_INTEGRAL
+            .type = TKN_INTEGRAL, .raw = malloc(1), .origin = malloc(1)
     }) == NO_ERROR, "failed to push token into cb");
     tassert(cb_new(1, &cb2) == NO_ERROR, "failed to init cb2");
     tassert(cb_append(&cb2, (struct Token) {
-            .type = TKN_REGEX
+            .type = TKN_REGEX, .raw = malloc(1), .origin = malloc(1)
     }) == NO_ERROR, "failed to push token into cb");
     
     struct Runnable c1, c2, c1c;
