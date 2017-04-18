@@ -1,11 +1,11 @@
 #include "../test.h"
-
 #include "../code_block.h"
+#include <stdlib.h>
 
 #define TOKEN ((struct Token) { \
-    .raw = "hi!", \
+    .raw = malloc(2), \
     .raw_len = 4, \
-    .origin = "magic", \
+    .origin = malloc(2), \
     .origin_len = 6, \
     .line = __LINE__, \
     .index = ++idx, \

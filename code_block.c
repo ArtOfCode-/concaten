@@ -82,6 +82,7 @@ ERROR cb_insert(struct CodeBlock *into, size_t pos, struct Token what) {
 
 ERROR cb_remove(struct CodeBlock *from, size_t pos) {
     if (pos >= from->count) { return CB_RMV_BAD_IDX_FAIL; }
+    tkn_free(&from->tokens[pos]);
     for (size_t i = pos; i < from->count; ++i) {
         from->tokens[i] = from->tokens[i + 1];
     }
@@ -114,6 +115,9 @@ ERROR cb_set(struct CodeBlock *in, size_t idx, struct Token new_val) {
 }
 
 void cb_free(struct CodeBlock *freeing) {
+    for (size_t i = 0; i < freeing->count; ++i) {
+        tkn_free(&freeing->tokens[i]);
+    }
     free(freeing->tokens);
     *freeing = (struct CodeBlock) {
             .cap = 0,
