@@ -3,7 +3,7 @@
 #include <stdlib.h>
 #include <string.h>
 
-#define GEN_S (t = malloc(3), strcpy(t, "hi!"), t)
+#define GEN_S (t = malloc(4), strcpy(t, "hi!"), t)
 #define TOKEN ((struct Token) { \
     .raw = GEN_S, \
     .raw_len = 1, \
