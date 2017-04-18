@@ -43,6 +43,7 @@ ERROR real_to_s_d(struct DataStack *d, struct ScopeStack *s,
         ctno_free(res);
         return STL_INT_STR_DSPUSH_FAIL;
     }
+    ctno_free(res);
     return NO_ERROR;
 }
 
@@ -248,13 +249,13 @@ ERROR real_div(struct DataStack *d, struct ScopeStack *s,
             if (*second_v == 0) {
                 return STL_DIV_BY_ZERO_FAIL;
             }
-            res = *second_v/ (real) *top_v;
+            res = *second_v / (real) *top_v;
         } else if (second_o->data.literal.type == LTL_real) {
             real *second_v = ctno_to(second_o, real);
             if (*second_v == 0) {
                 return STL_DIV_BY_ZERO_FAIL;
             }
-            res = *second_v/ *top_v;
+            res = *second_v / *top_v;
         } else {
             return ARGUMENT_MISMATCH_FAIL;
         }
@@ -361,7 +362,6 @@ ERROR init_real_methods() {
         return STL_INIT_MM_NEW_FAIL;
     }
     try_add_c(">string", real_to_s_d);
-    try_add_c(">string-d", real_to_s_d);
     try_add_c("+", real_add);
     try_add_c("-", real_sub);
     try_add_c("*", real_mul);
