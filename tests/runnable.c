@@ -24,6 +24,7 @@ ERROR test2(struct DataStack *ds, struct ScopeStack *ss, struct TokenStack *ts) 
     struct Object *tods;
     tassert(dst_pop(ds, &tods) == NO_ERROR, "failed to pop ds");
     tassert(tods->is_literal == top_is_lit, "got wrong value for ds");
+    ctno_free(tods);
     
     struct Token tots;
     tassert(tst_pop(ts, &tots) == NO_ERROR, "failed to pop ts");
