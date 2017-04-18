@@ -2,11 +2,8 @@
 
 void free_stl() {
     mm_free(string_methods);
-    free(string_methods);
     mm_free(integral_methods);
-    free(integral_methods);
     mm_free(real_methods);
-    free(real_methods);
     mm_free(&global_funcs);
 }
 
