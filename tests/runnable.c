@@ -33,11 +33,10 @@ ERROR test2(struct DataStack *ds, struct ScopeStack *ss, struct TokenStack *ts) 
     return USER_DEFINED_ERROR;
 }
 
-#define INI_MALLOC (t = malloc(1), t[0] = 0, t)
+char *rn_gen_s() { char *r = malloc(1); *r = 0; return r; }
 struct TestResult test_runnable() {
     successes = 0;
     total = 0;
-    char *t;
     struct DataStack ds;
     tassert(dst_new(&ds) == NO_ERROR, "failed to init data stack");
     struct Object *lit = malloc(sizeof(*lit));
@@ -62,11 +61,11 @@ struct TestResult test_runnable() {
     struct CodeBlock cb1, cb2;
     tassert(cb_new(1, &cb1) == NO_ERROR, "failed to init cb1");
     tassert(cb_append(&cb1, (struct Token) {
-            .type = TKN_INTEGRAL, .raw = INI_MALLOC, .origin = INI_MALLOC
+            .type = TKN_INTEGRAL, .raw = rn_gen_s(), .origin = rn_gen_s()
     }) == NO_ERROR, "failed to push token into cb");
     tassert(cb_new(1, &cb2) == NO_ERROR, "failed to init cb2");
     tassert(cb_append(&cb2, (struct Token) {
-            .type = TKN_REGEX, .raw = INI_MALLOC, .origin = INI_MALLOC
+            .type = TKN_REGEX, .raw = rn_gen_s(), .origin = rn_gen_s()
     }) == NO_ERROR, "failed to push token into cb");
     
     struct Runnable c1, c2, c1c;
