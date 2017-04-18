@@ -119,9 +119,4 @@ void cb_free(struct CodeBlock *freeing) {
         tkn_free(&freeing->tokens[i]);
     }
     free(freeing->tokens);
-    *freeing = (struct CodeBlock) {
-            .cap = 0,
-            .count = 0,
-            .tokens = NULL
-    };
 }
