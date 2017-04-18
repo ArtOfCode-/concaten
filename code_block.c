@@ -17,7 +17,7 @@ ERROR cb_new(size_t init_cap, struct CodeBlock *ret) {
 ERROR cb_copy(const struct CodeBlock from, struct CodeBlock *into) {
     struct Token *mem = malloc(sizeof(*mem) * from.cap);
     if (!mem) { return CB_COPY_MALLOC_FAIL; }
-    for (size_t i = 0; i < from.cap; ++i) {
+    for (size_t i = 0; i < from.count; ++i) {
         tkn_copy(from.tokens[i], &mem[i]);
     }
     *into = (struct CodeBlock) {
