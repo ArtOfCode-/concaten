@@ -120,6 +120,9 @@ If you get a segfault, that's especially important. Please try to track it
 down; since I don't have unlimited access to your machine, I can't really find
 the bug.
 
+I'd also appreciate it if you ran the main executable (`./concaten`) on any of
+the code samples, especially `demo.ctn`.
+
 ---
 
 **A note about versions**: My format is `major.milestone.submilestone`, where
