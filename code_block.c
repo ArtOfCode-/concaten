@@ -18,7 +18,7 @@ ERROR cb_copy(const struct CodeBlock from, struct CodeBlock *into) {
     struct Token *mem = malloc(sizeof(*mem) * from.cap);
     if (!mem) { return CB_COPY_MALLOC_FAIL; }
     for (size_t i = 0; i < from.cap; ++i) {
-        mem[i] = from.tokens[i];
+        tkn_copy(from.tokens[i], &mem[i]);
     }
     *into = (struct CodeBlock) {
             .cap = from.cap,

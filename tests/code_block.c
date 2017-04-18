@@ -4,9 +4,9 @@
 
 #define TOKEN ((struct Token) { \
     .raw = malloc(2), \
-    .raw_len = 4, \
+    .raw_len = 1, \
     .origin = malloc(2), \
-    .origin_len = 6, \
+    .origin_len = 1, \
     .line = __LINE__, \
     .index = ++idx, \
     .type = TKN_WORD \
