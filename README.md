@@ -54,6 +54,12 @@ For an example of how the language will probably look, see `test.ctn`.
   specced out, actual usage might reveal things that I didn't consider, and
   therefore need to add in, remove, or change.
 
+### Documentation
+
+Documentation is (or, if it isn't, will soon be) available in the form of a
+function ("word") reference, a glossary, and guides. See `docs/README.md` for
+more information.
+
 ### Installing
 
 Installing Concaten is simple if you have `git`, `cmake` and `make` installed.
@@ -66,6 +72,16 @@ This will clone the `master` branch of the repositiory (which has the latest
 stable version) and build it. If you'd like the bleeding-edge version, which
 might not always compile, let alone function correctly, do `git checkout dev`
 immediately after `cd`ing.
+
+If you don't have CMake or Make installed, or prefer not to use them, you can
+probably get the Concaten executable by running this command:
+
+    cc -Wall -Wextra -Werror -pedantic -O3 -std=c11 -oconcaten \
+        [^t]*.c t[ko]*.c stl/*.c -lm
+
+While this _should_ work, I say "probably" because, firstly, it was written
+with GCC in mind, and as such the syntax may not be correct for, say, MSVC.
+Secondly, I'm not going to keep this as up-to-date as the 
 
 If you discover any issues, please report them on GitHub.
 
