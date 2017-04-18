@@ -144,6 +144,7 @@ bool parse(struct Tokenizer tknr, struct MethodMap globals) {
             }
             ctno_free(new_val); // we're relinquishing control of it
         }
+        tkn_free(&ctkn);
     }
     if (err != TST_POP_EMPTY_FAIL) {
         fprintf(stderr, "Failed to get next token: "EFMT"\n", err);
