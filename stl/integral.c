@@ -39,6 +39,7 @@ ERROR integral_to_s_d(struct DataStack *d, struct ScopeStack *s,
         ctno_free(res);
         return STL_INT_STR_DSPUSH_FAIL;
     }
+    ctno_free(res);
     return NO_ERROR;
 }
 
