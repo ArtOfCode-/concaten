@@ -22,7 +22,7 @@ ERROR cb_copy(const struct CodeBlock from, struct CodeBlock *into) {
     }
     *into = (struct CodeBlock) {
             .cap = from.cap,
-            .count = from.cap,
+            .count = from.count,
             .tokens = mem
     };
     return NO_ERROR;
