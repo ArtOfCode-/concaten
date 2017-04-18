@@ -1,11 +1,13 @@
 #include "../test.h"
 #include "../code_block.h"
 #include <stdlib.h>
+#include <string.h>
 
+#define GEN_S (t = malloc(3), strcpy(t, "hi!"), t)
 #define TOKEN ((struct Token) { \
-    .raw = malloc(2), \
+    .raw = GEN_S, \
     .raw_len = 1, \
-    .origin = malloc(2), \
+    .origin = GEN_S, \
     .origin_len = 1, \
     .line = __LINE__, \
     .index = ++idx, \
@@ -21,13 +23,14 @@ struct TestResult test_code_block() {
     size_t successes = 0, total = 0, idx = 0;
     struct CodeBlock test_o;
     struct Token res;
+    char *t;
     // make sure init works
     tassert(cb_new(4, &test_o) == NO_ERROR, "failed to initialize codeblock");
     tassert(test_o.count == 0, "bad initial count");
     // test_o basic appending
     tassert(cb_append(&test_o, TOKEN) == NO_ERROR, "failed to append");
     // test_o basic get
-    a_get(o, 0, 28, 1);
+    a_get(o, 0, 31, 1);
     // get to the point where we resize
     tassert(cb_append(&test_o, TOKEN) == NO_ERROR, "failed to append");
     tassert(cb_append(&test_o, TOKEN) == NO_ERROR, "failed to append");
@@ -49,35 +52,35 @@ struct TestResult test_code_block() {
     tassert(cb_remove(&test_o, 9) == CB_RMV_BAD_IDX_FAIL,
             "removed from bad position");
     // get again
-    a_get(o, 0, 28, 1);
+    a_get(o, 0, 31, 1);
     // testing copy
     struct CodeBlock test_c;
     tassert(cb_copy(test_o, &test_c) == NO_ERROR, "failed to copy");
-    a_get(c, 0, 28, 1);
+    a_get(c, 0, 31, 1);
     tassert(cb_prepend(&test_c, TOKEN) == NO_ERROR, "failed to prepend");
-    a_get(c, 0, 57, 6);
+    a_get(c, 0, 60, 6);
     // make sure the copy doesn't affect the original
-    a_get(o, 0, 28, 1);
+    a_get(o, 0, 31, 1);
     cb_free(&test_c);
     // bad get
     tassert(cb_get(test_o, 7, &res) == CB_GET_BAD_IDX_FAIL,
             "got value that shouldn't be there");
     // insert in middle
     tassert(cb_insert(&test_o, 2, TOKEN) == NO_ERROR, "failed to insert");
-    a_get(o, 2, 66, 7);
+    a_get(o, 2, 69, 7);
     // bad insert
     tassert(cb_insert(&test_o, 9, TOKEN) == CB_INST_BAD_IDX_FAIL,
             "successfully inserted in bad pos");
     // basic prepend
     tassert(cb_prepend(&test_o, TOKEN) == NO_ERROR, "failed to insert");
-    a_get(o, 0, 72, 9);
+    a_get(o, 0, 75, 9);
     // set
     tassert(cb_set(&test_o, 1, TOKEN) == NO_ERROR, "failed to set");
     // suddenly, insert! (intentionally in the middle of the `set` test_o)
     tassert(cb_insert(&test_o, 3, TOKEN) == NO_ERROR, "failed to insert");
-    a_get(o, 3, 77, 11);
+    a_get(o, 3, 80, 11);
     // finish the set test_o
-    a_get(o, 1, 75, 10);
+    a_get(o, 1, 78, 10);
     cb_free(&test_o);
     
     return (struct TestResult) { .successes = successes, .total = total };
