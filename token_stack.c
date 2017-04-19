@@ -85,8 +85,8 @@ ERROR tst_pop(struct TokenStack *this, struct Token *ret) {
         level->token_head = old->next;
         free(old);
     } else if (this->ptknr.head) {
-        ret_val = this->ptknr.head->value;
         struct TS_TokenNode *old = this->ptknr.head;
+        ret_val = old->value;
         this->ptknr.head = old->next;
         free(old);
     } else {
