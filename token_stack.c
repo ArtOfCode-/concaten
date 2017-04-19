@@ -217,7 +217,6 @@ ERROR tst_restore_state(struct TokenStack *this) {
                         .value = todo->data.popped
                 };
                 this->ptknr.head = new_head;
-                
                 break;
             case TSCN_LEVEL_POP:
                 if (tst_push_level(this) != NO_ERROR) {
