@@ -83,9 +83,13 @@ ERROR rn_run(const struct Runnable run, struct DataStack *ds,
     if (run.type == RNT_C_CODE) {
         return run.code.c(ds, ss, ts);
     } else if (run.type == RNT_CTN_CODE) {
-        if (tst_push_level(ts) != NO_ERROR) return RN_RUN_TST_PUSH_FAIL;
+        if (tst_push_level(ts) != NO_ERROR) return RN_RUN_TST_LEVEL_FAIL;
         for (size_t i = run.code.ctn.count; i > 0; --i) {
-            if (tst_push(ts, run.code.ctn.tokens[i - 1]) != NO_ERROR) {
+            struct Token pushing;
+            if (tkn_copy(run.code.ctn.tokens[i - 1], &pushing) != NO_ERROR) {
+                return RN_RUN_TKN_COPY_FAIL;
+            }
+            if (tst_push(ts, pushing) != NO_ERROR) {
                 return RN_RUN_TST_PUSH_FAIL;
             }
         }
