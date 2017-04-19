@@ -16,6 +16,7 @@ void tst_level_node_free(struct TS_LevelNode *this) {
             free(node);
             node = next;
         }
+        this->token_head = NULL;
         free(this);
     }
 }
