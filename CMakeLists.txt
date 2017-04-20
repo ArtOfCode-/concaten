@@ -9,10 +9,13 @@ set(NORMAL_LIBS m)
 set(TEST_FLAGS "-g")
 set(TEST_LIBS)
 
-# to enable ASan, add -fsanitize=address -fno-omit-frame-pointer and asan lib
-# it doesn't work on WSL, so it's not added by default
-set(PROFILE_FLAGS "-g -O0")
-set(PROFILE_LIBS)
+if(ENABLE_ASAN)
+    set(PROFILE_FLAGS "-fsanitize=address -fno-omit-frame-pointer")
+    set(PROFILE_LIBS asan)
+else(ENABLE_ASAN)
+    set(PROFILE_FLAGS "-g -O0")
+    set(PROFILE_LIBS)
+endif(ENABLE_ASAN)
 
 set(NORMAL_SRCS
         tokenizer.c stringbuilder.c method_map.c prop_map.c object.c
