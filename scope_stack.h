@@ -29,6 +29,7 @@ struct ScopeStack {
 ERROR sst_new(size_t, struct MethodMap, struct ScopeStack *);
 ERROR sst_save_state(struct ScopeStack *);
 ERROR sst_restore_state(struct ScopeStack *);
+ERROR sst_discard_save(struct ScopeStack *);
 ERROR sst_get(const struct ScopeStack, const char *, struct Runnable *);
 ERROR sst_get_all(const struct ScopeStack, const char *,
                  struct Runnable **, size_t *);

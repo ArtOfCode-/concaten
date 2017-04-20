@@ -33,6 +33,34 @@ ERROR sst_save_state(struct ScopeStack *this) {
     return NO_ERROR;
 }
 
+ERROR sst_discard_save(struct ScopeStack *this) {
+    this->saving_state = false;
+    struct SS_ChangeNode *cn = this->change_head;
+    while (cn) {
+        switch (cn->type) {
+            case SSCN_SCOPE_POP:
+                mm_free(&cn->set_data.removed_layer);
+                break;
+            case SSCN_SCOPE_PUSH:
+                break;
+            case SSCN_SET:
+                free((char *) cn->set_data.single.key);
+                rn_free(&cn->set_data.single.val);
+                break;
+            case SSCN_ADD:
+                free((char *) cn->set_data.single.key);
+                break;
+            default:
+                return SST_RST_UNKNOWN_TYPE_FAIL;
+        }
+        struct SS_ChangeNode *next = cn->next;
+        free(cn);
+        cn = next;
+    }
+    this->change_head = NULL;
+    return NO_ERROR;
+}
+
 ERROR sst_restore_state(struct ScopeStack *this) {
     this->saving_state = false;
     struct SS_ChangeNode *cn = this->change_head;

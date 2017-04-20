@@ -129,7 +129,13 @@ bool parse(struct Tokenizer tknr, struct MethodMap globals) {
                 } else {
                     if ((err = tst_discard_save(&tst)) != NO_ERROR) {
                         eprint("Failed to discard tst data: "EFMT"\n", err);
+                        goto error;
                     }
+                    if ((err = sst_discard_save(&sst)) != NO_ERROR) {
+                        eprint("Failed to discard sst data: "EFMT"\n", err);
+                        goto error;
+                    }
+                    dst_free(&dst_c);
                     break;
                 }
             }
