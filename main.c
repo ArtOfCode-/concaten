@@ -60,7 +60,7 @@ bool parse(struct Tokenizer tknr, struct MethodMap globals) {
     } while(0)
     struct Token ctkn;
     size_t idx = 0;
-    while ((err = tst_pop_repl(&tst, &ctkn, idx++)) == NO_ERROR) {
+    while ((err = tst_pop_repl(&tst, &ctkn, ++idx)) == NO_ERROR) {
         if (ctkn.type == TKN_WORD) {
             // first, look for methods in the top of stack
             if (!dst_empty(dst)) {
