@@ -110,6 +110,7 @@ ERROR cb_get(const struct CodeBlock from, size_t idx, struct Token *into) {
 
 ERROR cb_set(struct CodeBlock *in, size_t idx, struct Token new_val) {
     if (idx >= in->count) { return CB_SET_BAD_IDX_FAIL; }
+    tkn_free(&in->tokens[idx]);
     in->tokens[idx] = new_val;
     return NO_ERROR;
 }

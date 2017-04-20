@@ -17,7 +17,7 @@ char *cb_gen_s() { char *r = malloc(1); *r = 0; return r; }
 #define a_get(w, idx, l, i) \
     tassert(cb_get(test_##w, idx, &res) == NO_ERROR, "failed to get"); \
     tassert(res.line == l && res.index == i, "got wrong value (%zu %zu)", \
-            res.line, res.index)
+            res.line, res.index);
 
 struct TestResult test_code_block() {
     size_t successes = 0, total = 0, idx = 0;
