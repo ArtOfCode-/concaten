@@ -28,7 +28,7 @@ struct TestResult test_code_block() {
     // test_o basic appending
     tassert(cb_append(&test_o, TOKEN) == NO_ERROR, "failed to append");
     // test_o basic get
-    a_get(o, 0, 30, 1);
+    a_get(o, 0, 29, 1);
     // get to the point where we resize
     tassert(cb_append(&test_o, TOKEN) == NO_ERROR, "failed to append");
     tassert(cb_append(&test_o, TOKEN) == NO_ERROR, "failed to append");
@@ -50,22 +50,22 @@ struct TestResult test_code_block() {
     tassert(cb_remove(&test_o, 9) == CB_RMV_BAD_IDX_FAIL,
             "removed from bad position");
     // get again
-    a_get(o, 0, 30, 1);
+    a_get(o, 0, 29, 1);
     // testing copy
     struct CodeBlock test_c;
     tassert(cb_copy(test_o, &test_c) == NO_ERROR, "failed to copy");
-    a_get(c, 0, 30, 1);
+    a_get(c, 0, 29, 1);
     tassert(cb_prepend(&test_c, TOKEN) == NO_ERROR, "failed to prepend");
-    a_get(c, 0, 59, 6);
+    a_get(c, 0, 58, 6);
     // make sure the copy doesn't affect the original
-    a_get(o, 0, 30, 1);
+    a_get(o, 0, 29, 1);
     cb_free(&test_c);
     // bad get
     tassert(cb_get(test_o, 7, &res) == CB_GET_BAD_IDX_FAIL,
             "got value that shouldn't be there");
     // insert in middle
     tassert(cb_insert(&test_o, 2, TOKEN) == NO_ERROR, "failed to insert");
-    a_get(o, 2, 68, 7);
+    a_get(o, 2, 67, 7);
     // bad insert
     tassert(cb_insert(&test_o, 9, (struct Token) {
             .line = 0 // Don't allocate memory, it would be lost
@@ -73,14 +73,14 @@ struct TestResult test_code_block() {
             "successfully inserted in bad pos");
     // basic prepend
     tassert(cb_prepend(&test_o, TOKEN) == NO_ERROR, "failed to insert");
-    a_get(o, 0, 74, 8);
+    a_get(o, 0, 75, 8);
     // set
     tassert(cb_set(&test_o, 1, TOKEN) == NO_ERROR, "failed to set");
     // suddenly, insert! (intentionally in the middle of the `set` test_o)
     tassert(cb_insert(&test_o, 3, TOKEN) == NO_ERROR, "failed to insert");
-    a_get(o, 3, 79, 10);
+    a_get(o, 3, 80, 10);
     // finish the set test_o
-    a_get(o, 1, 77, 9);
+    a_get(o, 1, 78, 9);
     cb_free(&test_o);
     
     return (struct TestResult) { .successes = successes, .total = total };
