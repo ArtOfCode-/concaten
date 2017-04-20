@@ -1,16 +1,51 @@
-"Hello, World!" puts
-1 1 + *puts
--12 >string
-14.8 *puts puts
-1.2 3.4 / *puts
-1 2.3 - *puts
-2.3 1 - *puts
-1.2 3 * *puts
-5 10 * *puts
-4 3 / *puts
-9 592934 - *puts
-3 14 mod *puts
-3.2 14 mod *puts
-12 *puts
-
-"done" puts
+"Hello, World!"
+puts
+1
+1
++
+*puts
+-12
+>string
+14.8
+*puts
+puts
+1.2
+3.4
+/
+*puts
+1
+2.3
+-
+*puts
+2.3
+1
+-
+*puts
+1.2
+3
+*
+*puts
+5
+10
+*
+*puts
+4
+3
+/
+*puts
+9
+592934
+-
+*puts
+3
+14 
+mod
+*puts
+3.2
+14
+mod
+*puts
+12
+*puts
+"done" 
+puts
