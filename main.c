@@ -26,12 +26,9 @@ ERROR tst_pop_repl_##n(struct TokenStack *t, struct Token *o) { \
 mms
 #undef X
 
-ERROR (*tsts[])(struct TokenStack *, struct Token *) = {0};
 ERROR tst_pop_repl(struct TokenStack *t, struct Token *o, size_t idx) {
     #define X(n) tst_pop_repl_##n,
-    ERROR (*tsts[])(struct TokenStack *, struct Token *) = {
-        mms
-    };
+    ERROR (*tsts[])(struct TokenStack *, struct Token *) = { mms };
     #undef X
     return tsts[idx](t, o);
 }
