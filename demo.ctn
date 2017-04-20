@@ -4,6 +4,10 @@
 -12 >string
 14.8 *puts
 puts
+#real >string
+2.3 >string puts
+#integer >string
+5 >string puts
 #integer addition
 1 1 + *puts
 #integer with real addition
