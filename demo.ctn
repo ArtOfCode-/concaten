@@ -1,16 +1,48 @@
-"Hello, World!" puts            
-1 1 + *puts
+#Hello, World!
+"Hello, World!" puts
+#testing that the data stack preserves values
 -12 >string
 14.8 *puts
 puts
-1.2 3.4 / *puts
-1 2.3 - *puts
+#integer addition
+1 1 + *puts
+#integer with real addition
+1.2 1 + *puts
+#real addition
+1.2 3.4 + *puts
+#real with integer addition
+1 2.3 + *puts
+#integer subtraction
+2 1 - *puts
+#integer with real subtraction
 2.3 1 - *puts
-1.2 3 * *puts
-5 10 * *puts
-4 3 / *puts
-9 592934 - *puts
-3 14 mod *puts
-3.2 14 mod *puts
-12 *puts
+#real subtraction
+2.4 1.3 - *puts
+#real with integer subtraction
+1.2 3.4 / *puts
+#integer multiplication
+3 5 * *puts
+#integer with real multiplication
+3.4 5 * *puts
+#real multiplcation
+2.3 4.5 * *puts
+#real with integer multiplication
+2 3.4 * *puts
+#integer division
+2 3 / *puts
+#integer with real division
+2.3 4 / *puts
+#real division
+2.3 4.5 / *puts
+#real with integer division
+2 3.4 / *puts
+#integer modulus
+2 3 mod *puts
+#integer with real modulus
+2.3 4 mod *puts
+#real modulus
+2.3 4.5 mod *puts
+#real with integer modulus
+2 3.4 mod *puts
+#make sure none of that segfaulted
 "done" puts
