@@ -1,7 +1,6 @@
 #include "../test.h"
 #include "../code_block.h"
 #include <stdlib.h>
-#include <string.h>
 
 char *cb_gen_s() { char *r = malloc(1); *r = 0; return r; }
 #define TOKEN ((struct Token) { \

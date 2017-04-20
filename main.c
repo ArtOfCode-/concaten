@@ -7,16 +7,6 @@
 #include "object.h"
 #include "stl.h"
 
-ERROR tst_pop_repl(struct TokenStack *t, struct Token *o) {
-    ERROR ret = tst_pop(t, o);
-    if (ret == NO_ERROR) {
-        printf("Popped %zu %zu %s\n", o->line, o->index, o->raw);
-    } else {
-        printf("Error: "EFMT"\n", ret);
-    }
-    return ret;
-}
-
 bool parse(struct Tokenizer tknr, struct MethodMap globals) {
     ERROR err;
     struct TokenStack tst;
@@ -43,7 +33,7 @@ bool parse(struct Tokenizer tknr, struct MethodMap globals) {
         fprintf(stderr, __VA_ARGS__); \
     } while(0)
     struct Token ctkn;
-    while ((err = tst_pop_repl(&tst, &ctkn)) == NO_ERROR) {
+    while ((err = tst_pop(&tst, &ctkn)) == NO_ERROR) {
         if (ctkn.type == TKN_WORD) {
             // first, look for methods in the top of stack
             if (!dst_empty(dst)) {
