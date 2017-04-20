@@ -68,18 +68,18 @@ struct TestResult test_code_block() {
     tassert(cb_insert(&test_o, 2, TOKEN) == NO_ERROR, "failed to insert");
     a_get(o, 2, 68, 7);
     // bad insert
-    tassert(cb_insert(&test_o, 9, TOKEN) == CB_INST_BAD_IDX_FAIL,
+    tassert(cb_insert(&test_o, 9, (struct Token) {0}) == CB_INST_BAD_IDX_FAIL,
             "successfully inserted in bad pos");
     // basic prepend
     tassert(cb_prepend(&test_o, TOKEN) == NO_ERROR, "failed to insert");
-    a_get(o, 0, 74, 9);
+    a_get(o, 0, 74, 8);
     // set
     tassert(cb_set(&test_o, 1, TOKEN) == NO_ERROR, "failed to set");
     // suddenly, insert! (intentionally in the middle of the `set` test_o)
     tassert(cb_insert(&test_o, 3, TOKEN) == NO_ERROR, "failed to insert");
-    a_get(o, 3, 79, 11);
+    a_get(o, 3, 79, 10);
     // finish the set test_o
-    a_get(o, 1, 77, 10);
+    a_get(o, 1, 77, 9);
     cb_free(&test_o);
     
     return (struct TestResult) { .successes = successes, .total = total };
