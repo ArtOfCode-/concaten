@@ -220,6 +220,7 @@ ERROR tst_discard_save(struct TokenStack *this) {
         free(removing);
         removing = next;
     }
+    this->latest_change = NULL;
     return NO_ERROR;
 }
 
