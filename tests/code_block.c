@@ -67,7 +67,9 @@ struct TestResult test_code_block() {
     tassert(cb_insert(&test_o, 2, TOKEN) == NO_ERROR, "failed to insert");
     a_get(o, 2, 68, 7);
     // bad insert
-    tassert(cb_insert(&test_o, 9, (struct Token) {0}) == CB_INST_BAD_IDX_FAIL,
+    tassert(cb_insert(&test_o, 9, (struct Token) {
+            .line = 0 // Don't allocate memory, it would be lost
+    }) == CB_INST_BAD_IDX_FAIL,
             "successfully inserted in bad pos");
     // basic prepend
     tassert(cb_prepend(&test_o, TOKEN) == NO_ERROR, "failed to insert");
