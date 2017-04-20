@@ -44,6 +44,7 @@ static const ERROR TST_RSTR_PUSH_FAIL               =  312;
 static const ERROR TST_RSTR_POP_LEVEL_FAIL          =  313;
 static const ERROR TST_RSTR_PUSH_LEVEL_FAIL         =  314;
 static const ERROR TST_PEEK_MALLOC_FAIL             =  315;
+static const ERROR TST_DISC_NOT_SAVING_FAIL         =  316;
 static const ERROR SST_CTOR_MALLOC_FAIL             =  401;
 static const ERROR SST_RST_PUSH_SCOPE_FAIL          =  402;
 static const ERROR SST_RST_POP_SCOPE_FAIL           =  403;

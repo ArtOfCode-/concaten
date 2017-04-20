@@ -9,7 +9,11 @@
 
 ERROR tst_pop_repl(struct TokenStack *t, struct Token *o) {
     ERROR ret = tst_pop(t, o);
-//    printf("Popped %zu %zu %s\n", o->line, o->index, o->raw);
+    if (ret == NO_ERROR) {
+        printf("Popped %zu %zu %s\n", o->line, o->index, o->raw);
+    } else {
+        printf("Error: "EFMT"\n", ret);
+    }
     return ret;
 }
 
@@ -123,10 +127,14 @@ bool parse(struct Tokenizer tknr, struct MethodMap globals) {
                     free(candidates);
                     goto error;
                 } else {
+                    if ((err = tst_discard_save(&tst)) != NO_ERROR) {
+                        eprint("Failed to discard tst data: "EFMT"\n", err);
+                    }
                     break;
                 }
             }
             free(candidates);
+            tkn_free(&ctkn);
             if (err == ARGUMENT_MISMATCH_FAIL) {
                 eprint("Argument types all failed to match.\n");
                 free(candidates);
@@ -135,7 +143,6 @@ bool parse(struct Tokenizer tknr, struct MethodMap globals) {
                 eprint("Candidate returned error: "EFMT"\n", err);
                 goto error;
             }
-            tkn_free(&ctkn);
         } else {
             struct Object *new_val = malloc(sizeof(*new_val));
             if (!new_val) {

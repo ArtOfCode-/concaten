@@ -189,6 +189,40 @@ ERROR tst_save_state(struct TokenStack *this) {
     return NO_ERROR;
 }
 
+ERROR tst_discard_save(struct TokenStack *this) {
+    if (!this->tracking_changes) return TST_DISC_NOT_SAVING_FAIL;
+    this->tracking_changes = false;
+    struct TS_ChangeNode *removing = this->latest_change;
+    while (removing) {
+        struct TS_TokenNode *stored_head;
+        switch (removing->type) {
+            case TSCN_TOKEN_POP:
+                tkn_free(&removing->data.popped);
+                break;
+            case TSCN_TOKEN_PUSH:
+                break;
+            case TSCN_TOKEN_NEXT:
+                tkn_free(&removing->data.popped);
+                break;
+            case TSCN_LEVEL_POP:
+                stored_head = removing->data.popped_head;
+                while (stored_head) {
+                    tkn_free(&stored_head->value);
+                    struct TS_TokenNode *next = stored_head->next;
+                    free(stored_head);
+                    stored_head = next;
+                }
+                break;
+            case TSCN_LEVEL_PUSH:
+                break;
+        }
+        struct TS_ChangeNode *next = removing->prev;
+        free(removing);
+        removing = next;
+    }
+    return NO_ERROR;
+}
+
 ERROR tst_restore_state(struct TokenStack *this) {
     if (!this->tracking_changes) return TST_RSTR_NOT_SAVING_FAIL;
     this->tracking_changes = false;

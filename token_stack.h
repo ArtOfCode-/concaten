@@ -56,6 +56,7 @@ ERROR tst_peek(struct TokenStack *, struct Token *);
 ERROR tst_push_level(struct TokenStack *);
 ERROR tst_pop_level(struct TokenStack *);
 ERROR tst_save_state(struct TokenStack *);
+ERROR tst_discard_save(struct TokenStack *);
 ERROR tst_restore_state(struct TokenStack *);
 void tst_free(struct TokenStack *);
 
