@@ -75,6 +75,7 @@ bool tkn_eq(const struct Token lhs, const struct Token rhs) {
 
 void tkn_free(struct Token *t) {
     if (t) {
+//        printf("Freeing %zu %zu %s\n", t->line, t->index, t->raw);
         free(t->raw);
         free(t->origin);
     }
