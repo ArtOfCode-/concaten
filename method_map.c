@@ -204,6 +204,7 @@ void mm_free(struct MethodMap *mm) {
             for (size_t bidx = 0; bidx < mm->bucket_count; ++bidx) {
                 struct MM_Bucket bk = mm->buckets[bidx];
                 for (size_t iidx = 0; iidx < bk.count; ++iidx) {
+                    free(&bk.items[iidx].key);
                     rn_free(&bk.items[iidx].func);
                 }
             }

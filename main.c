@@ -227,5 +227,7 @@ int main(int argc, char **argv) {
         }
     }
     free_stl();
+    
+    puts("totally done");
     return 0;
 }
