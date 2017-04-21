@@ -96,6 +96,7 @@ static const ERROR MM_RH_BAD_SIZE_FAIL              =  574;
 static const ERROR MM_SET_REHASH_FAIL               =  575;
 static const ERROR MM_GET_NO_KEY_FAIL               =  576;
 static const ERROR MM_RMV_NO_KEY_FAIL               =  577;
+static const ERROR MM_SET_MALLOC_FAIL               =  578;
 static const ERROR TP_CTOR_ARY_MALLOC_FAIL          =  600;
 static const ERROR TP_CTOR_NAME_MALLOC_FAIL         =  601;
 static const ERROR TP_COPY_ARY_MALLOC_FAIL          =  602;

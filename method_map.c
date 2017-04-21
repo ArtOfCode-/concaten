@@ -83,8 +83,11 @@ ERROR mm_set(struct MethodMap *mm, const char *key, MM_VALUE_TYPE f) {
         // note that we're not searching to see if it exists again, since
         // we already checked if it's in there.
     }
+    char *key_c = malloc(key_len + 1);
+    if (!key) return MM_SET_MALLOC_FAIL;
+    strncpy(key_c, key, key_len + 1);
     bucket->items[bucket->count] = (struct MM_KeyValPair) {
-            .key = key,
+            .key = key_c,
             .key_len = key_len,
             .func = f
     };
