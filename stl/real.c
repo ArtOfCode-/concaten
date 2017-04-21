@@ -109,6 +109,7 @@ ERROR real_add(struct DataStack *d, struct ScopeStack *s,
         mm_free(real_methods);
         return STL_INT_ADD_PUSH_FAIL;
     }
+    ctno_free(res_o); // relinquish control
     return NO_ERROR;
 }
 
@@ -166,6 +167,7 @@ ERROR real_sub(struct DataStack *d, struct ScopeStack *s,
         mm_free(real_methods);
         return STL_INT_ADD_PUSH_FAIL;
     }
+    ctno_free(res_o); // relinquish control
     return NO_ERROR;
 }
 
@@ -223,6 +225,7 @@ ERROR real_mul(struct DataStack *d, struct ScopeStack *s,
         mm_free(real_methods);
         return STL_INT_ADD_PUSH_FAIL;
     }
+    ctno_free(res_o); // relinquish control
     return NO_ERROR;
 }
 
@@ -277,6 +280,7 @@ ERROR real_div(struct DataStack *d, struct ScopeStack *s,
         mm_free(real_methods);
         return STL_INT_ADD_PUSH_FAIL;
     }
+    ctno_free(res_o); // relinquish control
     return NO_ERROR;
 }
 
@@ -337,6 +341,7 @@ ERROR real_mod(struct DataStack *d, struct ScopeStack *s,
         mm_free(real_methods);
         return STL_INT_ADD_PUSH_FAIL;
     }
+    ctno_free(res_o); // relinquish control
     return NO_ERROR;
 }
 

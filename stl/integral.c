@@ -97,6 +97,7 @@ ERROR integral_add(struct DataStack *d, struct ScopeStack *s,
         mm_free(integral_methods);
         return STL_INT_ADD_PUSH_FAIL;
     }
+    ctno_free(res_o); // relinquish control
     return NO_ERROR;
 }
 
@@ -154,6 +155,7 @@ ERROR integral_sub(struct DataStack *d, struct ScopeStack *s,
         mm_free(integral_methods);
         return STL_INT_ADD_PUSH_FAIL;
     }
+    ctno_free(res_o); // relinquish control
     return NO_ERROR;
 }
 
@@ -211,6 +213,7 @@ ERROR integral_mul(struct DataStack *d, struct ScopeStack *s,
         mm_free(integral_methods);
         return STL_INT_ADD_PUSH_FAIL;
     }
+    ctno_free(res_o); // relinquish control
     return NO_ERROR;
 }
 
@@ -265,6 +268,7 @@ ERROR integral_div(struct DataStack *d, struct ScopeStack *s,
         mm_free(integral_methods);
         return STL_INT_ADD_PUSH_FAIL;
     }
+    ctno_free(res_o); // relinquish control
     return NO_ERROR;
 }
 
@@ -325,6 +329,7 @@ ERROR integral_mod(struct DataStack *d, struct ScopeStack *s,
         mm_free(integral_methods);
         return STL_INT_ADD_PUSH_FAIL;
     }
+    ctno_free(res_o); // relinquish control
     return NO_ERROR;
 }
 
