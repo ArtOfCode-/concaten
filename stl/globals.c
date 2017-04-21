@@ -65,9 +65,9 @@ static inline struct Token tkn(char *val, enum TokenType tt) {
     try(rn_from_c(v, &rn_##v), STL_INIT_RN_FROM_C_FAIL); \
     try(mm_set(&global_funcs, name, rn_##v), STL_INIT_MM_SET_FAIL); \
 } while (0)
+
 // normally, string literals are bad, but the way these specific tokens are
 // used means it's fine to put literals, as long as I don't `tkn_free`.
-
 #define try_add_ctn(name, id, ...) do { \
     ++pseudo_line; \
     struct Token id##_tkns[] = { __VA_ARGS__ }; \
@@ -77,6 +77,7 @@ static inline struct Token tkn(char *val, enum TokenType tt) {
         STL_GLB_INIT_CB_NEW_FAIL); \
     struct Runnable rn_##id; \
     try(rn_from_ctn(cb_##id, &rn_##id), STL_GLB_INIT_RN_NEW_FAIL); \
+    cb_free(&cb_##id); \
     try(mm_set(&global_funcs, name, rn_##id), STL_GLB_INIT_MM_SET_FAIL); \
 } while(0)
 
