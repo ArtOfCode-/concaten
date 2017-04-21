@@ -89,7 +89,6 @@ ERROR pm_copy(const struct PropMap copying, struct PropMap *into) {
 ERROR pm_set(struct PropMap *pm, const char *k, PM_VALUE_TYPE val) {
     size_t key_len = strlen(k) + 1;
     size_t key_hash_raw = pm_hash(k);
-    
     size_t idx = key_hash_raw % pm->bucket_count;
     struct PM_Bucket *bucket = &pm->buckets[idx];
     for (size_t i = 0; i < bucket->count; ++i) {
@@ -117,6 +116,9 @@ ERROR pm_set(struct PropMap *pm, const char *k, PM_VALUE_TYPE val) {
     char *key = malloc(key_len);
     if (!key) return PM_SET_MALLOC_FAIL;
     strncpy(key, k, key_len);
+    if (ctno_claim(val) != NO_ERROR) {
+        return PM_SET_CLAIM_FAIL;
+    }
     bucket->items[bucket->count] = (struct PM_KeyValPair) {
             .key = key,
             .key_len = key_len,
