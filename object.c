@@ -126,7 +126,6 @@ ERROR ctno_set_prop(struct Object *to, const char *key,
         old = NULL;
     }
     if (check_for_cycles(to, adding)) return CTNO_SET_CYCLE_FAIL;
-    if (ctno_claim(adding) != NO_ERROR) return CTNO_SET_CLAIM_FAIL;
     if (pm_set(&to->data.properties, key, adding) != NO_ERROR) {
         return CTNO_SET_ADD_FAIL;
     }
