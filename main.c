@@ -174,10 +174,10 @@ bool parse(struct Tokenizer tknr, struct MethodMap globals) {
 int main(int argc, char **argv) {
     if (argc <= 0) {
         fputs("Usage: /path/to/concaten paths...", stderr);
-        return 1;
+        goto error;
     } else if (argc == 1) {
         fprintf(stderr, "Usage: \"%s\" paths...\n", argv[0]);
-        return 1;
+        goto error;
     }
     ERROR err;
     if (argv[1][0] == '-') {
@@ -198,12 +198,12 @@ int main(int argc, char **argv) {
                 } else {
                     puts("");
                 }
-                return 1;
+                goto error;
             }
             bool res = parse(tknr, global_funcs);
             tknr_free(&tknr);
             if (!res) {
-                return 1;
+                goto error;
             }
         }
     } else {
@@ -218,16 +218,19 @@ int main(int argc, char **argv) {
             } else {
                 puts("");
             }
-            return 1;
+            goto error;
         }
         bool res = parse(tknr, global_funcs);
         tknr_free(&tknr);
         if (!res) {
-            return 1;
+            goto error;
         }
     }
     free_stl();
     
     puts("totally done");
     return 0;
+    error:;
+    free_stl();
+    return 1;
 }
