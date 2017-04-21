@@ -89,6 +89,7 @@ static const ERROR PM_SET_REHASH_FAIL               =  557;
 static const ERROR PM_SET_MALLOC_FAIL               =  558;
 static const ERROR PM_GET_NO_KEY_FAIL               =  559;
 static const ERROR PM_RMV_NO_KEY_FAIL               =  560;
+static const ERROR PM_SET_CLAIM_FAIL                =  561;
 static const ERROR MM_CTOR_MALLOC_FAIL              =  571;
 static const ERROR MM_NESTED_REHASH_FAIL            =  572;
 static const ERROR MM_RH_CREATE_FAIL                =  573;
