@@ -1,4 +1,5 @@
 #include "prop_map.h"
+#include "object.h"
 
 #include <stdlib.h>
 #include <string.h>
@@ -94,6 +95,7 @@ ERROR pm_set(struct PropMap *pm, const char *k, PM_VALUE_TYPE val) {
     for (size_t i = 0; i < bucket->count; ++i) {
         if (bucket->items[i].key_len == key_len &&
                 strncmp(k, bucket->items[i].key, key_len) == 0) {
+            ctno_free(bucket->items[i].val);
             bucket->items[i].val = val;
             return NO_ERROR;
         }

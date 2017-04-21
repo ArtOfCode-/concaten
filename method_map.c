@@ -68,6 +68,7 @@ ERROR mm_set(struct MethodMap *mm, const char *const key, MM_VALUE_TYPE f) {
     for (size_t i = 0; i < bucket->count; ++i) {
         if (bucket->items[i].key_len == key_len &&
             strncmp(key, bucket->items[i].key, key_len) == 0) {
+            rn_free(&bucket->items[i].func);
             bucket->items[i].func = f;
             return NO_ERROR;
         }
