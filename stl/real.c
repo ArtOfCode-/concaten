@@ -364,6 +364,7 @@ ERROR init_real_methods() {
         return STL_INIT_MALLOC_FAIL;
     }
     if (mm_new(16, real_methods) != NO_ERROR) {
+        free(real_methods);
         return STL_INIT_MM_NEW_FAIL;
     }
     try_add_c(">string", real_to_s_d);

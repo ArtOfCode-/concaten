@@ -162,9 +162,6 @@ ERROR tkn_value_string(struct Token *from, struct Object *into) {
     if (tto_escape_string(from->raw, val_len, &esc, &esc_len) != NO_ERROR) {
         return TTO_STRING_ESCAPE_FAIL;
     }
-    if (mm_claim(string_methods) != NO_ERROR) {
-        return TTO_MM_CLAIM_FAIL;
-    }
     ERROR err = ctno_from_cstring(esc, esc_len, into);
     --from->raw;
     tkn_free(from);
@@ -214,9 +211,6 @@ ERROR tkn_value_integral(struct Token *from, struct Object *into) {
     }
     if (num_end != raw + len) {
         return TTO_INVALID_DIGIT_FAIL;
-    }
-    if (mm_claim(integral_methods) != NO_ERROR) {
-        return TTO_MM_CLAIM_FAIL;
     }
     ERROR err = ctno_from_integral(val, into);
     tkn_free(from);

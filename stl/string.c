@@ -41,6 +41,7 @@ ERROR init_string_methods() {
         return STL_INIT_MALLOC_FAIL;
     }
     if (mm_new(16, string_methods) != NO_ERROR) {
+        free(string_methods);
         return STL_INIT_MM_NEW_FAIL;
     }
     try_add_c("puts", ctn_puts);
