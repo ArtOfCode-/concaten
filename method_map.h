@@ -16,7 +16,7 @@ typedef struct Runnable MM_VALUE_TYPE;
 #define MM_PREF_BUCKET_DEPTH 4
 
 struct MM_KeyValPair {
-    const char *key;
+    char *key;
     size_t key_len;
     MM_VALUE_TYPE func;
 };

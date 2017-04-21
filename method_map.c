@@ -61,7 +61,7 @@ ERROR mm_claim(struct MethodMap *mm) {
     return NO_ERROR;
 }
 
-ERROR mm_set(struct MethodMap *mm, const char *key, MM_VALUE_TYPE f) {
+ERROR mm_set(struct MethodMap *mm, const char *const key, MM_VALUE_TYPE f) {
     size_t key_len = strlen(key);
     size_t idx = mm_hash(key) % mm->bucket_count;
     struct MM_Bucket *bucket = &mm->buckets[idx];
@@ -165,7 +165,7 @@ bool mm_is_value(const struct MethodMap mm, MM_VALUE_TYPE f) {
 // doesn't do any preexistence-checking, just bounds.
 // will produce duplicate keys if not used carefully!
 // but also marginally faster.
-ERROR mm_raw_add(struct MethodMap *mm, const char *key, MM_VALUE_TYPE val) {
+ERROR mm_raw_add(struct MethodMap *mm, char *key, MM_VALUE_TYPE val) {
     size_t bucket_idx = mm_hash(key) % mm->bucket_count;
     struct MM_Bucket *bk = &mm->buckets[bucket_idx];
     if (bk->count == MM_MAX_BUCKET_DEPTH) return MM_NESTED_REHASH_FAIL;
@@ -207,7 +207,7 @@ void mm_free(struct MethodMap *mm) {
             for (size_t bidx = 0; bidx < mm->bucket_count; ++bidx) {
                 struct MM_Bucket bk = mm->buckets[bidx];
                 for (size_t iidx = 0; iidx < bk.count; ++iidx) {
-                    free((char *) bk.items[iidx].key);
+                    free(bk.items[iidx].key);
                     rn_free(&bk.items[iidx].func);
                 }
             }
