@@ -166,13 +166,17 @@ bool mm_is_value(const struct MethodMap mm, MM_VALUE_TYPE f) {
 // will produce duplicate keys if not used carefully!
 // but also marginally faster.
 ERROR mm_raw_add(struct MethodMap *mm, char *key, MM_VALUE_TYPE val) {
+    size_t key_len = strlen(key);
     size_t bucket_idx = mm_hash(key) % mm->bucket_count;
     struct MM_Bucket *bk = &mm->buckets[bucket_idx];
     if (bk->count == MM_MAX_BUCKET_DEPTH) return MM_NESTED_REHASH_FAIL;
+    char *key_c = malloc(key_len + 1);
+    if (!key) return MM_SET_MALLOC_FAIL;
+    strncpy(key_c, key, key_len + 1);
     bk->items[bk->count] = (struct MM_KeyValPair) {
             .func = val,
             .key = key,
-            .key_len = strlen(key)
+            .key_len = key_len
     };
     ++bk->count;
     if (bk->count == MM_PREF_BUCKET_DEPTH) ++mm->bk_gr_pref;
