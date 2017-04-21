@@ -165,14 +165,7 @@ void ctno_free(struct Object *freeing) {
                 free(freeing->data.literal.value);
                 freeing->data.literal.value = NULL;
             } else {
-                struct PropMap *pm = &freeing->data.properties;
-                for (size_t bidx = 0; bidx < pm->bucket_count; ++bidx) {
-                    struct PM_Bucket *bk = &pm->buckets[bidx];
-                    for (size_t iidx = 0; iidx < bk->count; ++iidx) {
-                        ctno_free(bk->items[iidx].val);
-                    }
-                }
-                pm_free(pm);
+                pm_free(&freeing->data.properties);
             }
             free(freeing); // ensures that we didn't ctno_free(&sth);
         }
