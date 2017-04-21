@@ -11,7 +11,7 @@ set(TEST_LIBS)
 
 if(ENABLE_ASAN)
     set(PROFILE_FLAGS "-fsanitize=address -fno-omit-frame-pointer -g -O0")
-    set(PROFILE_LIBS asan)
+    set(PROFILE_LIBS)
 else()
     set(PROFILE_FLAGS "-g -O0")
     set(PROFILE_LIBS)
