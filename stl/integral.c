@@ -355,7 +355,6 @@ ERROR init_integral_methods() {
         return STL_INIT_MM_NEW_FAIL;
     }
     try_add_c(">string", integral_to_s_d);
-    try_add_c(">string-d", integral_to_s_d);
     try_add_c("+", integral_add);
     try_add_c("-", integral_sub);
     try_add_c("*", integral_mul);
