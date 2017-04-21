@@ -175,7 +175,7 @@ ERROR mm_raw_add(struct MethodMap *mm, char *key, MM_VALUE_TYPE val) {
     strncpy(key_c, key, key_len + 1);
     bk->items[bk->count] = (struct MM_KeyValPair) {
             .func = val,
-            .key = key,
+            .key = key_c,
             .key_len = key_len
     };
     ++bk->count;
