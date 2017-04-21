@@ -156,13 +156,14 @@ ERROR pm_remove(struct PropMap *pm, const char *key) {
     for (removed = 0; removed < bucket->count; ++removed) {
         if (bucket->items[removed].key_len == key_len &&
                 strncmp(key, bucket->items[removed].key, key_len) == 0) {
-            free(bucket->items[removed].key);
             break;
         }
     }
     if (removed == bucket->count) {
         return PM_RMV_NO_KEY_FAIL;
     }
+    free(bucket->items[removed].key);
+    ctno_free(bucket->items[removed].val);
     for (size_t move = removed + 1; move < bucket->count; ++move) {
         bucket->items[move - 1] = bucket->items[move];
     }

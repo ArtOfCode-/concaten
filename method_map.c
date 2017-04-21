@@ -132,6 +132,8 @@ ERROR mm_remove(struct MethodMap *mm, const char *finding) {
     if (removed == bucket->count) {
         return MM_RMV_NO_KEY_FAIL;
     }
+    free(bucket->items[removed].key);
+    rn_free(&bucket->items[removed].func);
     for (size_t move = removed + 1; move < bucket->count; ++move) {
         bucket->items[move - 1] = bucket->items[move];
     }

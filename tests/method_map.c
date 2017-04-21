@@ -48,7 +48,7 @@ struct TestResult test_method_map() {
     tassert(mm_set(&mm, "eighth", f07) == NO_ERROR, "assignment failed");
     tassert(mm_is_key(mm, "eighth"), "eighth isn't a key!");
     tassert(mm_get(mm, "eighth", &val) == NO_ERROR, "eighth get fail");
-    tassert(rn_eq(val, f07), "unexpected value for " "eighth");
+    tassert(rn_eq(val, f07), "unexpected value for eighth");
     tassert(mm_remove(&mm, "eighth") == NO_ERROR, "failed to remove");
     tassert(!mm_is_key(mm, "eighth"), "eighth is a key!");
     tassert(mm_get(mm, "eighth", &val) != NO_ERROR, "got for eighth");
@@ -57,14 +57,14 @@ struct TestResult test_method_map() {
     tassert(mm_is_value(mm, f01), "f01 isn't a value!");
     tassert(!mm_is_value(mm, f12), "f12 is a value!");
     tassert(mm_get(mm, "third", &val) == NO_ERROR, "third get fail");
-    tassert(rn_eq(val, f02), "unexpected value for " "third");
+    tassert(rn_eq(val, f02), "unexpected value for third");
     tassert(mm_get(mm, "eleventh", &val) != NO_ERROR, "got for eleventh");
     tassert(!mm_is_key(mm, "eleventh"), "eleventh is a key!");
     tassert(mm_set(&mm, "eleventh", f10) == NO_ERROR, "assignment failed");
     tassert(mm_set(&mm, "twelfth", f11) == NO_ERROR, "assignment failed");
     tassert(mm_set(&mm, "thirteenth", f12) == NO_ERROR, "assignment failed");
     tassert(mm_get(mm, "thirteenth", &val) == NO_ERROR, "thirteenth get fail");
-    tassert(rn_eq(val, f12), "unexpected value for " "thirteenth");
+    tassert(rn_eq(val, f12), "unexpected value for thirteenth");
     tassert(mm_remove(&mm, "thirteenth") == NO_ERROR, "failed to remove");
     tassert(!mm_is_value(mm, f12), "f12 is a value!");
     tassert(mm_set(&mm, ">string", f13) == NO_ERROR, "assignment failed");
