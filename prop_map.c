@@ -220,6 +220,7 @@ void pm_free(struct PropMap *pm) {
             struct PM_Bucket bk = pm->buckets[bidx];
             for (size_t iidx = 0; iidx < bk.count; ++iidx) {
                 free(bk.items[iidx].key);
+                ctno_free(bk.items[iidx].val);
             }
         }
         free(pm->buckets);
